@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 #include <string>
 #include <vector>
-#include <iostream.h>
+#include <iostream>
 #include <fstream>
 #include "SDL.h"
 #include "ur.h"
@@ -34,7 +34,7 @@ class ur_audio
 {
  public:
   ur_audio();
-  void ur_audio::audio_callback(Uint8 *stream, int len);
+  void audio_callback(Uint8 *stream, int len);
 
   void pushBGM(std::string name);
   void popBGM();

@@ -21,3 +21,11 @@ Licensed GPLv2 for now until I get around to relicensing it to 3-clause BSD or
 something.
 
 This first git commit contains no changes after the initial 2002/2003 work.
+
+## Build
+
+    $ cd libmodplug
+    $ make
+    $ cd ..
+    $ make
+    $ ./ur

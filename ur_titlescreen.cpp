@@ -31,8 +31,8 @@ ur_titlescreen::ur_titlescreen (std::string basedir,
   SDL_Surface *titleGraphicLoad;
   titleGraphicLoad = SDL_LoadBMP ((basedir + "titlescreen.bmp").c_str ());
   if (titleGraphicLoad == NULL)
-    cout << "!! Unable to load title screen image from " << basedir +
-      "titlescreen.bmp" << endl;
+    std::cout << "!! Unable to load title screen image from " << basedir +
+      "titlescreen.bmp" << std::endl;
   titleGraphic =
     SDL_ConvertSurface (titleGraphicLoad, &screenFormat, SDL_SRCCOLORKEY);
   SDL_FreeSurface (titleGraphicLoad);
@@ -68,7 +68,7 @@ ur_titlescreen::run (UR_KEYPAD_ENUM keystroke, SDL_Surface * screen)
   textPosition.w = FONT_TEXT_X * welcomeText.length ();
   SDL_Color textColor;
   textColor.r = audioManager->VUmeterL/255;
-  //cout << audioManager->VUmeterL << endl;
+  //std::cout << audioManager->VUmeterL << std::endl;
   textColor.g = 127;
   textColor.b = 127;
   fontManager->printTextToSurface (screen, welcomeText, urFont_Text,

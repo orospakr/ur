@@ -120,7 +120,7 @@ ur_map::run (UR_DIRECTION_ENUM keypress, SDL_Surface * destinationSurface)
     }
   
   
-  //cout<< player->xpos << endl << player->ypos << endl << endl;
+  //std::cout<< player->xpos << std::endl << player->ypos << std::endl << std::endl;
   //screenGeom.y++;
   //screenGeom.x++;
   layerA->drawToScreen (destinationSurface, screenGeom);

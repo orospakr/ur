@@ -121,7 +121,7 @@ ur_layer::drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom)
   endX += 2;			// these two are there just so it overlaps and there's no blockiness at the right and bottom edges
   endY += 2;
 
-  //cout << screenGeom.w/32 << endl << screenGeom.h/32 << endl << endl;
+  //std::cout << screenGeom.w/32 << std::endl << screenGeom.h/32 << std::endl << std::endl;
   for (Sint64 ycounter = beginY; ycounter < endY; ycounter++)
     {
       for (Sint64 xcounter = beginX; xcounter < endX; xcounter++)
@@ -130,10 +130,10 @@ ur_layer::drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom)
 	  SDL_Rect *dstRect;
 	  srcRect = getTileSrcCoord (floorGraphicalMap[xcounter][ycounter]);
 	  dstRect = getTileDestCoord (xcounter, ycounter);
-	  //cout << "The requested tilepile blit's source coordinates and dimensions are: ";
-	  //cout << " X origin: " << srcRect->x << " Y origin: " << srcRect->y << " Height: " << srcRect->h << " Width: " << srcRect->w << endl;
-	  //cout << "The requested screen destination coordinates and dimensions are: ";
-	  //cout << " X origin: " << dstRect->x << " Y origin: " << dstRect->y << " Height: " << dstRect->h << " Width: " << dstRect->w << endl;
+	  //std::cout << "The requested tilepile blit's source coordinates and dimensions are: ";
+	  //std::cout << " X origin: " << srcRect->x << " Y origin: " << srcRect->y << " Height: " << srcRect->h << " Width: " << srcRect->w << std::endl;
+	  //std::cout << "The requested screen destination coordinates and dimensions are: ";
+	  //std::cout << " X origin: " << dstRect->x << " Y origin: " << dstRect->y << " Height: " << dstRect->h << " Width: " << dstRect->w << std::endl;
 	  dstRect->x -= screenGeom.x;
 	  dstRect->y -= screenGeom.y;
 	  SDL_BlitSurface (tilepile, srcRect, screen, dstRect);
@@ -175,9 +175,9 @@ ur_layer::quickAGMPrint ()
     {
       for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
 	{
-	  cout << floorGraphicalMap[xcounter][ycounter];
+	  std::cout << floorGraphicalMap[xcounter][ycounter];
 	}
-      cout << "\n";
+      std::cout << "\n";
     }
 }
 
@@ -188,9 +188,9 @@ ur_layer::quickAPMPrint ()
     {
       for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
 	{
-	  cout << floorPhysicalMap[xcounter][ycounter];
+	  std::cout << floorPhysicalMap[xcounter][ycounter];
 	}
-      cout << "\n";
+      std::cout << "\n";
     }
 }
 

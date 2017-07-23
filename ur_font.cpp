@@ -26,12 +26,12 @@ ur_font::ur_font (std::string basedir, SDL_PixelFormat * screenFormat)
 
   bigFontLoad = SDL_LoadBMP ((basedir + "/bigfont.bmp").c_str ());
   if (bigFontLoad == NULL)
-    cout << "ACK!  could not big font from " << basedir +
-      "/bigfont.bmp" << endl;
+    std::cout << "ACK!  could not big font from " << basedir +
+      "/bigfont.bmp" << std::endl;
   textFontLoad = SDL_LoadBMP ((basedir + "/textfont.bmp").c_str ());
   if (textFontLoad == NULL)
-    cout << "ACK!  could not text font from " << basedir +
-      "/textfont.bmp" << endl;
+    std::cout << "ACK!  could not text font from " << basedir +
+      "/textfont.bmp" << std::endl;
   bigFont = SDL_ConvertSurface (bigFontLoad, screenFormat, SDL_SRCCOLORKEY);
   textFont = SDL_ConvertSurface (textFontLoad, screenFormat, SDL_SRCCOLORKEY);
   //SDL_SetColorKey (bigFont, SDL_SRCCOLORKEY, SDL_MapRGB (screenFormat, 255, 255, 255));
@@ -60,8 +60,8 @@ ur_font::printTextToSurface (SDL_Surface * surface, std::string text,
       Sint64 result = char2ascii (*(cstrbuf + position));
 
       
-      //cout << *(cstrbuf+position);
-      //cout << " == " << result << endl;
+      //std::cout << *(cstrbuf+position);
+      //std::cout << " == " << result << std::endl;
       SDL_Rect sourcePos;
       sourcePos.h = FONT_TEXT_Y;
       sourcePos.w = FONT_TEXT_X;
@@ -75,9 +75,9 @@ ur_font::printTextToSurface (SDL_Surface * surface, std::string text,
       SDL_BlitSurface (textFont,&sourcePos,fontBuffer,NULL);
       // now that we have the letter sitting in its own temporary surface, we're going to change the colour...
       Uint16 * raw_pixels = (Uint16 *)fontBuffer->pixels;
-      //cout << "  Source positions are: x=" << sourcePos.x << ", y=" << sourcePos.y;
-      //cout << "\n  Destination positions are: x=" << destPos.x << ", y=" << destPos.y  << endl;
-      //cout << "  Still good!\n";
+      //std::cout << "  Source positions are: x=" << sourcePos.x << ", y=" << sourcePos.y;
+      //std::cout << "\n  Destination positions are: x=" << destPos.x << ", y=" << destPos.y  << std::endl;
+      //std::cout << "  Still good!\n";
       SDL_LockSurface(fontBuffer);
       for (Uint64 hcounter = 0; hcounter<sourcePos.h;hcounter++)
 	for (Uint64 wcounter = 0; wcounter<sourcePos.w; wcounter++)
@@ -85,7 +85,7 @@ ur_font::printTextToSurface (SDL_Surface * surface, std::string text,
 	    Uint64 offset = (hcounter*FONT_TEXT_X+wcounter);
 	    if (SDL_MapRGB(fontBuffer->format,0,0,0)==raw_pixels[offset])
 	      {
-		//cout << " \n Hit at "<< hcounter << ", " << wcounter << endl;
+		//std::cout << " \n Hit at "<< hcounter << ", " << wcounter << std::endl;
 		raw_pixels[offset]=SDL_MapRGB(fontBuffer->format,textColor.r,textColor.g,textColor.b);
 	      } 
 	  }

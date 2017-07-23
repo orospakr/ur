@@ -85,8 +85,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <iostream.h>
-#include <libiberty.h>
+#include <iostream>
 #include "SDL.h"
 #include "ur.h"
 
@@ -196,16 +195,16 @@ main (int argc, char *argv[])
 {
   char *msg;
   Sint64 done;
-  cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
-  cout << "    " << REVISION_EDITION << endl;
-  cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR << "."
-    << REVISION_MICRO << endl << endl;
+  std::cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
+  std::cout << "    " << REVISION_EDITION << std::endl;
+  std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR << "."
+    << REVISION_MICRO << std::endl << std::endl;
   printf ("Initialising SDL... ");
   /* Initialize SDL */
   if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
       asprintf (&msg, "Couldn't initialize SDL: %s\n", SDL_GetError ());
-      cout << msg;
+      std::cout << msg;
       free (msg);
       exit (1);
     }
@@ -219,7 +218,7 @@ main (int argc, char *argv[])
     {
       asprintf (&msg, "Couldn't set 640x480x16 video mode: %s\n",
 		SDL_GetError ());
-      cout << msg;
+      std::cout << msg;
       free (msg);
       exit (2);
     }
@@ -328,6 +327,6 @@ main (int argc, char *argv[])
   delete fontManager;
   SDL_Quit();
 
-  cout << "\nShutdown sucessful.  Welcome back to the world of shell.\n";
+  std::cout << "\nShutdown sucessful.  Welcome back to the world of shell.\n";
   return 0;
 }

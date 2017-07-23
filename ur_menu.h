@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream.h>
+#include <iostream>
 #include "SDL.h"
 #include "ur.h"
 

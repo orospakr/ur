@@ -73,7 +73,7 @@ ur_object::ur_object (std::string objectPath, std::string objectName,
 
   /* Now, to load up the speech responses... this goes until the end of the file
    */
-  //cout << "Loading speech data structures...\n";
+  //std::cout << "Loading speech data structures...\n";
   while (!loadReader.eof ())
     {
       UR_TALK_DATA tempSpeechLoad;
@@ -82,7 +82,7 @@ ur_object::ur_object (std::string objectPath, std::string objectName,
       loadReader.getline (loadBuffer, 2048);
       tempSpeechLoad.response = charToSTLString (loadBuffer);
       speechData.push_back (tempSpeechLoad);
-      //cout << "Succeded loading one speech data structure.\n";
+      //std::cout << "Succeded loading one speech data structure.\n";
     }
   delete [] loadBuffer;
   loadReader.close ();
@@ -198,7 +198,7 @@ ur_object::move (UR_DIRECTION_ENUM key)
       // play "bump" sound.  Not going anywhere!
       break;
     default:
-      cout <<
+      std::cout <<
 	"!! Warning! Undefined APM space detected!  Check the level definition files.\n";
       // give the player the benefit of the doubt and let 'im pass. :P
       xpos = futureX;
@@ -247,16 +247,16 @@ ur_object::move (UR_DIRECTION_ENUM key)
 	continue;		// I don't want to bother with this one... it's me!
       if (bossLayer->objects[counter]) // do the following if this object is not NULL
         {
-	  //cout << "Object #" << counter << " was not null.\n";
+	  //std::cout << "Object #" << counter << " was not null.\n";
 	  bool xInRange = false;
 	  bool yInRange = false;
 	  
 	  Sint64 xNearBound = bossLayer->objects[counter]->areaInfluence.x;
 	  Sint64 xFarBound = xNearBound + bossLayer->objects[counter]->areaInfluence.w;
-	  //cout << xNearBound << endl;
-	  //cout << xFarBound << endl;
+	  //std::cout << xNearBound << std::endl;
+	  //std::cout << xFarBound << std::endl;
 
-	  //cout << bossLayer->objects[counter]->areaInfluence.x << endl;
+	  //std::cout << bossLayer->objects[counter]->areaInfluence.x << std::endl;
 
 	  Sint64 yNearBound = bossLayer->objects[counter]->areaInfluence.y;
 	  Sint64 yFarBound = yNearBound + bossLayer->objects[counter]->areaInfluence.h;
@@ -264,17 +264,17 @@ ur_object::move (UR_DIRECTION_ENUM key)
 	  if ((xpos > xNearBound) && (xpos < xFarBound))
 	    {
 	      xInRange = true;
-	      //cout << "X was in range for something!\n";
+	      //std::cout << "X was in range for something!\n";
 	    }
 	  if ((ypos > yNearBound) && (ypos < yFarBound))
 	    {
 	      yInRange = true;
-	      //cout << "Y was in range for something!\n";
+	      //std::cout << "Y was in range for something!\n";
 	    }
 
 	  if (xInRange && yInRange)
 	    {
-	      cout << "We've hit some shiziat!!\n";
+	      std::cout << "We've hit some shiziat!!\n";
 	      dead=true;
 	      collision (bossLayer->objects[counter]);
 	    }

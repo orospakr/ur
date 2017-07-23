@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream.h>
+#include <iostream>
 #include <fstream>
 #include "SDL.h"
 #include "ur.h"

@@ -67,9 +67,9 @@ ur_audio::ur_audio()
   int audioInitResult = SDL_OpenAudio(desired,obtained_audio_spec);
   if (audioInitResult <0)
   {
-    cout << "!! Couldn't open audio!\n";
-    cout << "   SDL gave error code: " << audioInitResult << endl;
-    cout << SDL_GetError();
+    std::cout << "!! Couldn't open audio!\n";
+    std::cout << "   SDL gave error code: " << audioInitResult << std::endl;
+    std::cout << SDL_GetError();
   }
 
   /* desired spec is no longer needed*/
@@ -129,14 +129,14 @@ void ur_audio::load_music(std::string name)
   struct stat results;
   if (stat(filename.c_str(), &results))
     {
-      cout << endl << "!! Could not stat " << filename << endl;
+      std::cout << std::endl << "!! Could not stat " << filename << std::endl;
       return;
     }
   BGMsize = results.st_size;
   loadReader.open( filename.c_str() ,std::ifstream::in | std::ifstream::binary);
   if (!loadReader.good ())
     {
-      cout << endl << "!! Unable to load " << name << ". :( \n";
+      std::cout << std::endl << "!! Unable to load " << name << ". :( \n";
       return;
     }
   loadedBGM = new char[BGMsize];
