@@ -1,0 +1,7 @@
+Usurper's Retribution File Formats
+~~~
+
+Ext:	Name:				Purpose:
+APM:	Acorn Physical Map		Maps the physical tiles of a map (a grid)
+AGM:	Acorn Graphical Map		Maps the graphical tiles of a map (a grid)
+UR:	Game descripition file		Tells the engine a few simple things about the data

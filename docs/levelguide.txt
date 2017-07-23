@@ -1,0 +1,4 @@
+Usurper's Retribution Level Design Guide
+~~~
+
+UR is designed to be run (hopefully) at a multitude of different screen resolutions, and, therefore, levels should not be dependent (ie, players seeing things they shouldn't... or not seeing things) upon screen res.

@@ -1,0 +1,15 @@
+-- find and fix memory leaks and uninitialised/allocated props and objects
+
+-- implement more 'intelligent' APM implementation that checks for nearby walls, etc.
+
+-- perhaps design and implement "mapmods" so a map can have different versions of its APM and AGM, and object placement maps.
+
+-- object placement maps
+
+-- menuing subsystem (ur_menu)
+
+-- atmosphere class
+
+-- and finally, map state loading and saving
+
+-- AudioDrive

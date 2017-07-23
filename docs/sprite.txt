@@ -1,0 +1,10 @@
+Usurper's Retribution Sprite Defintions
+~~~
+
+Well, just look at example_sprite.bmp
+
+Here is the key:
+
+The crimson bit is the character potrait.  Displayed in menus and so forth.
+
+Each Animation seriesgo in the following order
