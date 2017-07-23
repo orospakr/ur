@@ -320,6 +320,9 @@ main (int argc, char *argv[])
 	}
       /* Draw to screen */
       draw ();
+
+      /* Horrible workaround for lack of linear time scaling. vaguely 30 Hz. */
+      SDL_Delay(32);
     }
   delete menu;
   delete map;
