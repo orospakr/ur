@@ -93,11 +93,8 @@ ur_sprite::getAnim (UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType)
 void
 ur_sprite::advanceAnimation ()
 {
-  animationPhase++;
-  if (animationPhase >= 8)
-    {
-      animationPhase = 0;
-    }
+  // animation phase should be modulo elapsed time ms, divide by 33 to get 30 fps.
+  animationPhase = SDL_GetTicks() / 33  / 3 % 8;
 }
 
 SDL_Rect ur_sprite::getPotrait ()

@@ -197,8 +197,6 @@ ur_layer::quickAPMPrint ()
 Sint64
 ur_layer::run ()
 {
-  tilesAnimPos++;
-  if (tilesAnimPos > 7)
-    tilesAnimPos = 0;
+  tilesAnimPos = SDL_GetTicks() / 33 / 3 % 8;
   return 0;
 }
