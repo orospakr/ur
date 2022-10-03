@@ -80,11 +80,8 @@ ur_titlescreen::run (UR_KEYPAD_ENUM keystroke, SDL_Surface * screen)
   scrollerDest.y = SCREEN_HEIGHT - 64;
   scrollerDest.h = FONT_TEXT_Y;
   scrollerDest.w = SCREEN_WIDTH;
-  scrollerPos++;
-  if (scrollerPos > scrollerText.length ())
-    {
-      scrollerPos = 0;
-    }
+  scrollerPos = SDL_GetTicks () / 66 % scrollerText.length ();
+
   fontManager->printTextToSurface (screen, scrollerText, urFont_Text,
 				   scrollerDest, scrollerPos, textColor);
 
