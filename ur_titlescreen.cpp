@@ -46,7 +46,7 @@ ur_titlescreen::~ur_titlescreen ()
 }
 
 Sint64
-ur_titlescreen::run (UR_KEYPAD_ENUM keystroke, SDL_Surface * screen)
+ur_titlescreen::run (UR_INPUT keystate, SDL_Surface * screen)
 {
   Sint64 result = 1;
   // draw the screen
@@ -86,7 +86,7 @@ ur_titlescreen::run (UR_KEYPAD_ENUM keystroke, SDL_Surface * screen)
 				   scrollerDest, scrollerPos, textColor);
 
   // see if user hit start button
-  if (keystroke == urKP_Start)
+  if (keystate.start)
     {
       audioManager->popBGM();
       result = 0;

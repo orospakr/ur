@@ -29,6 +29,12 @@
 #ifndef UR_H
 #define UR_H
 
+enum UR_RUN_STATE {
+  urGameState_Quit,
+  urGameState_InGame,
+  urGameState_TitleScreen
+};
+
 enum UR_FONT_ENUM
 {
   urFont_Big,
@@ -42,6 +48,18 @@ struct UR_INFLUENCE
   Sint64 h;
   Sint64 w;
 };
+
+struct UR_INPUT
+{
+  bool up;
+  bool down;
+  bool left;
+  bool right;
+  bool start;
+  bool select;
+  bool action;
+  bool cancel;
+} const UR_INPUT_DEFAULT = {false, false, false, false, false, false, false, false};
 
 enum UR_KEYPAD_ENUM
 {

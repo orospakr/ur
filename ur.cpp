@@ -25,10 +25,10 @@
       are fighting for!) (Zip dies here, I think...)
    I think this effectively disallows RAR, ZIP, TAR, GZ and BZ2 for varying
    reasons...  darnit...  Maybe just a direct directory structure on the FS...
-   
+
    It is Free Software, (as in both free speech and free beer)
    and it is released under the GNU General Public Licence.
-   
+
    The tile size is 32x32.  There will be four layers to the
    game display, namely:
       - floor layer A (bottommost)
@@ -42,15 +42,15 @@
    the graphical map.  The graphical map contains the data that makes the engine
    render the layer from the tiles, and the physical map is used to define the
    physical attributes (can walk there, can't walk there...)
-   
+
    In a more high level context, the characters will move through the game
    by crossing into special blocks that will pop them into another map
    (with in a suitable IC context, of course... the most common one being
    a door :P)
-   
+
    Also, there will be, perhaps, a third map which defines arguments for the physical
    map blocks.  Such as, which level to jump to when you enter a jump block.
-   
+
    The way you will interact with other characters will be by
    'text referencing'.  Each char in the map has an array of words to
    react to and their respective responses.  For instance, if you query
@@ -59,7 +59,7 @@
       son?"'
    There will also be default 'look' and 'name' responses built in, and perhaps
    'buy' and 'sell' if that particular character supports that.
-   
+
    It is (mostly) object oriented.  ( I bet some OOP diehards will look at this code
    and keel over dead, tho... >.> )
 */
@@ -114,126 +114,144 @@ ur_titlescreen *titleScreen = NULL;
 ur_menu *menu = NULL;
 
 /* The screen surface */
-SDL_Surface *screen = NULL;	// what you can see onscreen
+SDL_Surface *screen = NULL; // what you can see onscreen
 
 /* the audio manager */
-ur_audio * audioManager = NULL;
+ur_audio *audioManager = NULL;
+
+/**
+ * Wallclock at last iteration.
+ */
+static Uint32 lastTime = 0;
 
 /* This function draws to the screen the game map and the HUD */
 static void
-draw ()
+draw()
 {
   /* Make sure everything is displayed on screen */
-  SDL_Flip (screen);
-  /* Don't run too fast */
-  SDL_Delay (1);
+  SDL_Flip(screen);
 }
 
-UR_KEYPAD_ENUM
-getKey (SDL_Event * sdlevents)
+void inputUpdateKey(SDL_Event *sdlevents, UR_INPUT *currentInput, bool down)
 {
   UR_KEYPAD_ENUM result;
   switch ((*sdlevents).key.keysym.sym)
-    {
-    case SDLK_LEFT:
-      result = urKP_Left;
-      break;
-    case SDLK_RIGHT:
-      result = urKP_Right;
-      break;
-    case SDLK_UP:
-      result = urKP_Up;
-      break;
-    case SDLK_DOWN:
-      result = urKP_Down;
-      break;
-    case SDLK_RETURN:
-      result = urKP_Start;
-      break;
-    case SDLK_SPACE:
-      result = urKP_Action;
-      break;
-    case SDLK_RCTRL:
-      result = urKP_Select;
-      break;
-    default:
-      result = urKP_None;
-      break;
-    }
-  return result;
+  {
+  case SDLK_LEFT:
+    currentInput->left = down;
+    break;
+  case SDLK_RIGHT:
+    currentInput->right = down;
+    break;
+  case SDLK_UP:
+    currentInput->up = down;
+    break;
+  case SDLK_DOWN:
+    currentInput->down = down;
+    break;
+  case SDLK_RETURN:
+    currentInput->start = down;
+    break;
+  case SDLK_SPACE:
+    currentInput->action = down;
+    break;
+  case SDLK_RCTRL:
+    currentInput->select = down;
+    break;
+  }
 }
 
 UR_DIRECTION_ENUM
-keyToDirection (UR_KEYPAD_ENUM keypress)
+keyToDirection(UR_INPUT keypress)
 {
   UR_DIRECTION_ENUM result;
-  switch (keypress)
-    {
-    case urKP_Left:
-      result = urDirWest;
-      break;
-    case urKP_Right:
-      result = urDirEast;
-      break;
-    case urKP_Up:
-      result = urDirNorth;
-      break;
-    case urKP_Down:
-      result = urDirSouth;
-      break;
-    default:
-      result = urDirNone;
-      break;
-    }
+
+  if (keypress.up && keypress.right)
+  {
+    result = urDirNorthEast;
+  }
+  else if (keypress.up && keypress.left)
+  {
+    result = urDirNorthWest;
+  }
+  else if (keypress.down && keypress.right)
+  {
+    result = urDirSouthEast;
+  }
+  else if (keypress.down && keypress.left)
+  {
+    result = urDirSouthWest;
+  }
+  else if (keypress.up)
+  {
+    result = urDirNorth;
+  }
+  else if (keypress.down)
+  {
+    result = urDirSouth;
+  }
+  else if (keypress.left)
+  {
+    result = urDirWest;
+  }
+  else if (keypress.right)
+  {
+    result = urDirEast;
+  }
+  else
+  {
+    result = urDirNone;
+  }
   return result;
 }
 
 /* Primary start up routine, gets things warmed up and online... Hey, you gotta
    start somewhere. n.~ */
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   char *msg;
   Sint64 done;
   std::cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
   std::cout << "    " << REVISION_EDITION << std::endl;
   std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR << "."
-    << REVISION_MICRO << std::endl << std::endl;
-  printf ("Initialising SDL... ");
+            << REVISION_MICRO << std::endl
+            << std::endl;
+  printf("Initialising SDL... ");
   /* Initialize SDL */
-  if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-    {
-      asprintf (&msg, "Couldn't initialize SDL: %s\n", SDL_GetError ());
-      std::cout << msg;
-      free (msg);
-      exit (1);
-    }
-  //atexit (SDL_Quit);
-  printf ("DONE.\nSetting video mode (640x480x16bpp)... ");
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+  {
+    asprintf(&msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
+    std::cout << msg;
+    free(msg);
+    exit(1);
+  }
+  // atexit (SDL_Quit);
+  printf("DONE.\nSetting video mode (640x480x16bpp)... ");
   /* Set 640x480 16-bits video mode */
   screen =
-    SDL_SetVideoMode (SCREEN_WIDTH, SCREEN_HEIGHT, 16,
-		      SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN  );
+      SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16,
+                       SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+
   if (screen == NULL)
-    {
-      asprintf (&msg, "Couldn't set 640x480x16 video mode: %s\n",
-		SDL_GetError ());
-      std::cout << msg;
-      free (msg);
-      exit (2);
-    }
-  printf ("DONE.\nDisplaying startup logo... ");
+  {
+    asprintf(&msg, "Couldn't set 640x480x16 video mode: %s\n",
+             SDL_GetError());
+    std::cout << msg;
+    free(msg);
+    exit(2);
+  }
+  printf("DONE.\nDisplaying startup logo... ");
   std::string name = "Usurper's Retribution ";
-  SDL_WM_SetCaption ((name + REVISION_EDITION).c_str (), NULL);
+  SDL_WM_SetCaption((name + REVISION_EDITION).c_str(), NULL);
 
   audioManager = new ur_audio;
-  /* instantiante the system services, such as the sound and font managers */
-  fontManager = new ur_font ("data/", screen->format);
+  /* instantiate the system services, such as the sound and font managers */
+  fontManager = new ur_font("data/", screen->format);
 
   // display the startup logos
   SDL_Surface *logoLoader;
-  logoLoader = SDL_LoadBMP ("data/logo_ld.bmp");
-  SDL_BlitSurface (logoLoader, NULL, screen, NULL);
+  logoLoader = SDL_LoadBMP("data/logo_ld.bmp");
+  SDL_BlitSurface(logoLoader, NULL, screen, NULL);
   SDL_Rect welcomeTextPos;
   welcomeTextPos.h = 500;
   welcomeTextPos.w = 500;
@@ -243,93 +261,113 @@ main (int argc, char *argv[])
   textcolor.r = 255;
   textcolor.g = 0;
   textcolor.b = 0;
-  fontManager->printTextToSurface (screen, "Welcome to UR!", urFont_Big,
-				   welcomeTextPos, 0, textcolor);
-  SDL_Flip (screen);
-  SDL_FreeSurface (logoLoader);	// free the memory!
-  SDL_Delay (5000);		// show logo for 1 sec
+  fontManager->printTextToSurface(screen, "Welcome to UR!", urFont_Big,
+                                  welcomeTextPos, 0, textcolor);
+  SDL_Flip(screen);
+  SDL_FreeSurface(logoLoader); // free the memory!
+  // SDL_Delay(5000);             // show logo for 1 sec
 
-  printf ("DONE.\nStarting the engine... ");
+  printf("DONE.\nStarting the engine... ");
 
   /* Start instantiating the game itself */
-  titleScreen = new ur_titlescreen ("data/", *(screen->format), fontManager, audioManager);
-  
-  menu = new ur_menu ();
+  titleScreen = new ur_titlescreen("data/", *(screen->format), fontManager, audioManager);
 
+  menu = new ur_menu();
 
-  printf ("DONE.\nOnline!!\n\n");
+  printf("DONE.\nOnline!!\n\n");
   done = 0;
 
   /* primary game loop! */
   SDL_Event event;
-  UR_KEYPAD_ENUM currentInput = urKP_None;
+  UR_INPUT currentInput = UR_INPUT_DEFAULT;
 
-  /* current game status:
-   * 0: quit
-   * 1: in game
-   * 2: in title screen
-   * 
-   */
-  int status = 2;
+  UR_RUN_STATE status = urGameState_TitleScreen;
+  lastTime = SDL_GetTicks();
+
+  // time step in ms for the game logic (60 fps)
+  const Uint32 timeStep = 1000 / 30;
+  // time accumulator for the game logic
+  static Uint32 accumulator = 0;
 
   while (!done)
-    {
-      /* Check for basic events and keyboard */
-      while (SDL_PollEvent (&event))
-	{
-	  switch (event.type)
-	    {
-	    case SDL_KEYDOWN:
-	      /* this bit puts the user's interactions in currentInput for relaying
-	       * to the proper subsystem
-	       */
-	      if (event.key.keysym.sym == SDLK_ESCAPE)
-		done = 1;
-	      currentInput = getKey (&event);
-	      break;
-	    case SDL_KEYUP:
-	      currentInput = urKP_None;
-	      break;
-	    case SDL_QUIT:
-	      done = 1;
-	      break;
-	    default:
-	      break;
-	    }
-	}
-      switch (status)
-	{
-	case 0:
-	  done = 1;
-	  break;
-	case 1:
-	  map->run (keyToDirection (currentInput), screen);
-	  break;
-	case 2:
-	  Sint64 titleResult;
-	  titleResult = titleScreen->run (currentInput, screen);
-	  if (titleResult == 0)
-	    {
-	      map = new ur_map ("kv", screen->format, fontManager, audioManager);
-	      status = 1;
-	    }
-	  break;
-	default:
-	  done = 1;
-	  break;
-	}
-      /* Draw to screen */
-      draw ();
+  {
+    // get current time in ms
+    Uint32 currentTime = SDL_GetTicks();
+    // calculate time since last iteration
+    Uint32 timeSinceLast = currentTime - lastTime;
+    // store current time for next iteration
+    lastTime = currentTime;
 
-      /* Horrible workaround for lack of linear time scaling. vaguely 30 Hz. */
-      SDL_Delay(32);
+    // add the time since last iteration to the accumulator
+    accumulator += timeSinceLast;
+
+    /* Check for basic events and keyboard */
+    while (SDL_PollEvent(&event))
+    {
+      // I can change this to handle multiple keypresses at once by mutating a struct
+      // or bitmask. Track SDL_KEYDOWN to clear them.
+      switch (event.type)
+      {
+      case SDL_KEYDOWN:
+        /* this bit puts the user's interactions in currentInput for relaying
+         * to the proper subsystem
+         */
+        if (event.key.keysym.sym == SDLK_ESCAPE)
+          done = 1;
+        inputUpdateKey(&event, &currentInput, true);
+        break;
+      case SDL_KEYUP:
+        inputUpdateKey(&event, &currentInput, false);
+        break;
+      case SDL_QUIT:
+        done = 1;
+        break;
+      default:
+        break;
+      }
     }
+    switch (status)
+    {
+    case urGameState_Quit:
+      done = 1;
+      break;
+    case urGameState_InGame:
+      // if the accumulator is greater than the time step, we need to update the game logic
+      while (accumulator >= timeStep)
+      {
+        // calculate the interpolation factor
+        float interpolationFactor = accumulator / timeStep;
+
+        // run the game logic
+        map->run(keyToDirection(currentInput), screen);
+
+        // remove the time step from the accumulator
+        accumulator -= timeStep;
+      }
+
+      break;
+    case urGameState_TitleScreen:
+      Sint64 titleResult;
+      titleResult = titleScreen->run(currentInput, screen);
+      if (titleResult == 0)
+      {
+        map = new ur_map("kv", screen->format, fontManager, audioManager);
+        status = urGameState_InGame;
+      }
+      break;
+    default:
+      done = 1;
+      break;
+    }
+    /* Draw to screen */
+    draw();
+  }
   delete menu;
   delete map;
   delete titleScreen;
   delete fontManager;
   SDL_Quit();
 
-  std::cout << "\nShutdown sucessful.  Welcome back to the world of shell.\n";
+  std::cout << "\nShutdown successful.  Welcome back to the world of shell.\n";
   return 0;
 }

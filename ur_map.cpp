@@ -16,12 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-#include "ur_map.h"		// class's header file
+#include "ur_map.h" // class's header file
 
 // class constructor
-ur_map::ur_map (std::string name, SDL_PixelFormat * screenFormat,
-		ur_font * fonts, ur_audio * audio)
+ur_map::ur_map(std::string name, SDL_PixelFormat *screenFormat,
+               ur_font *fonts, ur_audio *audio)
 {
   /* just a few quick initialisations...
    */
@@ -33,45 +32,43 @@ ur_map::ur_map (std::string name, SDL_PixelFormat * screenFormat,
   screenGeom.h = SCREEN_HEIGHT;
   screenGeom.w = SCREEN_WIDTH;
 
-
-
   /* initialise the object pointers
    */
   objects = new ur_object *[MAX_OBJS];
   // just 'cause, I'm gonna initialise all of those pointers to null
   for (Sint64 counter = 0; counter < MAX_OBJS; counter++)
-    {
-      objects[counter] = NULL;
-    }
+  {
+    objects[counter] = NULL;
+  }
 
   /* load up the tiles for this map into a temp surface */
   SDL_Surface *mapTilesetLoad;
   mapTilesetLoad =
-    SDL_LoadBMP (("data/maps/" + name + "/tiles.bmp").c_str ());
+      SDL_LoadBMP(("data/maps/" + name + "/tiles.bmp").c_str());
   /* convert them to the display's format for better performance, set the colourkey and finish up */
-  mapTileset = SDL_DisplayFormat (mapTilesetLoad);
-  SDL_SetColorKey (mapTileset, SDL_SRCCOLORKEY,
-		   SDL_MapRGB (screenFormat, 255, 255, 255));
-  SDL_FreeSurface (mapTilesetLoad);
+  mapTileset = SDL_DisplayFormat(mapTilesetLoad);
+  SDL_SetColorKey(mapTileset, SDL_SRCCOLORKEY,
+                  SDL_MapRGB(screenFormat, 255, 255, 255));
+  SDL_FreeSurface(mapTilesetLoad);
 
   /* instantiate the layers... */
   layerA =
-    new ur_layer ("data/maps/" + name + "/", urLayerA, false, mapTileset,
-		  screenFormat, objects);
+      new ur_layer("data/maps/" + name + "/", urLayerA, false, mapTileset,
+                   screenFormat, objects);
   layerB =
-    new ur_layer ("data/maps/" + name + "/", urLayerB, false, mapTileset,
-		  screenFormat, objects);
+      new ur_layer("data/maps/" + name + "/", urLayerB, false, mapTileset,
+                   screenFormat, objects);
   layerC =
-    new ur_layer ("data/maps/" + name + "/", urLayerC, false, mapTileset,
-		  screenFormat, objects);
-  //layerAtmosphere = new ur_layer("data/maps/"+name+"/",urLayerAtmosphere, false);  ATMOSPHERE NOT YET SUPPORTED
-  player = new ur_object ("data/objs/", "al", screenFormat, layerA);
+      new ur_layer("data/maps/" + name + "/", urLayerC, false, mapTileset,
+                   screenFormat, objects);
+  // layerAtmosphere = new ur_layer("data/maps/"+name+"/",urLayerAtmosphere, false);  ATMOSPHERE NOT YET SUPPORTED
+  player = new ur_object("data/objs/", "al", screenFormat, layerA);
   objects[0] = player;
 
   // we are going to create a Mickey Mouse, and then set his bit to 'evil'... let us see what happens...
-  objects[1] = new ur_object ("data/objs/", "mickey", screenFormat, layerA);
-  objects[1]->faction = urFact_BadNik;	// make him evil
-  objects[0]->faction = urFact_FF;	// make our friend Al an FF
+  objects[1] = new ur_object("data/objs/", "mickey", screenFormat, layerA);
+  objects[1]->faction = urFact_BadNik; // make him evil
+  objects[0]->faction = urFact_FF;     // make our friend Al an FF
   player->xpos = 13 * TILE_WIDTH;
   player->ypos = 9 * TILE_HEIGHT;
   objects[1]->xpos = 12 * TILE_WIDTH;
@@ -80,59 +77,59 @@ ur_map::ur_map (std::string name, SDL_PixelFormat * screenFormat,
 }
 
 Sint64
-ur_map::run (UR_DIRECTION_ENUM keypress, SDL_Surface * destinationSurface)
+ur_map::run(UR_DIRECTION_ENUM keypress, SDL_Surface *destinationSurface)
 {
-  
-  layerA->run ();
-  layerB->run ();
-  layerC->run ();
+
+  layerA->run();
+  layerB->run();
+  layerC->run();
   for (Sint64 counter = 0; counter < MAX_OBJS; counter++)
+  {
+    if (objects[counter] != NULL)
     {
-      if (objects[counter] != NULL)
-	{
-	  objects[counter]->run ();
-	}
+      objects[counter]->run();
     }
-  player->move (keypress);
+  }
+  player->move(keypress);
+
+  // screen follows the player:
   screenGeom.x = player->xpos - (SCREEN_WIDTH / 2);
   screenGeom.y = player->ypos - (SCREEN_HEIGHT / 2);
 
-  // now, we need to check to ensure that the screen position has not gone beyond the bounds.
-  
+  // now, we need to check to ensure that the screen position has not gone out of bounds:
   if (screenGeom.x <= 0)
-    {
-      screenGeom.x = 0;
-    }
+  {
+    screenGeom.x = 0;
+  }
 
-  if (screenGeom.x >= SCREEN_WIDTH *2 )
-    {
-      screenGeom.x = SCREEN_WIDTH*2;
-    }
+  if (screenGeom.x >= SCREEN_WIDTH * 2)
+  {
+    screenGeom.x = SCREEN_WIDTH * 2;
+  }
 
   if (screenGeom.y <= 0)
-    {
-      screenGeom.y = 0;
-    }
+  {
+    screenGeom.y = 0;
+  }
 
-  if (screenGeom.y >= SCREEN_HEIGHT*2)
-    {
-      screenGeom.y = SCREEN_HEIGHT*2;
-    }
-  
-  
-  //std::cout<< player->xpos << std::endl << player->ypos << std::endl << std::endl;
-  //screenGeom.y++;
-  //screenGeom.x++;
-  layerA->drawToScreen (destinationSurface, screenGeom);
+  if (screenGeom.y >= SCREEN_HEIGHT * 2)
+  {
+    screenGeom.y = SCREEN_HEIGHT * 2;
+  }
+
+  // std::cout<< player->xpos << std::endl << player->ypos << std::endl << std::endl;
+  // screenGeom.y++;
+  // screenGeom.x++;
+  layerA->drawToScreen(destinationSurface, screenGeom);
   for (Sint64 counter = 0; counter < MAX_OBJS; counter++)
+  {
+    if (objects[counter] != NULL)
     {
-      if (objects[counter] != NULL)
-	{
-	  objects[counter]->drawToScreen (destinationSurface, screenGeom);
-	}
+      objects[counter]->drawToScreen(destinationSurface, screenGeom);
     }
-  layerB->drawToScreen (destinationSurface, screenGeom);
-  layerC->drawToScreen (destinationSurface, screenGeom);
+  }
+  layerB->drawToScreen(destinationSurface, screenGeom);
+  layerC->drawToScreen(destinationSurface, screenGeom);
 
   SDL_Rect greetzTextPos;
   greetzTextPos.h = 500;
@@ -143,9 +140,9 @@ ur_map::run (UR_DIRECTION_ENUM keypress, SDL_Surface * destinationSurface)
   funkycolor.r = 0;
   funkycolor.g = 0;
   funkycolor.b = 0;
-  fontManager->printTextToSurface (destinationSurface, "ur0.0.1 Demo!",
-				   urFont_Big, greetzTextPos, 0, funkycolor);
-				   
+  fontManager->printTextToSurface(destinationSurface, "ur0.0.1 Demo!",
+                                  urFont_Big, greetzTextPos, 0, funkycolor);
+
   if (player->dead)
   {
     SDL_Rect gameOverPos;
@@ -155,21 +152,21 @@ ur_map::run (UR_DIRECTION_ENUM keypress, SDL_Surface * destinationSurface)
     gameOverClr.b = 0;
     gameOverPos.w = FONT_TEXT_X * 10;
     gameOverPos.h = FONT_TEXT_Y * 1;
-    gameOverPos.y = (SCREEN_HEIGHT / 2 ) - (FONT_TEXT_Y / 2 );
-    gameOverPos.x = (SCREEN_WIDTH / 2 ) - ((FONT_TEXT_X * 10) /2);
-    fontManager->printTextToSurface (destinationSurface, "Game Over!",urFont_Big, gameOverPos, 0, gameOverClr);
+    gameOverPos.y = (SCREEN_HEIGHT / 2) - (FONT_TEXT_Y / 2);
+    gameOverPos.x = (SCREEN_WIDTH / 2) - ((FONT_TEXT_X * 10) / 2);
+    fontManager->printTextToSurface(destinationSurface, "Game Over!", urFont_Big, gameOverPos, 0, gameOverClr);
   }
   return 0;
 }
 
 // class destructor
-ur_map::~ur_map ()
+ur_map::~ur_map()
 {
   delete layerA;
   delete layerB;
   delete layerC;
-  delete [] objects;		// note the objects that this array of pointers points to will also require freeing
-  SDL_FreeSurface (mapTileset);
+  delete[] objects; // note the objects that this array of pointers points to will also require freeing
+  SDL_FreeSurface(mapTileset);
   delete audioController;
   // delete layerAtmosphere;  ATMOSPHERE NOT YET SUPPORTED
 }

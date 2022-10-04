@@ -38,8 +38,6 @@
  * nicely.
  */
 
-
-
 class ur_map
 {
 public:
@@ -53,8 +51,6 @@ public:
    * bigger than the screen itself!) */
   SDL_Rect screenGeom;
 
-  
-
   SDL_Surface *mapTileset;
 
   ur_layer *layerA;
@@ -67,7 +63,8 @@ public:
    */
   ur_object **objects;
 
-  /* runs one cycle
+  /**
+   * @brief Runs one cycle of updates for the map and all its objects.
    */
   Sint64 run (UR_DIRECTION_ENUM keypress, SDL_Surface * destinationSurface);
 private:

@@ -63,6 +63,12 @@ public:
    */
   Sint64 xpos;
   Sint64 ypos;
+
+  /**
+   * Velocity. This is the amount of pixels the object moves per every 33.333 ms.
+   * 
+   * Assuming 30 fps, that's one pixel per frame.
+   */
   Sint64 xvel;
   Sint64 yvel;
 

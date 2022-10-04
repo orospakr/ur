@@ -44,7 +44,7 @@ public:
   /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the game should begin
    *, otherwise just run it again.
    */
-  Sint64 run (UR_KEYPAD_ENUM keystroke, SDL_Surface * screen);
+  Sint64 run (UR_INPUT keystate, SDL_Surface * screen);
 private:
     SDL_Surface * titleGraphic;
   ur_font *fontManager;
