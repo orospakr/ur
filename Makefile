@@ -3,10 +3,10 @@
 CPP  = g++
 CC   = gcc
 OBJ  = ur.o ur_object.o ur_layer.o ur_sprite.o ur_map.o ur_menu.o ur_font.o ur_titlescreen.o ur_audio.o
-LIBS =  `sdl-config --libs`
+LIBS =  `sdl-config --libs` `pkg-config --libs libopenmpt`
 INCS =  
 BIN  = ur
-CXXFLAGS = $(INCS) `sdl-config --cflags` -g -Wall -Wno-deprecated
+CXXFLAGS = $(INCS) -std=c++17 `sdl-config --cflags` -g -Wall -Wno-deprecated `pkg-config --cflags libopenmpt`
 
 .PHONY: all all-before all-after clean clean-custom
 
@@ -17,7 +17,7 @@ clean: clean-custom
 	rm -f $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(OBJ) ./libmodplug/libmodplug.a -o "ur" $(LIBS)  $(CXXFLAGS)
+	$(CPP) $(OBJ) -o "ur" $(LIBS)  $(CXXFLAGS)
 
 ur.o: ur.cpp
 	$(CPP) -c ur.cpp -o ur.o $(CXXFLAGS)

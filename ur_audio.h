@@ -28,11 +28,17 @@
 #include <fstream>
 #include "SDL.h"
 #include "ur.h"
-#include "libmodplug/modplug.h"
+
+// include openmpt header
+#include "libopenmpt/libopenmpt.hpp"
 
 class ur_audio
 {
  public:
+ /**
+  * @brief Construct the audio manager. Note will block synchronously as it loads all content.
+  * 
+  */
   ur_audio();
   void audio_callback(Uint8 *stream, int len);
 
@@ -42,28 +48,24 @@ class ur_audio
   Uint16 VUmeterL;
   Uint16 VUmeterR;
 
-  void runAudio();
-
   ~ur_audio();
  private:
   void load_music(std::string name);
   void unload_music();
+  void change_music(std::string name);
   SDL_AudioSpec * obtained_audio_spec;
+
+  // a map of filenames to loaded openmpt modules
+  std::map<std::string, openmpt::module *> modules;
 
   std::string * BGMstack;
 
   Uint8 BGMstack_ptr;
 
-  // currently loaded song file
-  char *  loadedBGM;
-  // size of currently loaded song file
-  Uint64 BGMsize;
-
   // codec specific variables
-  ModPlugFile * currentMOD;
-  
-  
 
+  // a loaded openmpt module
+  openmpt::module * currentMOD;
 };
 
 #endif // UR_AUDIO_H

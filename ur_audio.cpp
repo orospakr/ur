@@ -16,21 +16,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "ur_audio.h"		// class's header file
+#include "ur_audio.h" // class's header file
 
-extern "C" void extern_audio_callback (void * userdata, Uint8 * stream, int len)
+extern "C" void extern_audio_callback(void *userdata, Uint8 *stream, int len)
 {
-  static_cast<ur_audio*>(userdata)->audio_callback( stream, len );
+  static_cast<ur_audio *>(userdata)->audio_callback(stream, len);
 }
 
-ur_audio::ur_audio()
+// private constant vector of module names
+const std::vector<std::string> MODULE_NAMES = {
+  "sweetdre.xm",
+  "7thheaven.mod"
+};
+
+ur_audio::ur_audio() : 
+  VUmeterL{0},
+  VUmeterR{0},
+  obtained_audio_spec{new SDL_AudioSpec},
+  modules{},
+  BGMstack{new std::string[10]},
+  BGMstack_ptr{0},
+  currentMOD{NULL}
 {
-  obtained_audio_spec = new SDL_AudioSpec;
-
-  currentMOD = NULL;
-  BGMstack_ptr = 0;
-
-  BGMstack = new std::string[10];
+  // first load all the modules
+  for (auto &name : MODULE_NAMES)
+  {
+    load_music(name);
+  }
 
   /* Open the audio device */
   SDL_AudioSpec *desired;
@@ -38,21 +50,19 @@ ur_audio::ur_audio()
   /* Allocate a desired SDL_AudioSpec */
   desired = new SDL_AudioSpec;
 
-  /* 22050 Hz - FM Radio Quality */
-  desired->freq=44100;
-  
+  desired->freq = 44100;
+
   /* 16-bit little-endian audio */
-  desired->format=AUDIO_S16LSB;
+  desired->format = AUDIO_S16LSB;
 
   /* set number of channels */
-  desired->channels=2;
-  
-  /* Large audio buffer reduces risk of dropouts but increases response time */
+  desired->channels = 2;
 
-  desired->samples=512;
-  
+  /* Large audio buffer reduces risk of dropouts but increases response time */
+  desired->samples = 512;
+
   /* Our callback function */
-  desired->callback=extern_audio_callback;
+  desired->callback = extern_audio_callback;
 
   /* we're doing something a little weird here:  SDL (being a C library) doesn't like the
      callback being a member of a c++ object, so, I have made a little c-like routine that SDL will call.
@@ -60,12 +70,11 @@ ur_audio::ur_audio()
      pass to the callback whenever SDL calls it.  So, it will be a pointer to this object and the little c-ish
      callback routine will be able to fone home.
   */
-  desired->userdata=this;
-
+  desired->userdata = this;
 
   /* Open the audio device */
-  int audioInitResult = SDL_OpenAudio(desired,obtained_audio_spec);
-  if (audioInitResult <0)
+  int audioInitResult = SDL_OpenAudio(desired, obtained_audio_spec);
+  if (audioInitResult < 0)
   {
     std::cout << "!! Couldn't open audio!\n";
     std::cout << "   SDL gave error code: " << audioInitResult << std::endl;
@@ -79,47 +88,54 @@ ur_audio::ur_audio()
 }
 
 /* callback function... */
-        
-void ur_audio::audio_callback (Uint8 *stream, int len) 
+
+void ur_audio::audio_callback(Uint8 *stream, int len)
 {
-  Sint16* samples = (Sint16*) stream;
+  Sint16 *samples = (Sint16 *)stream;
 
-  //Uint16 highestL = 0;
-  //Uint16 highestR = 0;
+  // Uint16 highestL = 0;
+  // Uint16 highestR = 0;
 
-  if (currentMOD) 
-    {
-      ModPlug_Read(currentMOD,stream,len);
-    }
-
+  if (currentMOD)
+  {
+    currentMOD->read_interleaved_stereo(44100, len / 4, (int16_t *)samples);
+  }
 }
 
 void ur_audio::pushBGM(std::string name)
 {
   SDL_LockAudio();
-  if (BGMstack_ptr > 0)
-    unload_music();
   BGMstack_ptr++;
-  BGMstack[BGMstack_ptr]=name;
-  load_music(BGMstack[BGMstack_ptr]);
+  BGMstack[BGMstack_ptr] = name;
+  change_music(BGMstack[BGMstack_ptr]);
   SDL_UnlockAudio();
 }
 
 void ur_audio::popBGM()
 {
   SDL_LockAudio();
-  if (BGMstack_ptr>0)
-    {
-      unload_music();
-      BGMstack_ptr--;
-    }
-  load_music(BGMstack[BGMstack_ptr]);
+  if (BGMstack_ptr > 0)
+  {
+    unload_music();
+    BGMstack_ptr--;
+  }
+  if (!BGMstack->empty()) {
+    change_music(BGMstack[BGMstack_ptr]);
+  }
   SDL_UnlockAudio();
 }
 
-void ur_audio::runAudio()
+void ur_audio::change_music(std::string name)
 {
-  
+  openmpt::module *newMOD = modules[name];
+  if (!newMOD)
+  {
+    std::cout << "!! Error:  Could not find module " << name << std::endl;
+    return;
+  }
+  SDL_LockAudio();
+  currentMOD = newMOD;
+  SDL_UnlockAudio();
 }
 
 void ur_audio::load_music(std::string name)
@@ -127,36 +143,52 @@ void ur_audio::load_music(std::string name)
   std::ifstream loadReader;
   std::string filename = "data/music/" + name;
   struct stat results;
+  openmpt::module *loadedModule;
+
   if (stat(filename.c_str(), &results))
-    {
-      std::cout << std::endl << "!! Could not stat " << filename << std::endl;
-      return;
-    }
-  BGMsize = results.st_size;
-  loadReader.open( filename.c_str() ,std::ifstream::in | std::ifstream::binary);
-  if (!loadReader.good ())
-    {
-      std::cout << std::endl << "!! Unable to load " << name << ". :( \n";
-      return;
-    }
-  loadedBGM = new char[BGMsize];
-  loadReader.read(loadedBGM,BGMsize);
-  loadReader.close();
-  currentMOD=ModPlug_Load(loadedBGM,BGMsize);
+  {
+    std::cout << std::endl
+              << "!! Could not stat " << filename << std::endl;
+    return;
+  }
+
+  loadReader.open(filename.c_str(), std::ifstream::in | std::ifstream::binary);
+  if (!loadReader.good())
+  {
+    std::cout << std::endl
+              << "!! Unable to load " << name << ". :( \n";
+    return;
+  }
+
+  // load openpt module:
+  try
+  {
+    loadedModule = new openmpt::module(loadReader);
+  }
+  catch (const std::exception &e)
+  {
+    std::cout << "!! Error loading " << name << ": " << e.what() << std::endl;
+    return;
+  }
+
+  if (!loadedModule)
+  {
+    std::cout << std::endl
+              << "!! Could not music module " << filename << std::endl;
+    return;
+  }
+
+  modules[name] = loadedModule;
 }
 
 void ur_audio::unload_music()
 {
-  ModPlug_Unload(currentMOD);
-  delete [] loadedBGM;
+  // TODO
 }
 
 ur_audio::~ur_audio()
 {
   SDL_LockAudio();
-  delete [] loadedBGM;
   delete obtained_audio_spec;
-  delete [] BGMstack;
+  delete[] BGMstack;
 }
-
-
