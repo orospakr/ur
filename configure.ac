@@ -7,7 +7,7 @@ AC_CONFIG_SRCDIR([src/ur.h])
 AC_CONFIG_HEADERS([config.h])
 
 # initialize automake
-AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
+AM_INIT_AUTOMAKE([-Wall -Werr foreign subdir-objects])
 
 AC_CONFIG_FILES([
     Makefile

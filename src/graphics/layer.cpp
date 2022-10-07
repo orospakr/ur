@@ -74,8 +74,8 @@ namespace ur
     loadReader.open((agmFilename).c_str(), std::ifstream::in);
     if (!loadReader.good())
     {
-      printf("!! Unable to open graphical map definition file (agm).\n");
-      printf(("   Filename was " + agmFilename + "\n").c_str());
+      std::cout << "!! Unable to open graphical map definition file (agm)." << std::endl << 
+        "   Filename was "  << agmFilename << std::endl;
       exit(1); // call system to stop
     }
     for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
@@ -94,8 +94,8 @@ namespace ur
     loadReader.open((apmFilename).c_str(), std::ifstream::in);
     if (!loadReader.good())
     {
-      printf("!! Unable to open physical map definition file (apm).\n");
-      printf(("   Filename was " + apmFilename + "\n").c_str());
+      std::cout << "!! Unable to open physical map definition file (apm)." << std::endl << 
+        "   Filename was "  << apmFilename << std::endl;
       exit(1); // call system to stop
     }
     for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
