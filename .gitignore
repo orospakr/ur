@@ -1,3 +1,23 @@
 *.o
 *.a
-ur
+src/ur
+*~
+
+# Exclude autoconf
+configure
+config.h.in
+config.h
+config.log
+config.status
+Makefile.in
+Makefile
+aclocal.m4
+autom4te.cache
+compile
+depcomp
+install-sh
+missing
+stamp-h1
+.dirstamp
+*.tar.gz
+*.Po
