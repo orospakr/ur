@@ -1,5 +1,5 @@
 /*
-    This file is part of Usurper's Redemption.
+    This file is part of Usurper's Retribution.
 
     Usurper's Retribution is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -324,3 +324,4 @@ void ur_object::drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom)
 {
   spriteGrafx->drawToScreen(screen, screenGeom);
 }
+
