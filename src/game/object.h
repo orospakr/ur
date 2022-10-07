@@ -26,7 +26,7 @@
 #include <fstream>
 #include "SDL.h"
 #include "ur.h"
-#include "ur_sprite.h"
+#include "graphics/sprite.h"
 
 namespace ur
 {

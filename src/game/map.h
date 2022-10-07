@@ -26,10 +26,10 @@
 #include <iostream>
 #include "SDL.h"
 #include "ur.h"
-#include "ur_audio.h"
-#include "ur_font.h"
-#include "ur_layer.h"
-#include "ur_object.h"
+#include "audio/audio.h"
+#include "graphics/font.h"
+#include "graphics/layer.h"
+#include "game/object.h"
 
 namespace ur
 {

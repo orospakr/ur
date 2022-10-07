@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "ur_map.h" // class's header file
+#include "game/map.h" // class's header file
 
 namespace ur
 {

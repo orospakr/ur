@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "ur_object.h" // class's header file
+#include "game/object.h" // class's header file
 
 namespace ur
 {

@@ -33,7 +33,7 @@
 #include "SDL.h"
 #include "ur.h"
 
-#include "ur_layer.h"
+#include "graphics/layer.h"
 
 namespace ur {
 

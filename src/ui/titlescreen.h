@@ -26,9 +26,9 @@
 #include <iostream>
 #include "SDL.h"
 #include "ur.h"
-#include "ur_audio.h"
-#include "ur_map.h"
-#include "ur_font.h"
+#include "audio/audio.h"
+#include "game/map.h"
+#include "graphics/font.h"
 
 namespace ur
 {

@@ -89,12 +89,12 @@
 #include "SDL.h"
 #include "ur.h"
 
-#include "ur_font.h"
-#include "ur_titlescreen.h"
-#include "ur_object.h"
-#include "ur_layer.h"
-#include "ur_menu.h"
-#include "ur_map.h"
+#include "graphics/font.h"
+#include "ui/titlescreen.h"
+#include "game/object.h"
+#include "graphics/layer.h"
+#include "ui/menu.h"
+#include "game/map.h"
 
 /* this is an instantiation of the game itself, including the primary maps... this thing
    contains all of the layers, objects, sprites, and everything else that make up the
