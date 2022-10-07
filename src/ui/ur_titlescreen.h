@@ -30,27 +30,33 @@
 #include "ur_map.h"
 #include "ur_font.h"
 
-/*
- * The title screen class.
- */
-class ur_titlescreen
+namespace ur
 {
-public:
-  // class constructor
-  ur_titlescreen (std::string basedir, SDL_PixelFormat screenFormat,
-		  ur_font * fonts, ur_audio * audio);
-  // class destructor
-  ~ur_titlescreen ();
-  /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the game should begin
-   *, otherwise just run it again.
+
+  /*
+   * The title screen class.
    */
-  Sint64 run (UR_INPUT keystate, SDL_Surface * screen);
-private:
-    SDL_Surface * titleGraphic;
-  ur_font *fontManager;
+  class Titlescreen
+  {
+  public:
+    // class constructor
+    Titlescreen(std::string basedir, SDL_PixelFormat screenFormat,
+                Font *fonts, Audio *audio);
+    // class destructor
+    ~Titlescreen();
+    /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the game should begin
+     *, otherwise just run it again.
+     */
+    Sint64 run(UR_INPUT keystate, SDL_Surface *screen);
+
+  private:
+    SDL_Surface *titleGraphic;
+    Font *fontManager;
     std::string scrollerText;
-  Sint64 scrollerPos;
-  ur_audio * audioManager;
-};
+    Sint64 scrollerPos;
+    Audio *audioManager;
+  };
+
+}
 
 #endif // UR_TITLESCREEN_H

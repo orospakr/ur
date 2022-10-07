@@ -32,40 +32,45 @@
 // include openmpt header
 #include "libopenmpt/libopenmpt.hpp"
 
-class ur_audio
+namespace ur
 {
- public:
- /**
-  * @brief Construct the audio manager. Note will block synchronously as it loads all content.
-  * 
-  */
-  ur_audio();
-  void audio_callback(Uint8 *stream, int len);
 
-  void pushBGM(std::string name);
-  void popBGM();
+  class Audio
+  {
+  public:
+    /**
+     * @brief Construct the audio manager. Note will block synchronously as it loads all content.
+     *
+     */
+    Audio();
+    void audio_callback(Uint8 *stream, int len);
 
-  Uint16 VUmeterL;
-  Uint16 VUmeterR;
+    void pushBGM(std::string name);
+    void popBGM();
 
-  ~ur_audio();
- private:
-  void load_music(std::string name);
-  void unload_music();
-  void change_music(std::string name);
-  SDL_AudioSpec * obtained_audio_spec;
+    Uint16 VUmeterL;
+    Uint16 VUmeterR;
 
-  // a map of filenames to loaded openmpt modules
-  std::map<std::string, openmpt::module *> modules;
+    ~Audio();
 
-  std::string * BGMstack;
+  private:
+    void load_music(std::string name);
+    void unload_music();
+    void change_music(std::string name);
+    SDL_AudioSpec *obtained_audio_spec;
 
-  Uint8 BGMstack_ptr;
+    // a map of filenames to loaded openmpt modules
+    std::map<std::string, openmpt::module *> modules;
 
-  // codec specific variables
+    std::string *BGMstack;
 
-  // a loaded openmpt module
-  openmpt::module * currentMOD;
-};
+    Uint8 BGMstack_ptr;
+
+    // codec specific variables
+
+    // a loaded openmpt module
+    openmpt::module *currentMOD;
+  };
+}
 
 #endif // UR_AUDIO_H

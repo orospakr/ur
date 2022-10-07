@@ -35,15 +35,15 @@
 
 #include "ur_layer.h"
 
+namespace ur {
 
-
-class ur_sprite
+class Sprite
 {
 public:
   // class constructor
-  ur_sprite (std::string spriteBMPFilename, SDL_PixelFormat * screenFormat);
+  Sprite (std::string spriteBMPFilename, SDL_PixelFormat * screenFormat);
   // class destructor
-  ~ur_sprite ();
+  ~Sprite ();
 
   /* this is all of the sprite data in a giant SDL_Surface.  Read docs/sprite.txt
    * for more info
@@ -60,7 +60,7 @@ public:
   UR_ANIM_ENUM currentAnim;
   void drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom);
 
-  /* These are updated automatically by the parent ur_object.  Don't bother
+  /* These are updated automatically by the parent Object.  Don't bother
    * changing them from this scope.
    */
   Sint64 xpos, ypos;
@@ -68,5 +68,7 @@ private:
   Sint64 animationPhase;
   SDL_Rect *getAnim (UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType);
 };
+
+}
 
 #endif // UR_SPRITE_H

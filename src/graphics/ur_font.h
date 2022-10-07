@@ -32,21 +32,26 @@
 #include "SDL.h"
 #include "ur.h"
 
-
-class ur_font
+namespace ur
 {
-public:
-  // class constructor
-  ur_font (std::string basedir, SDL_PixelFormat * screenFormat);
-  // class destructor
-  ~ur_font ();
-  void printTextToSurface (SDL_Surface * surface, std::string text,
-			   UR_FONT_ENUM whichFont, SDL_Rect destPos,
-			   Sint64 offset, SDL_Color textColor);
-private:
-    SDL_Surface * bigFont;
-  SDL_Surface *textFont;
-  Sint64 char2ascii (char input);
-};
+
+  class Font
+  {
+  public:
+    // class constructor
+    Font(std::string basedir, SDL_PixelFormat *screenFormat);
+    // class destructor
+    ~Font();
+    void printTextToSurface(SDL_Surface *surface, std::string text,
+                            UR_FONT_ENUM whichFont, SDL_Rect destPos,
+                            Sint64 offset, SDL_Color textColor);
+
+  private:
+    SDL_Surface *bigFont;
+    SDL_Surface *textFont;
+    Sint64 char2ascii(char input);
+  };
+
+}
 
 #endif // UR_FONT_H

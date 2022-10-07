@@ -16,16 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "ur_menu.h"		// class's header file
+#include "ur_menu.h" // class's header file
 
-// class constructor
-ur_menu::ur_menu ()
+namespace ur
 {
-  // insert your code here
-}
 
-// class destructor
-ur_menu::~ur_menu ()
-{
-  // insert your code here
+  // class constructor
+  Menu::Menu()
+  {
+    // insert your code here
+  }
+
+  // class destructor
+  Menu::~Menu()
+  {
+    // insert your code here
+  }
+
 }

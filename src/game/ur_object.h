@@ -28,112 +28,112 @@
 #include "ur.h"
 #include "ur_sprite.h"
 
-/*
- * A UR object.  Shows up as a sprite. Things such as
- * characters, badniks, control panels, etc. are sprites.
- * They can also have talkto lines, and props of other types.
- */
-
-
-class ur_object
+namespace ur
 {
-public:
-  /* objectPath contains the base path in which the object files can be found.
-   * objectName is the name of the object (there may be more than one with the
-   * same name), and is used to determine which directory the data may be loaded
-   * from, amongst other things)
+
+  /*
+   * A UR object.  Shows up as a sprite. Things such as
+   * characters, badniks, control panels, etc. are sprites.
+   * They can also have talkto lines, and props of other types.
    */
-  ur_object (std::string objectPath, std::string objectName,
-	     SDL_PixelFormat * screenFormat, ur_layer * hostLayer);
+  class Object
+  {
+  public:
+    /* objectPath contains the base path in which the object files can be found.
+     * objectName is the name of the object (there may be more than one with the
+     * same name), and is used to determine which directory the data may be loaded
+     * from, amongst other things)
+     */
+    Object(std::string objectPath, std::string objectName,
+           SDL_PixelFormat *screenFormat, Layer *hostLayer);
 
-  // class destructor
-  ~ur_object ();
+    // class destructor
+    ~Object();
 
-  void run ();
-  Sint64 move (UR_DIRECTION_ENUM key);
+    void run();
+    Sint64 move(UR_DIRECTION_ENUM key);
 
-  /* The object's area of influence, relative to the whole map */
-  UR_INFLUENCE areaInfluence;
+    /* The object's area of influence, relative to the whole map */
+    UR_INFLUENCE areaInfluence;
 
-  /* graphical manifestation
-   */
-  ur_sprite *spriteGrafx;
+    /* graphical manifestation
+     */
+    Sprite *spriteGrafx;
 
-  /* dynamics
-   */
-  Sint64 xpos;
-  Sint64 ypos;
+    /* dynamics
+     */
+    Sint64 xpos;
+    Sint64 ypos;
 
-  /**
-   * Velocity. This is the amount of pixels the object moves per every 33.333 ms.
-   * 
-   * Assuming 30 fps, that's one pixel per frame.
-   */
-  Sint64 xvel;
-  Sint64 yvel;
+    /**
+     * Velocity. This is the amount of pixels the object moves per every 33.333 ms.
+     *
+     * Assuming 30 fps, that's one pixel per frame.
+     */
+    Sint64 xvel;
+    Sint64 yvel;
 
-  /* Object's common name
-   */
+    /* Object's common name
+     */
     std::string name;
 
-  /* object's type */
-  UR_OBJTYPE_ENUM type;
+    /* object's type */
+    UR_OBJTYPE_ENUM type;
 
-  /* object's alignment/faction... good, evil, etc... */
-  UR_FACTION_ENUM faction;
+    /* object's alignment/faction... good, evil, etc... */
+    UR_FACTION_ENUM faction;
 
-  /* a vector of objects to make up the character's
-   * inventory.  Not allowed for standard objects... chars only
-   */
-    std::vector < ur_object > inventory;
+    /* a vector of objects to make up the character's
+     * inventory.  Not allowed for standard objects... chars only
+     */
+    std::vector<Object> inventory;
 
-  /* a vector of all the speech responses
-   */
-    std::vector < UR_TALK_DATA > speechData;
+    /* a vector of all the speech responses
+     */
+    std::vector<UR_TALK_DATA> speechData;
 
-  /* *** The following props are the stats.  They don't (normally) need
-   * *** to be set unless the object is a character
-   */
-  /* experience. Can goes as high as you like (within the bounds of Sint64, of course)
-   */
-  Sint64 exp;
-  /* strength setting.  Choose one between 0-100
-   */
-  Sint64 strength;
-  /* constitution.  Choose one between 0-100
-   */
-  Sint64 constitution;
-  /* gender.  male=0, female=1... these values are arbitrary, I may note...
-   */
-  Sint64 gender;
-  /* the max velocities.  Higher for Sonic than others, obviously. ;P
-   */
-  Sint64 velmax;
+    /* *** The following props are the stats.  They don't (normally) need
+     * *** to be set unless the object is a character
+     */
+    /* experience. Can goes as high as you like (within the bounds of Sint64, of course)
+     */
+    Sint64 exp;
+    /* strength setting.  Choose one between 0-100
+     */
+    Sint64 strength;
+    /* constitution.  Choose one between 0-100
+     */
+    Sint64 constitution;
+    /* gender.  male=0, female=1... these values are arbitrary, I may note...
+     */
+    Sint64 gender;
+    /* the max velocities.  Higher for Sonic than others, obviously. ;P
+     */
+    Sint64 velmax;
 
-  /* This draws the object to the supplied surface.  Note that it just shafts
-   * the job down to its sprite object.
-   */
-  void drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom);
+    /* This draws the object to the supplied surface.  Note that it just shafts
+     * the job down to its sprite object.
+     */
+    void drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom);
 
-  /* AI driver props
-   */
-  bool AI_moveMe;
+    /* AI driver props
+     */
+    bool AI_moveMe;
 
-  bool dead;
+    bool dead;
 
+    /// collision detection method.  NOTE:  When objects collide, the object that 'affects'
+    /// the action should be the one that makes the calls to the affect_xxx series methods
+    /// on the target object
+    Sint64 collision(Object *otherEntity);
 
-  /// collision detection method.  NOTE:  When objects collide, the object that 'affects'
-  /// the action should be the one that makes the calls to the affect_xxx series methods
-  /// on the target object
-  Sint64 collision (ur_object * otherEntity);
+    Sint64 affect_instaKill();
+    Sint64 affect_injure(Sint64 hitPoints);
+    Sint64 affect_push(UR_DIRECTION_ENUM sourceDirection);
 
-  Sint64 affect_instaKill ();
-  Sint64 affect_injure (Sint64 hitPoints);
-  Sint64 affect_push (UR_DIRECTION_ENUM sourceDirection);
+  private:
+    Layer *bossLayer;
+  };
 
-private:
-    ur_layer * bossLayer;
-
-};
-
+}
 #endif // UR_OBJECT_H

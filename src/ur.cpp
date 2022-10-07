@@ -100,24 +100,24 @@
    contains all of the layers, objects, sprites, and everything else that make up the
    currently loaded location in the game world
 */
-ur_map *map = NULL;
+ur::Map *map = NULL;
 
 /* The font manager */
-ur_font *fontManager = NULL;
+ur::Font *fontManager = NULL;
 
 /* The title screen */
-ur_titlescreen *titleScreen = NULL;
+ur::Titlescreen *titleScreen = NULL;
 
-/* this is the menuing subsystem.  The main game loop switches between this and the ur_map
+/* this is the menuing subsystem.  The main game loop switches between this and the Map
    accordingly.
 */
-ur_menu *menu = NULL;
+ur::Menu *menu = NULL;
 
 /* The screen surface */
 SDL_Surface *screen = NULL; // what you can see onscreen
 
 /* the audio manager */
-ur_audio *audioManager = NULL;
+ur::Audio *audioManager = NULL;
 
 /**
  * Wallclock at last iteration.
@@ -132,9 +132,9 @@ draw()
   SDL_Flip(screen);
 }
 
-void inputUpdateKey(SDL_Event *sdlevents, UR_INPUT *currentInput, bool down)
+void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput, bool down)
 {
-  UR_KEYPAD_ENUM result;
+  ur::UR_KEYPAD_ENUM result;
   switch ((*sdlevents).key.keysym.sym)
   {
   case SDLK_LEFT:
@@ -158,49 +158,51 @@ void inputUpdateKey(SDL_Event *sdlevents, UR_INPUT *currentInput, bool down)
   case SDLK_RCTRL:
     currentInput->select = down;
     break;
+    default:
+      break;
   }
 }
 
-UR_DIRECTION_ENUM
-keyToDirection(UR_INPUT keypress)
+ur::UR_DIRECTION_ENUM
+keyToDirection(ur::UR_INPUT keypress)
 {
-  UR_DIRECTION_ENUM result;
+  ur::UR_DIRECTION_ENUM result;
 
   if (keypress.up && keypress.right)
   {
-    result = urDirNorthEast;
+    result = ur::urDirNorthEast;
   }
   else if (keypress.up && keypress.left)
   {
-    result = urDirNorthWest;
+    result = ur::urDirNorthWest;
   }
   else if (keypress.down && keypress.right)
   {
-    result = urDirSouthEast;
+    result = ur::urDirSouthEast;
   }
   else if (keypress.down && keypress.left)
   {
-    result = urDirSouthWest;
+    result = ur::urDirSouthWest;
   }
   else if (keypress.up)
   {
-    result = urDirNorth;
+    result = ur::urDirNorth;
   }
   else if (keypress.down)
   {
-    result = urDirSouth;
+    result = ur::urDirSouth;
   }
   else if (keypress.left)
   {
-    result = urDirWest;
+    result = ur::urDirWest;
   }
   else if (keypress.right)
   {
-    result = urDirEast;
+    result = ur::urDirEast;
   }
   else
   {
-    result = urDirNone;
+    result = ur::urDirNone;
   }
   return result;
 }
@@ -244,9 +246,9 @@ int main(int argc, char *argv[])
   std::string name = "Usurper's Retribution ";
   SDL_WM_SetCaption((name + REVISION_EDITION).c_str(), NULL);
 
-  audioManager = new ur_audio;
+  audioManager = new ur::Audio;
   /* instantiate the system services, such as the sound and font managers */
-  fontManager = new ur_font("data/", screen->format);
+  fontManager = new ur::Font("data/", screen->format);
 
   // display the startup logos
   SDL_Surface *logoLoader;
@@ -261,7 +263,7 @@ int main(int argc, char *argv[])
   textcolor.r = 255;
   textcolor.g = 0;
   textcolor.b = 0;
-  fontManager->printTextToSurface(screen, "Welcome to UR!", urFont_Big,
+  fontManager->printTextToSurface(screen, "Welcome to UR!", ur::urFont_Big,
                                   welcomeTextPos, 0, textcolor);
   SDL_Flip(screen);
   SDL_FreeSurface(logoLoader); // free the memory!
@@ -270,18 +272,18 @@ int main(int argc, char *argv[])
   printf("DONE.\nStarting the engine... ");
 
   /* Start instantiating the game itself */
-  titleScreen = new ur_titlescreen("data/", *(screen->format), fontManager, audioManager);
+  titleScreen = new ur::Titlescreen("data/", *(screen->format), fontManager, audioManager);
 
-  menu = new ur_menu();
+  menu = new ur::Menu();
 
   printf("DONE.\nOnline!!\n\n");
   done = 0;
 
   /* primary game loop! */
   SDL_Event event;
-  UR_INPUT currentInput = UR_INPUT_DEFAULT;
+  ur::UR_INPUT currentInput = ur::UR_INPUT_DEFAULT;
 
-  UR_RUN_STATE status = urGameState_TitleScreen;
+  ur::UR_RUN_STATE status = ur::urGameState_TitleScreen;
   lastTime = SDL_GetTicks();
 
   // time step in ms for the game logic (60 fps)
@@ -328,10 +330,10 @@ int main(int argc, char *argv[])
     }
     switch (status)
     {
-    case urGameState_Quit:
+    case ur::urGameState_Quit:
       done = 1;
       break;
-    case urGameState_InGame:
+    case ur::urGameState_InGame:
       // if the accumulator is greater than the time step, we need to update the game logic
       while (accumulator >= timeStep)
       {
@@ -346,13 +348,13 @@ int main(int argc, char *argv[])
       }
 
       break;
-    case urGameState_TitleScreen:
+    case ur::urGameState_TitleScreen:
       Sint64 titleResult;
       titleResult = titleScreen->run(currentInput, screen);
       if (titleResult == 0)
       {
-        map = new ur_map("kv", screen->format, fontManager, audioManager);
-        status = urGameState_InGame;
+        map = new ur::Map("kv", screen->format, fontManager, audioManager);
+        status = ur::urGameState_InGame;
       }
       break;
     default:

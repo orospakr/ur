@@ -18,8 +18,10 @@
 
 #include "ur_font.h"		// class's header file
 
+namespace ur {
+
 // class constructor
-ur_font::ur_font (std::string basedir, SDL_PixelFormat * screenFormat)
+Font::Font (std::string basedir, SDL_PixelFormat * screenFormat)
 {
   // load up the fonts
   SDL_Surface *bigFontLoad, *textFontLoad;
@@ -41,14 +43,14 @@ ur_font::ur_font (std::string basedir, SDL_PixelFormat * screenFormat)
 }
 
 // class destructor
-ur_font::~ur_font ()
+Font::~Font ()
 {
   SDL_FreeSurface (bigFont);
   SDL_FreeSurface (textFont);
 }
 
 void
-ur_font::printTextToSurface (SDL_Surface * surface, std::string text,
+Font::printTextToSurface (SDL_Surface * surface, std::string text,
 			     UR_FONT_ENUM whichFont, SDL_Rect destPos,
 			     Sint64 offset, SDL_Color textColor)
 {
@@ -97,7 +99,8 @@ ur_font::printTextToSurface (SDL_Surface * surface, std::string text,
 }
 
 Sint64
-ur_font::char2ascii (char input)
+Font::char2ascii (char input)
 {
   return (Sint64) input;
+}
 }

@@ -33,87 +33,90 @@
 #include "SDL.h"
 #include "ur.h"
 
-/* Forward declaration of ur_object instead of an #include "ur_object.h" to
- * avoid a cyclic dependency
- */
-class ur_object;
-
-
-
-/*typedef struct
+namespace ur
 {
-    Sint64 screenOrigin_X;
-    Sint64 screenOrigin_Y;
-    Sint64 objectOrigin_X;
-    Sint64 objectOrigin_Y;
-} UR_RELATIVE_ORIGIN; */
 
-enum UR_LAYER_ENUM
-{
-  urLayerA,
-  urLayerB,
-  urLayerC
-};
-
-class ur_layer
-{
-public:
-  // class constructor
-  ur_layer (std::string layerPath, UR_LAYER_ENUM position, bool transparent,
-	    SDL_Surface * tileset, SDL_PixelFormat * screenFormat,
-	    ur_object ** objPile);
-
-  // class destructor
-  ~ur_layer ();
-
-  /* The object stack for the parent map */
-  ur_object **objects;
-
-  /* The tile graphics for this floor
+  /* Forward declaration of Object instead of an #include "Object.h" to
+   * avoid a cyclic dependency
    */
-  SDL_Surface *tilepile;
+  class Object;
 
-  /* the matrix of values describing to the engine what each block is
-   * graphically. Remember, each block is 32x32
-   */
-  Sint64 floorGraphicalMap[MAP_WIDTH][MAP_HEIGHT];
+  /*typedef struct
+  {
+      Sint64 screenOrigin_X;
+      Sint64 screenOrigin_Y;
+      Sint64 objectOrigin_X;
+      Sint64 objectOrigin_Y;
+  } UR_RELATIVE_ORIGIN; */
 
-  /* the physical properties of the map, as described in docs/physmaps
-   */
-  Sint64 floorPhysicalMap[MAP_WIDTH][MAP_HEIGHT];
+  enum UR_LAYER_ENUM
+  {
+    urLayerA,
+    urLayerB,
+    urLayerC
+  };
 
-  Sint64 drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom);
+  class Layer
+  {
+  public:
+    // class constructor
+    Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
+          SDL_Surface *tileset, SDL_PixelFormat *screenFormat,
+          Object **objPile);
 
-  Sint64 run ();
+    // class destructor
+    ~Layer();
 
-private:
-  /* Between 0 and 7.  Is the animation position for the tiles.
-   */
-  Sint64 tilesAnimPos;
+    /* The object stack for the parent map */
+    Object **objects;
 
-  /*
-   * returns an SDL_Rect that you can use as a srcrect when
-   * blitting a tile from the tilepile
-   */
-  SDL_Rect *getTileSrcCoord (Sint64 number);
+    /* The tile graphics for this floor
+     */
+    SDL_Surface *tilepile;
 
-  /* returns an SDL_Rect that you can use as a dstrect when
-   * blitting a tile from the tilepile
-   */
-  SDL_Rect *getTileDestCoord (Sint64 x, Sint64 y);
+    /* the matrix of values describing to the engine what each block is
+     * graphically. Remember, each block is 32x32
+     */
+    Sint64 floorGraphicalMap[MAP_WIDTH][MAP_HEIGHT];
 
-  /* Loads up the floormaps.  Floormaps are used to determine
-   * the way that the engine should react to different
-   * floor styles on the map, and to graphically draw the map.
-   * The two map types are Acorn Graphical Map (agm) and Acorn
-   * Physical Map (apm).
-   */
-  Sint64 loadLayerMap (std::string agmFilename, std::string apmFilename);
+    /* the physical properties of the map, as described in docs/physmaps
+     */
+    Sint64 floorPhysicalMap[MAP_WIDTH][MAP_HEIGHT];
 
-  /* debugging funcs to display the contents of floorGraphicalMap and physmap
-   */
-  void quickAGMPrint ();
-  void quickAPMPrint ();
-};
+    Sint64 drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom);
+
+    Sint64 run();
+
+  private:
+    /* Between 0 and 7.  Is the animation position for the tiles.
+     */
+    Sint64 tilesAnimPos;
+
+    /*
+     * returns an SDL_Rect that you can use as a srcrect when
+     * blitting a tile from the tilepile
+     */
+    SDL_Rect *getTileSrcCoord(Sint64 number);
+
+    /* returns an SDL_Rect that you can use as a dstrect when
+     * blitting a tile from the tilepile
+     */
+    SDL_Rect *getTileDestCoord(Sint64 x, Sint64 y);
+
+    /* Loads up the floormaps.  Floormaps are used to determine
+     * the way that the engine should react to different
+     * floor styles on the map, and to graphically draw the map.
+     * The two map types are Acorn Graphical Map (agm) and Acorn
+     * Physical Map (apm).
+     */
+    Sint64 loadLayerMap(std::string agmFilename, std::string apmFilename);
+
+    /* debugging funcs to display the contents of floorGraphicalMap and physmap
+     */
+    void quickAGMPrint();
+    void quickAPMPrint();
+  };
+
+}
 
 #endif // UR_LAYER_H

@@ -26,17 +26,22 @@
 #include "SDL.h"
 #include "ur.h"
 
-/*
- * The menuing system... starts the game, displays configuration
- * menus...  should hopefully be available during game play soon...
- */
-class ur_menu
+namespace ur
 {
-public:
-  // class constructor
-  ur_menu ();
-  // class destructor
-  ~ur_menu ();
-};
+
+  /*
+   * The menuing system... starts the game, displays configuration
+   * menus...  should hopefully be available during game play soon...
+   */
+  class Menu
+  {
+  public:
+    // class constructor
+    Menu();
+    // class destructor
+    ~Menu();
+  };
+
+}
 
 #endif // UR_MENU_H
