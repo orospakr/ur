@@ -20,7 +20,6 @@
 
 namespace ur
 {
-
   std::string charToSTLString(char *input)
   {
     std::string blah(input);
@@ -169,6 +168,38 @@ namespace ur
       if (yvel > 0)
         yvel--;
       break;
+    case urDirNorthWest:
+      yvel--;
+      if ((yvel * (-1)) >= velmax)
+        yvel = (velmax * (-1));
+      xvel--;
+      if ((xvel * (-1)) >= velmax)
+        xvel = (velmax * (-1));
+      break;
+    case urDirNorthEast:
+      yvel--;
+      if ((yvel * (-1)) >= velmax)
+        yvel = (velmax * (-1));
+      xvel++;
+      if (xvel >= velmax)
+        xvel = velmax;
+      break;
+    case urDirSouthWest:
+      yvel++;
+      if (yvel >= velmax)
+        yvel = velmax;
+      xvel--;
+      if ((xvel * (-1)) >= velmax)
+        xvel = (velmax * (-1));
+      break;
+    case urDirSouthEast:
+      yvel++;
+      if (yvel >= velmax)
+        yvel = velmax;
+      xvel++;
+      if (xvel >= velmax)
+        xvel = velmax;
+      break;
     default:
       /* we want to accelerate so our inertia is equal to that of the reference plane of the
        * platform. In English: we want the object to slow down
@@ -183,6 +214,7 @@ namespace ur
         xvel--;
       break;
     }
+
     /* these quick little additions will be replaced by more complicated code that
      * checks the APM... perhaps by using the future SDL_Rect objectSpace
      */
