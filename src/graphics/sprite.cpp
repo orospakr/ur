@@ -16,6 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <SDL2/SDL_image.h>
+
 #include "graphics/sprite.h" // class's header file
 
 namespace ur
@@ -23,22 +25,26 @@ namespace ur
 
   // class constructor
   Sprite::Sprite(std::string spriteBMPFilename,
-                 SDL_PixelFormat *screenFormat)
+                 SDL_Renderer *renderer)
   {
     animationPhase = 0;
     currentDir = urDirNone;
-    SDL_Surface *spriteDataLoad = SDL_LoadBMP(spriteBMPFilename.c_str());
-    spriteData =
-        SDL_ConvertSurface(spriteDataLoad, screenFormat, SDL_SRCCOLORKEY);
-    SDL_FreeSurface(spriteDataLoad);
-    SDL_SetColorKey(spriteData, SDL_SRCCOLORKEY,
-                    SDL_MapRGB(screenFormat, 255, 255, 255));
+    spriteData = IMG_LoadTexture(renderer, spriteBMPFilename.c_str());
+    if(spriteData == NULL)
+    {
+      std::cout << "!! Error loading sprite " << spriteBMPFilename << " because " << SDL_GetError() << std::endl;
+      exit(1);
+    }
+
+    // TODO: colourkeys again or alpha?
+    // SDL_SetColorKey(spriteData, SDL_SRCCOLORKEY,
+                    // SDL_MapRGB(screenFormat, 255, 255, 255));
   }
 
   // class destructor
   Sprite::~Sprite()
   {
-    SDL_FreeSurface(spriteData);
+    SDL_DestroyTexture(spriteData);
   }
 
   SDL_Rect *
@@ -112,7 +118,7 @@ namespace ur
   }
 
   void
-  Sprite::drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom)
+  Sprite::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom)
   {
     SDL_Rect dstRect;
     dstRect.h = TILE_HEIGHT;
@@ -124,7 +130,7 @@ namespace ur
     // dstRect.x=abs(dstRect.x);
     // dstRect.y=abs(dstRect.y);
     SDL_Rect *animResult = getAnim(currentDir, currentAnim);
-    SDL_BlitSurface(spriteData, animResult, screen, &dstRect);
+    SDL_RenderCopy(renderer, spriteData, animResult, &dstRect);
     delete animResult;
   }
 

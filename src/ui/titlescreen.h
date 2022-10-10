@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 #include "audio/audio.h"
 #include "game/map.h"
@@ -40,20 +40,20 @@ namespace ur
   {
   public:
     // class constructor
-    Titlescreen(std::string basedir, SDL_PixelFormat screenFormat,
+    Titlescreen(std::string basedir,
+                SDL_Renderer *renderer,
                 Font *fonts, Audio *audio);
     // class destructor
     ~Titlescreen();
     /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the game should begin
      *, otherwise just run it again.
      */
-    Sint64 run(UR_INPUT keystate, SDL_Surface *screen);
+    Sint64 run(UR_INPUT keystate, SDL_Renderer *renderer);
 
   private:
-    SDL_Surface *titleGraphic;
+    SDL_Texture *titleGraphic;
     Font *fontManager;
     std::string scrollerText;
-    Sint64 scrollerPos;
     Audio *audioManager;
   };
 

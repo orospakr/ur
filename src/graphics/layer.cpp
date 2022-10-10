@@ -23,14 +23,12 @@ namespace ur
 
   // class constructor
   Layer::Layer(std::string layerPath, UR_LAYER_ENUM position,
-               bool transparent, SDL_Surface *tileset,
-               SDL_PixelFormat *screenFormat, Object **objPile)
+               bool transparent, SDL_Texture *tileset,
+               SDL_Renderer *renderer, Object **objPile)
   {
     tilepile = tileset;
     objects = objPile;
     tilesAnimPos = 0;
-
-    // yuckyBuffer=SDL_CreateRGBSurface(SDL_SWSURFACE, 640,480,(*screenFormat).BitsPerPixel,(*screenFormat).Rmask, (*screenFormat).Gmask, (*screenFormat).Bmask, (*screenFormat).Amask);
 
     /* Now we need to load up the map (the array of ints called floorMap) */
     std::string agmFilename; // graphic map filename
@@ -113,7 +111,7 @@ namespace ur
   }
 
   Sint64
-  Layer::drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom)
+  Layer::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom)
   {
     Sint64 beginY = screenGeom.y / 32;
     Sint64 endY = beginY + (SCREEN_HEIGHT / 32);
@@ -134,11 +132,11 @@ namespace ur
         dstRect = getTileDestCoord(xcounter, ycounter);
         // std::cout << "The requested tilepile blit's source coordinates and dimensions are: ";
         // std::cout << " X origin: " << srcRect->x << " Y origin: " << srcRect->y << " Height: " << srcRect->h << " Width: " << srcRect->w << std::endl;
-        // std::cout << "The requested screen destination coordinates and dimensions are: ";
+        // std::cout << "The requested renderer destination coordinates and dimensions are: ";
         // std::cout << " X origin: " << dstRect->x << " Y origin: " << dstRect->y << " Height: " << dstRect->h << " Width: " << dstRect->w << std::endl;
         dstRect->x -= screenGeom.x;
         dstRect->y -= screenGeom.y;
-        SDL_BlitSurface(tilepile, srcRect, screen, dstRect);
+        SDL_RenderCopy(renderer, tilepile, srcRect, dstRect);
         delete srcRect;
         delete dstRect;
       }

@@ -28,7 +28,7 @@ namespace ur
 
   // class constructor
   Object::Object(std::string objectPath, std::string objectName,
-                 SDL_PixelFormat *screenFormat, Layer *hostLayer)
+                 SDL_Renderer *renderer, Layer *hostLayer)
   {
     xpos = 0;
     ypos = 0;
@@ -48,7 +48,7 @@ namespace ur
      */
     std::ifstream loadReader;
     spriteGrafx =
-        new Sprite(objectPath + objectName + "/sprites.bmp", screenFormat);
+        new Sprite(objectPath + objectName + "/sprites.png", renderer);
     loadReader.open((objectPath + objectName + "/def.txt").c_str(),
                     std::ifstream::in);
     if (!loadReader.good())
@@ -215,9 +215,9 @@ namespace ur
       break;
     }
 
-    /* these quick little additions will be replaced by more complicated code that
-     * checks the APM... perhaps by using the future SDL_Rect objectSpace
-     */
+    // TODO: start here and consider replacing with a ray trace regime to enable
+    // flexible collision detection with the map?
+
     Sint64 futureX = xpos + xvel; // values that could be... but only if the APM permits it!
     Sint64 futureY = ypos + yvel;
     Sint64 futureBlock;
@@ -355,9 +355,10 @@ namespace ur
     return 0;
   }
 
-  void Object::drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom)
+  void Object::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom)
   {
-    spriteGrafx->drawToScreen(screen, screenGeom);
+    
+    spriteGrafx->drawToScreen(renderer, screenGeom);
   }
 
 }

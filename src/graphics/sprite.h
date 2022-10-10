@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 
 #include "graphics/layer.h"
@@ -41,14 +41,14 @@ class Sprite
 {
 public:
   // class constructor
-  Sprite (std::string spriteBMPFilename, SDL_PixelFormat * screenFormat);
+  Sprite (std::string spriteBMPFilename, SDL_Renderer * renderer);
   // class destructor
   ~Sprite ();
 
-  /* this is all of the sprite data in a giant SDL_Surface.  Read docs/sprite.txt
+  /* this is all of the sprite data in a giant texture.  Read docs/sprite.txt
    * for more info
    */
-  SDL_Surface *spriteData;
+  SDL_Texture *spriteData;
 
   /* the following are funcs that return SDL_Rects that point to the relevant area
    * of the spriteData surface, depending upon the sprite type, and animation status.
@@ -58,7 +58,7 @@ public:
   void advanceAnimation ();
   UR_DIRECTION_ENUM currentDir;
   UR_ANIM_ENUM currentAnim;
-  void drawToScreen (SDL_Surface * screen, SDL_Rect screenGeom);
+  void drawToScreen (SDL_Renderer * renderer, SDL_Rect screenGeom);
 
   /* These are updated automatically by the parent Object.  Don't bother
    * changing them from this scope.

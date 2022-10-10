@@ -29,7 +29,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 
 namespace ur
@@ -39,16 +39,16 @@ namespace ur
   {
   public:
     // class constructor
-    Font(std::string basedir, SDL_PixelFormat *screenFormat);
+    Font(std::string basedir, SDL_Renderer *renderer);
     // class destructor
     ~Font();
-    void printTextToSurface(SDL_Surface *surface, std::string text,
-                            UR_FONT_ENUM whichFont, SDL_Rect destPos,
-                            Sint64 offset, SDL_Color textColor);
+    void printTextToSurface(SDL_Renderer * renderer, std::string text,
+                            UR_FONT_ENUM whichFont, SDL_Point destPos,
+                            SDL_Color textColor);
 
   private:
-    SDL_Surface *bigFont;
-    SDL_Surface *textFont;
+    SDL_Texture *bigFont;
+    SDL_Texture *textFont;
     Sint64 char2ascii(char input);
   };
 

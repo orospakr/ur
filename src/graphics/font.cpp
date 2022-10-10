@@ -16,91 +16,69 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "graphics/font.h"		// class's header file
+#include <string>
+#include <SDL2/SDL_image.h>
+#include "graphics/font.h" // class's header file
 
-namespace ur {
-
-// class constructor
-Font::Font (std::string basedir, SDL_PixelFormat * screenFormat)
+namespace ur
 {
-  // load up the fonts
-  SDL_Surface *bigFontLoad, *textFontLoad;
 
-  bigFontLoad = SDL_LoadBMP ((basedir + "/bigfont.bmp").c_str ());
-  if (bigFontLoad == NULL)
-    std::cout << "ACK!  could not big font from " << basedir +
-      "/bigfont.bmp" << std::endl;
-  textFontLoad = SDL_LoadBMP ((basedir + "/textfont.bmp").c_str ());
-  if (textFontLoad == NULL)
-    std::cout << "ACK!  could not text font from " << basedir +
-      "/textfont.bmp" << std::endl;
-  bigFont = SDL_ConvertSurface (bigFontLoad, screenFormat, SDL_SRCCOLORKEY);
-  textFont = SDL_ConvertSurface (textFontLoad, screenFormat, SDL_SRCCOLORKEY);
-  //SDL_SetColorKey (bigFont, SDL_SRCCOLORKEY, SDL_MapRGB (screenFormat, 255, 255, 255));
-  //SDL_SetColorKey (textFont, SDL_SRCCOLORKEY, SDL_MapRGB (screenFormat, 255, 255, 255));
-  SDL_FreeSurface (bigFontLoad);
-  SDL_FreeSurface (textFontLoad);
-}
+  // class constructor
+  Font::Font(std::string basedir, SDL_Renderer *renderer)
+  {
+    bigFont = IMG_LoadTexture(renderer, (basedir + "/bigfont.png").c_str());
+    if (bigFont == NULL)
+      std::cout << "ACK!  could not big font from " << basedir + "/bigfont.png"
+                << " because " << SDL_GetError() << std::endl;
+    textFont = IMG_LoadTexture(renderer, (basedir + "/textfont.png").c_str());
+    if (textFont == NULL)
+      std::cout << "ACK!  could not text font from " << basedir + "/textfont.png"
+                << " because " << SDL_GetError() << std::endl;
+  }
 
-// class destructor
-Font::~Font ()
-{
-  SDL_FreeSurface (bigFont);
-  SDL_FreeSurface (textFont);
-}
+  // class destructor
+  Font::~Font()
+  {
+    SDL_DestroyTexture(bigFont);
+    SDL_DestroyTexture(textFont);
+  }
 
-void
-Font::printTextToSurface (SDL_Surface * surface, std::string text,
-			     UR_FONT_ENUM whichFont, SDL_Rect destPos,
-			     Sint64 offset, SDL_Color textColor)
-{
-  // the two fonts are of different sizes... defined in ur.h
-  const char *cstrbuf = text.c_str ();
-  Sint64 position = offset;
-  while (*(cstrbuf + position) != '\0')
+  void
+  Font::printTextToSurface(SDL_Renderer *renderer, std::string text,
+                           UR_FONT_ENUM whichFont, SDL_Point destPos, SDL_Color textColor)
+  {
+    // the two fonts are of different sizes... defined in ur.h
+
+
+    for (std::string::size_type i = 0; i < text.size(); ++i)
     {
-      Sint64 result = char2ascii (*(cstrbuf + position));
+      Sint64 ascii = char2ascii(text[i]);
 
-      
-      //std::cout << *(cstrbuf+position);
-      //std::cout << " == " << result << std::endl;
+      // std::cout << *(cstrbuf+position);
+      // std::cout << " == " << charIndex << std::endl;
       SDL_Rect sourcePos;
       sourcePos.h = FONT_TEXT_Y;
       sourcePos.w = FONT_TEXT_X;
-      sourcePos.x = (result - 1) * FONT_TEXT_X;
+      sourcePos.x = (ascii - 1) * FONT_TEXT_X;
       sourcePos.y = 0;
-      destPos.x += FONT_TEXT_X;
 
-      SDL_Surface * fontBuffer = SDL_CreateRGBSurface(surface->flags,sourcePos.w,sourcePos.h,surface->format->BitsPerPixel,surface->format->Rmask,surface->format->Gmask,surface->format->Bmask,surface->format->Amask);
-      SDL_SetColorKey (fontBuffer, SDL_SRCCOLORKEY, SDL_MapRGB (surface->format, 255, 255, 255));
+      SDL_Rect charDestPos;
+      charDestPos.x = destPos.x + i * FONT_TEXT_X;
+      charDestPos.y = destPos.y;
+      charDestPos.w = FONT_TEXT_X;
+      charDestPos.h = FONT_TEXT_Y;
 
-      SDL_BlitSurface (textFont,&sourcePos,fontBuffer,NULL);
-      // now that we have the letter sitting in its own temporary surface, we're going to change the colour...
-      Uint16 * raw_pixels = (Uint16 *)fontBuffer->pixels;
-      //std::cout << "  Source positions are: x=" << sourcePos.x << ", y=" << sourcePos.y;
-      //std::cout << "\n  Destination positions are: x=" << destPos.x << ", y=" << destPos.y  << std::endl;
-      //std::cout << "  Still good!\n";
-      SDL_LockSurface(fontBuffer);
-      for (Uint64 hcounter = 0; hcounter<sourcePos.h;hcounter++)
-	for (Uint64 wcounter = 0; wcounter<sourcePos.w; wcounter++)
-	  {
-	    Uint64 offset = (hcounter*FONT_TEXT_X+wcounter);
-	    if (SDL_MapRGB(fontBuffer->format,0,0,0)==raw_pixels[offset])
-	      {
-		//std::cout << " \n Hit at "<< hcounter << ", " << wcounter << std::endl;
-		raw_pixels[offset]=SDL_MapRGB(fontBuffer->format,textColor.r,textColor.g,textColor.b);
-	      } 
-	  }
-      SDL_UnlockSurface(fontBuffer);
-      SDL_BlitSurface (fontBuffer, NULL, surface, &destPos);
-      SDL_FreeSurface (fontBuffer);
-      position++;
+      // Change the colour of the letter to the desired colour before RenderCopy.
+
+      // TODO: this has side-effect of changing color mod on the texture itself, which may be undesirable.
+      SDL_SetTextureColorMod(textFont, textColor.r, textColor.g, textColor.b);
+      SDL_RenderCopy(renderer, textFont, &sourcePos, &charDestPos);
     }
-}
+  }
 
-Sint64
-Font::char2ascii (char input)
-{
-  return (Sint64) input;
-}
+  Sint64
+  Font::char2ascii(char input)
+  {
+    return (Sint64)input;
+  }
 }

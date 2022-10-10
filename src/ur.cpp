@@ -86,7 +86,10 @@
 #include <stdlib.h>
 #include <string>
 #include <iostream>
-#include "SDL.h"
+#include <algorithm>
+
+#include <SDL2/SDL.h>
+
 #include "ur.h"
 
 #include "graphics/font.h"
@@ -95,6 +98,16 @@
 #include "graphics/layer.h"
 #include "ui/menu.h"
 #include "game/map.h"
+
+/**
+ * SDL window.
+ */
+SDL_Window *sdlWindow;
+
+/**
+ * SDL renderer.
+ */
+SDL_Renderer *sdlRenderer;
 
 /* this is an instantiation of the game itself, including the primary maps... this thing
    contains all of the layers, objects, sprites, and everything else that make up the
@@ -113,9 +126,6 @@ ur::Titlescreen *titleScreen = NULL;
 */
 ur::Menu *menu = NULL;
 
-/* The screen surface */
-SDL_Surface *screen = NULL; // what you can see onscreen
-
 /* the audio manager */
 ur::Audio *audioManager = NULL;
 
@@ -123,14 +133,6 @@ ur::Audio *audioManager = NULL;
  * Wallclock at last iteration.
  */
 static Uint32 lastTime = 0;
-
-/* This function draws to the screen the game map and the HUD */
-static void
-draw()
-{
-  /* Make sure everything is displayed on screen */
-  SDL_Flip(screen);
-}
 
 void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput, bool down)
 {
@@ -158,8 +160,8 @@ void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput, bool down)
   case SDLK_RCTRL:
     currentInput->select = down;
     break;
-    default:
-      break;
+  default:
+    break;
   }
 }
 
@@ -228,69 +230,95 @@ int main(int argc, char *argv[])
     exit(1);
   }
   // atexit (SDL_Quit);
-  printf("DONE.\nSetting video mode (640x480x16bpp)... ");
+  printf("DONE.\nCreating window...");
   /* Set 640x480 16-bits video mode */
-  screen =
-      SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16,
-                       SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+  // screen =
+  //     SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16,
+  //                      SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 
-  if (screen == NULL)
+  sdlWindow = SDL_CreateWindow("Usurper's Retribution", SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED, 800,
+                               600, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+
+  if (sdlWindow == NULL)
   {
-    asprintf(&msg, "Couldn't set 640x480x16 video mode: %s\n",
-             SDL_GetError());
-    std::cout << msg;
-    free(msg);
-    exit(2);
+    std::cout << "!! Could not create window: " << SDL_GetError() << std::endl;
+    exit(1);
   }
+
+  // Using software rendering for now because otherwise (at least on macOS with metal) there are subpixel rendering issues.
+  sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
+  if (sdlRenderer == NULL)
+  {
+    std::cout << "!! Could not create renderer: " << SDL_GetError() << std::endl;
+    exit(1);
+  }
+
+  // clear the display
+  SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+  SDL_RenderClear(sdlRenderer);
+  SDL_RenderPresent(sdlRenderer);
+
+  // our logical display size is 640x480, use GPU scaling to scale it up.
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest"); // nearest-neighbor scaling for sharp pixel art.
+  SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+
   printf("DONE.\nDisplaying startup logo... ");
   std::string name = "Usurper's Retribution ";
-  SDL_WM_SetCaption((name + REVISION_EDITION).c_str(), NULL);
+
+  SDL_SetWindowTitle(sdlWindow, (name + REVISION_EDITION).c_str());
 
   audioManager = new ur::Audio;
   /* instantiate the system services, such as the sound and font managers */
-  fontManager = new ur::Font("data/", screen->format);
+  fontManager = new ur::Font("data/", sdlRenderer);
 
   // display the startup logos
   SDL_Surface *logoLoader;
   logoLoader = SDL_LoadBMP("data/logo_ld.bmp");
-  SDL_BlitSurface(logoLoader, NULL, screen, NULL);
-  SDL_Rect welcomeTextPos;
-  welcomeTextPos.h = 500;
-  welcomeTextPos.w = 500;
+  SDL_Texture *logoTexture = SDL_CreateTextureFromSurface(sdlRenderer, logoLoader);
+  SDL_FreeSurface(logoLoader);
+  SDL_RenderCopy(sdlRenderer, logoTexture, NULL, NULL);
+
+  SDL_RenderPresent(sdlRenderer);
+  SDL_SetRenderDrawColor(sdlRenderer, 255, 0, 0, 255);
+  SDL_RenderClear(sdlRenderer);
+
+  SDL_Point welcomeTextPos;
   welcomeTextPos.x = 10;
   welcomeTextPos.y = 10;
   SDL_Color textcolor;
   textcolor.r = 255;
   textcolor.g = 0;
   textcolor.b = 0;
-  fontManager->printTextToSurface(screen, "Welcome to UR!", ur::urFont_Big,
-                                  welcomeTextPos, 0, textcolor);
-  SDL_Flip(screen);
-  SDL_FreeSurface(logoLoader); // free the memory!
+  fontManager->printTextToSurface(sdlRenderer, "Welcome to UR!", ur::urFont_Big,
+                                  welcomeTextPos, textcolor);
+
   // SDL_Delay(5000);             // show logo for 1 sec
 
   printf("DONE.\nStarting the engine... ");
 
   /* Start instantiating the game itself */
-  titleScreen = new ur::Titlescreen("data/", *(screen->format), fontManager, audioManager);
+  titleScreen = new ur::Titlescreen("data/", sdlRenderer, fontManager, audioManager);
 
   menu = new ur::Menu();
 
   printf("DONE.\nOnline!!\n\n");
   done = 0;
 
-  /* primary game loop! */
   SDL_Event event;
   ur::UR_INPUT currentInput = ur::UR_INPUT_DEFAULT;
 
   ur::UR_RUN_STATE status = ur::urGameState_TitleScreen;
   lastTime = SDL_GetTicks();
 
-  // time step in ms for the game logic (60 fps)
-  const Uint32 timeStep = 1000 / 30;
+  // time step in ms for the game logic (60 fps).
+  // TODO: these should be floats to avoid rounding? timestep will be too short
+  const Uint32 timeStep = 1000 / 60;
+  const Uint32 graphicsTimeStep = 1000 / 60;
   // time accumulator for the game logic
   static Uint32 accumulator = 0;
 
+  /* primary game loop! */
   while (!done)
   {
     // get current time in ms
@@ -303,7 +331,11 @@ int main(int argc, char *argv[])
     // add the time since last iteration to the accumulator
     accumulator += timeSinceLast;
 
-    /* Check for basic events and keyboard */
+    // calculate fps
+    int fps = 1000 / timeSinceLast;
+    // std::cout << "FPS: " << fps << std::endl;
+
+    /* Process events */
     while (SDL_PollEvent(&event))
     {
       // I can change this to handle multiple keypresses at once by mutating a struct
@@ -334,35 +366,55 @@ int main(int argc, char *argv[])
       done = 1;
       break;
     case ur::urGameState_InGame:
-      // if the accumulator is greater than the time step, we need to update the game logic
+      // run physics and game logic at timeStep rate.
       while (accumulator >= timeStep)
       {
-        // calculate the interpolation factor
         float interpolationFactor = accumulator / timeStep;
 
         // run the game logic
-        map->run(keyToDirection(currentInput), screen);
+        map->run(keyToDirection(currentInput), sdlRenderer);
 
         // remove the time step from the accumulator
         accumulator -= timeStep;
       }
+      SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+      SDL_RenderClear(sdlRenderer);
+      map->drawToScreen(sdlRenderer);
+      SDL_RenderPresent(sdlRenderer);
 
       break;
     case ur::urGameState_TitleScreen:
       Sint64 titleResult;
-      titleResult = titleScreen->run(currentInput, screen);
+      SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+      SDL_RenderClear(sdlRenderer);
+      titleResult = titleScreen->run(currentInput, sdlRenderer);
       if (titleResult == 0)
       {
-        map = new ur::Map("kv", screen->format, fontManager, audioManager);
+        map = new ur::Map("kv", sdlRenderer, fontManager, audioManager);
         status = ur::urGameState_InGame;
       }
+      SDL_RenderPresent(sdlRenderer);
       break;
     default:
       done = 1;
       break;
     }
-    /* Draw to screen */
-    draw();
+
+    // use delay limit frame rate to 60
+    // if (timeSinceLast < (graphicsTimeStep))
+    // {
+    //   std::cout << "HOLD" << std::endl;
+    //   SDL_Delay(graphicsTimeStep - timeSinceLast);
+    // }
+
+    // max of (graphicstimestep - timeSinceLast) or 0
+
+    // don't need this, got vsync.
+    // int timeUntilNextFrame = graphicsTimeStep - (SDL_GetTicks() - lastTime);
+    // if (timeUntilNextFrame > 0)
+    // {
+    //   SDL_Delay(timeUntilNextFrame);
+    // }
   }
   delete menu;
   delete map;

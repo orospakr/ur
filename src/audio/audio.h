@@ -26,7 +26,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 
 // include openmpt header

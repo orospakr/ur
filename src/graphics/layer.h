@@ -30,7 +30,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 
 namespace ur
@@ -61,7 +61,7 @@ namespace ur
   public:
     // class constructor
     Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
-          SDL_Surface *tileset, SDL_PixelFormat *screenFormat,
+          SDL_Texture *tileset, SDL_Renderer *renderer,
           Object **objPile);
 
     // class destructor
@@ -72,7 +72,7 @@ namespace ur
 
     /* The tile graphics for this floor
      */
-    SDL_Surface *tilepile;
+    SDL_Texture *tilepile;
 
     /* the matrix of values describing to the engine what each block is
      * graphically. Remember, each block is 32x32
@@ -83,7 +83,7 @@ namespace ur
      */
     Sint64 floorPhysicalMap[MAP_WIDTH][MAP_HEIGHT];
 
-    Sint64 drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom);
+    Sint64 drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
 
     Sint64 run();
 

@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 #include "audio/audio.h"
 #include "graphics/font.h"
@@ -44,7 +44,7 @@ namespace ur
   {
   public:
     // class constructor
-    Map(std::string name, SDL_PixelFormat *screenFormat, Font *fonts, Audio *audio);
+    Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
     // class destructor
     ~Map();
     std::string mapName;
@@ -53,7 +53,7 @@ namespace ur
      * bigger than the screen itself!) */
     SDL_Rect screenGeom;
 
-    SDL_Surface *mapTileset;
+    SDL_Texture *mapTileset;
 
     Layer *layerA;
     Layer *layerB;
@@ -68,7 +68,12 @@ namespace ur
     /**
      * @brief Runs one cycle of updates for the map and all its objects.
      */
-    Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Surface *destinationSurface);
+    Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer);
+
+    /**
+     * @brief Renders the map to the screen.
+     */
+    void drawToScreen(SDL_Renderer *renderer);
 
   private:
     /* a pointer to the object that is the user's character

@@ -24,7 +24,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ur.h"
 #include "graphics/sprite.h"
 
@@ -45,7 +45,7 @@ namespace ur
      * from, amongst other things)
      */
     Object(std::string objectPath, std::string objectName,
-           SDL_PixelFormat *screenFormat, Layer *hostLayer);
+           SDL_Renderer *renderer, Layer *hostLayer);
 
     // class destructor
     ~Object();
@@ -114,7 +114,7 @@ namespace ur
     /* This draws the object to the supplied surface.  Note that it just shafts
      * the job down to its sprite object.
      */
-    void drawToScreen(SDL_Surface *screen, SDL_Rect screenGeom);
+    void drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
 
     /* AI driver props
      */

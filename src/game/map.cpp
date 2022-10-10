@@ -16,17 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <SDL2/SDL_image.h>
+
 #include "game/map.h" // class's header file
 
 namespace ur
 {
 
   // class constructor
-  Map::Map(std::string name, SDL_PixelFormat *screenFormat,
-           Font *fonts, Audio *audio)
+  Map::Map(std::string name,
+           SDL_Renderer *renderer,
+           Font *fonts,
+           Audio *audio)
   {
-    /* just a few quick initialisations...
-     */
     mapName = name;
     audioController = audio;
     fontManager = fonts;
@@ -46,30 +48,31 @@ namespace ur
 
     /* load up the tiles for this map into a temp surface */
     SDL_Surface *mapTilesetLoad;
-    mapTilesetLoad =
-        SDL_LoadBMP(("data/maps/" + name + "/tiles.bmp").c_str());
-    /* convert them to the display's format for better performance, set the colourkey and finish up */
-    mapTileset = SDL_DisplayFormat(mapTilesetLoad);
-    SDL_SetColorKey(mapTileset, SDL_SRCCOLORKEY,
-                    SDL_MapRGB(screenFormat, 255, 255, 255));
-    SDL_FreeSurface(mapTilesetLoad);
+
+    std::string tilesetPath = "data/maps/" + mapName + "/tiles.png";
+    mapTileset = IMG_LoadTexture(renderer, tilesetPath.c_str());
+    if (mapTileset == NULL)
+    {
+      std::cout << "!! Unable to load tileset image from " << tilesetPath << " because " << SDL_GetError() << std::endl;
+      exit(1);
+    }
 
     /* instantiate the layers... */
     layerA =
         new Layer("data/maps/" + name + "/", urLayerA, false, mapTileset,
-                  screenFormat, objects);
+                  renderer, objects);
     layerB =
         new Layer("data/maps/" + name + "/", urLayerB, false, mapTileset,
-                  screenFormat, objects);
+                  renderer, objects);
     layerC =
         new Layer("data/maps/" + name + "/", urLayerC, false, mapTileset,
-                  screenFormat, objects);
+                  renderer, objects);
     // layerAtmosphere = new Layer("data/maps/"+name+"/",urLayerAtmosphere, false);  ATMOSPHERE NOT YET SUPPORTED
-    player = new Object("data/objs/", "al", screenFormat, layerA);
+    player = new Object("data/objs/", "al", renderer, layerA);
     objects[0] = player;
 
     // we are going to create a Mickey Mouse, and then set his bit to 'evil'... let us see what happens...
-    objects[1] = new Object("data/objs/", "mickey", screenFormat, layerA);
+    objects[1] = new Object("data/objs/", "mickey", renderer, layerA);
     objects[1]->faction = urFact_BadNik; // make him evil
     objects[0]->faction = urFact_FF;     // make our friend Al an FF
     player->xpos = 13 * TILE_WIDTH;
@@ -80,7 +83,7 @@ namespace ur
   }
 
   Sint64
-  Map::run(UR_DIRECTION_ENUM keypress, SDL_Surface *destinationSurface)
+  Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer)
   {
 
     layerA->run();
@@ -120,56 +123,57 @@ namespace ur
       screenGeom.y = SCREEN_HEIGHT * 2;
     }
 
+    return 0;
+  }
+
+  void Map::drawToScreen(SDL_Renderer *renderer)
+  {
+
     // std::cout<< player->xpos << std::endl << player->ypos << std::endl << std::endl;
     // screenGeom.y++;
     // screenGeom.x++;
-    layerA->drawToScreen(destinationSurface, screenGeom);
+    layerA->drawToScreen(renderer, screenGeom);
     for (Sint64 counter = 0; counter < MAX_OBJS; counter++)
     {
       if (objects[counter] != NULL)
       {
-        objects[counter]->drawToScreen(destinationSurface, screenGeom);
+        objects[counter]->drawToScreen(renderer, screenGeom);
       }
     }
-    layerB->drawToScreen(destinationSurface, screenGeom);
-    layerC->drawToScreen(destinationSurface, screenGeom);
+    layerB->drawToScreen(renderer, screenGeom);
+    layerC->drawToScreen(renderer, screenGeom);
 
-    SDL_Rect greetzTextPos;
-    greetzTextPos.h = 500;
-    greetzTextPos.w = 500;
+    SDL_Point greetzTextPos;
     greetzTextPos.x = 3;
     greetzTextPos.y = 460;
     SDL_Color funkycolor;
     funkycolor.r = 0;
     funkycolor.g = 0;
     funkycolor.b = 0;
-    fontManager->printTextToSurface(destinationSurface, "ur0.0.1 Demo!",
-                                    urFont_Big, greetzTextPos, 0, funkycolor);
+    fontManager->printTextToSurface(renderer, "ur0.0.1 Demo!",
+                                    urFont_Big, greetzTextPos, funkycolor);
 
     if (player->dead)
     {
-      SDL_Rect gameOverPos;
+      SDL_Point gameOverPos;
       SDL_Color gameOverClr;
       gameOverClr.r = 255;
       gameOverClr.g = 0;
       gameOverClr.b = 0;
-      gameOverPos.w = FONT_TEXT_X * 10;
-      gameOverPos.h = FONT_TEXT_Y * 1;
       gameOverPos.y = (SCREEN_HEIGHT / 2) - (FONT_TEXT_Y / 2);
       gameOverPos.x = (SCREEN_WIDTH / 2) - ((FONT_TEXT_X * 10) / 2);
-      fontManager->printTextToSurface(destinationSurface, "Game Over!", urFont_Big, gameOverPos, 0, gameOverClr);
+      fontManager->printTextToSurface(renderer, "Game Over!", urFont_Big, gameOverPos, gameOverClr);
     }
-    return 0;
   }
 
   // class destructor
   Map::~Map()
   {
     delete layerA;
-    delete layerB;
-    delete layerC;
+    // delete layerB;
+    // delete layerC;
     delete[] objects; // note the objects that this array of pointers points to will also require freeing
-    SDL_FreeSurface(mapTileset);
+    SDL_DestroyTexture(mapTileset);
     delete audioController;
     // delete layerAtmosphere;  ATMOSPHERE NOT YET SUPPORTED
   }
