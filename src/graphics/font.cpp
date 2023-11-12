@@ -47,15 +47,11 @@ namespace ur
   Font::printTextToSurface(SDL_Renderer *renderer, std::string text,
                            UR_FONT_ENUM whichFont, SDL_Point destPos, SDL_Color textColor)
   {
-    // the two fonts are of different sizes... defined in ur.h
-
-
+    // TODO: the two fonts are of different sizes... defined in ur.h
     for (std::string::size_type i = 0; i < text.size(); ++i)
     {
       Sint64 ascii = char2ascii(text[i]);
 
-      // std::cout << *(cstrbuf+position);
-      // std::cout << " == " << charIndex << std::endl;
       SDL_Rect sourcePos;
       sourcePos.h = FONT_TEXT_Y;
       sourcePos.w = FONT_TEXT_X;

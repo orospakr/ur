@@ -80,7 +80,7 @@ namespace ur
     Sint64 marqueeWidth = FONT_TEXT_X * scrollerText.length() + SCREEN_WIDTH;
     // draw scroller
     SDL_Point scrollerDest;
-    // TODO: using modulus here (to avoid a ticking variable) is basically
+    // TODO: using modulo here (to avoid a ticking variable) is basically
     // landing at an arbitrary point in the scroll position, but because
     // SDL_Ticks starts at 0 at app start time, and this scroller is virtually
     // the first thing we do, excepting a bit of a race condition, the scroller

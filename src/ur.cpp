@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
   }
 
   // Using software rendering for now because otherwise (at least on macOS with metal) there are subpixel rendering issues.
-  sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
+  sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
   if (sdlRenderer == NULL)
   {
     std::cout << "!! Could not create renderer: " << SDL_GetError() << std::endl;
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
   SDL_RenderPresent(sdlRenderer);
 
   // our logical display size is 640x480, use GPU scaling to scale it up.
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest"); // nearest-neighbor scaling for sharp pixel art.
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // nearest-neighbor scaling for sharp pixel art.
   SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
   printf("DONE.\nDisplaying startup logo... ");
@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
   SDL_RenderCopy(sdlRenderer, logoTexture, NULL, NULL);
 
   SDL_RenderPresent(sdlRenderer);
-  SDL_SetRenderDrawColor(sdlRenderer, 255, 0, 0, 255);
+  SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
   SDL_RenderClear(sdlRenderer);
 
   SDL_Point welcomeTextPos;

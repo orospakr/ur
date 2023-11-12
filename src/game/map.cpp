@@ -145,11 +145,11 @@ namespace ur
 
     SDL_Point greetzTextPos;
     greetzTextPos.x = 3;
-    greetzTextPos.y = 460;
+    greetzTextPos.y = SCREEN_HEIGHT - 20;
     SDL_Color funkycolor;
-    funkycolor.r = 0;
-    funkycolor.g = 0;
-    funkycolor.b = 0;
+    funkycolor.r = 255;
+    funkycolor.g = 255;
+    funkycolor.b = 255;
     fontManager->printTextToSurface(renderer, "ur0.0.1 Demo!",
                                     urFont_Big, greetzTextPos, funkycolor);
 
