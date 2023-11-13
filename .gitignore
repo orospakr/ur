@@ -5,21 +5,9 @@ src/ur
 .DS_Store
 .vscode
 
-# Exclude autoconf
-configure
-config.h.in
-config.h
-config.log
-config.status
-Makefile.in
+# Exclude cmake and build files
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
 Makefile
-aclocal.m4
-autom4te.cache
-compile
-depcomp
-install-sh
-missing
-stamp-h1
-.dirstamp
-*.tar.gz
-*.Po
+ur

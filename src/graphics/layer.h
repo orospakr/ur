@@ -30,7 +30,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "ur.h"
 
 namespace ur

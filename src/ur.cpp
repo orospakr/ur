@@ -88,7 +88,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "ur.h"
 

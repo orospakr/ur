@@ -17,7 +17,7 @@
 */
 
 #include <string>
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include "graphics/font.h" // class's header file
 
 namespace ur

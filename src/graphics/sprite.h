@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "ur.h"
 
 #include "graphics/layer.h"
