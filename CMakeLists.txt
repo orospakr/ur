@@ -49,9 +49,11 @@ include_directories(src src/audio src/graphics src/ui)
 # Add subdirectory
 add_subdirectory(src)
 
-
 # Link libraries
 target_link_libraries(ur)
 
 # Compiler flags
 target_compile_options(ur PRIVATE -Wall)
+
+# Game data
+file(COPY data DESTINATION ${CMAKE_BINARY_DIR})
