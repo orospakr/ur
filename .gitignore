@@ -12,3 +12,10 @@ cmake_install.cmake
 Makefile
 ur
 build
+
+# vcpkg
+vcpkg_installed
+
+# Visual Studio
+.vs
+CMakeSettings.json

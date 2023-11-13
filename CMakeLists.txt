@@ -10,8 +10,10 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
 # find libopenmpt, using pkg-config:
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(OPENMPT REQUIRED IMPORTED_TARGET libopenmpt)
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(OPENMPT REQUIRED IMPORTED_TARGET libopenmpt)
+
+find_package(libopenmpt CONFIG REQUIRED)
 
 # Define the executable
 add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/layer.cpp src/graphics/sprite.cpp)
@@ -33,12 +35,12 @@ else()
     message(FATAL_ERROR "SDL2_image not found")
 endif()
 
-if(OPENMPT_FOUND)
+if(libopenmpt_FOUND)
     message(STATUS "OPENMPT_INCLUDE_DIRS = ${OPENMPT_INCLUDE_DIRS}")
     message(STATUS "OPENMPT_LIBRARIES = ${OPENMPT_LIBRARIES}")
     # include_directories(${OPENMPT_INCLUDE_DIRS})
     # target_link_libraries(ur ${OPENMPT_LIBRARIES})
-    target_link_libraries(ur PkgConfig::OPENMPT)
+    target_link_libraries(ur libopenmpt::libopenmpt)
 else()
     message(FATAL_ERROR "libopenmpt not found")
 endif()

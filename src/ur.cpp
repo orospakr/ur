@@ -88,6 +88,8 @@
 #include <iostream>
 #include <algorithm>
 
+#define SDL_MAIN_HANDLED 1
+
 #include <SDL.h>
 
 #include "ur.h"
@@ -224,8 +226,8 @@ int main(int argc, char *argv[])
   /* Initialize SDL */
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
-    asprintf(&msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
-    std::cout << msg;
+   // sprintf(msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
+   // std::cout << msg;
     free(msg);
     exit(1);
   }
@@ -332,7 +334,7 @@ int main(int argc, char *argv[])
     accumulator += timeSinceLast;
 
     // calculate fps
-    int fps = 1000 / timeSinceLast;
+    int fps = timeSinceLast == 0 ? 0 : 1000 / timeSinceLast;
     // std::cout << "FPS: " << fps << std::endl;
 
     /* Process events */
