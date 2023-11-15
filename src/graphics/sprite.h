@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -24,51 +24,52 @@
 #ifndef UR_SPRITE_H
 #define UR_SPRITE_H
 
+#include "ur.h"
+#include <SDL.h>
+#include <iostream>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <SDL.h>
-#include "ur.h"
 
 #include "graphics/layer.h"
 
 namespace ur {
 
-class Sprite
-{
+class Sprite {
 public:
   // class constructor
-  Sprite (std::string spriteBMPFilename, SDL_Renderer * renderer);
+  Sprite(std::string spriteBMPFilename, SDL_Renderer *renderer);
   // class destructor
-  ~Sprite ();
+  ~Sprite();
 
   /* this is all of the sprite data in a giant texture.  Read docs/sprite.txt
    * for more info
    */
   SDL_Texture *spriteData;
 
-  /* the following are funcs that return SDL_Rects that point to the relevant area
-   * of the spriteData surface, depending upon the sprite type, and animation status.
+  /* the following are funcs that return SDL_Rects that point to the relevant
+   * area of the spriteData surface, depending upon the sprite type, and
+   * animation status.
    */
 
-  SDL_Rect getPotrait ();
-  void advanceAnimation ();
+  SDL_Rect getPotrait();
+  void advanceAnimation();
   UR_DIRECTION_ENUM currentDir;
   UR_ANIM_ENUM currentAnim;
-  void drawToScreen (SDL_Renderer * renderer, SDL_Rect screenGeom);
+  void drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
 
   /* These are updated automatically by the parent Object.  Don't bother
    * changing them from this scope.
    */
   Sint64 xpos, ypos;
+
 private:
   Sint64 animationPhase;
-  SDL_Rect *getAnim (UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType);
+  SDL_Rect *getAnim(UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType);
 };
 
-}
+} // namespace ur
 
 #endif // UR_SPRITE_H

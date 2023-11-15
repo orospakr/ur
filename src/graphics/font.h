@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -23,35 +23,33 @@
 #ifndef UR_FONT_H
 #define UR_FONT_H
 
+#include "ur.h"
+#include <SDL.h>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <SDL.h>
-#include "ur.h"
 
-namespace ur
-{
+namespace ur {
 
-  class Font
-  {
-  public:
-    // class constructor
-    Font(std::string basedir, SDL_Renderer *renderer);
-    // class destructor
-    ~Font();
-    void printTextToSurface(SDL_Renderer * renderer, std::string text,
-                            UR_FONT_ENUM whichFont, SDL_Point destPos,
-                            SDL_Color textColor);
+class Font {
+public:
+  // class constructor
+  Font(std::string basedir, SDL_Renderer *renderer);
+  // class destructor
+  ~Font();
+  void printTextToSurface(SDL_Renderer *renderer, std::string text,
+                          UR_FONT_ENUM whichFont, SDL_Point destPos,
+                          SDL_Color textColor);
 
-  private:
-    SDL_Texture *bigFont;
-    SDL_Texture *textFont;
-    Sint64 char2ascii(char input);
-  };
+private:
+  SDL_Texture *bigFont;
+  SDL_Texture *textFont;
+  Sint64 char2ascii(char input);
+};
 
-}
+} // namespace ur
 
 #endif // UR_FONT_H

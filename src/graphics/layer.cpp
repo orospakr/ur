@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -18,185 +18,160 @@
 
 #include "graphics/layer.h" // class's header file
 
-namespace ur
-{
+namespace ur {
 
-  // class constructor
-  Layer::Layer(std::string layerPath, UR_LAYER_ENUM position,
-               bool transparent, SDL_Texture *tileset,
-               SDL_Renderer *renderer, Object **objPile)
-  {
-    tilepile = tileset;
-    objects = objPile;
-    tilesAnimPos = 0;
+// class constructor
+Layer::Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
+             SDL_Texture *tileset, SDL_Renderer *renderer, Object **objPile) {
+  tilepile = tileset;
+  objects = objPile;
+  tilesAnimPos = 0;
 
-    /* Now we need to load up the map (the array of ints called floorMap) */
-    std::string agmFilename; // graphic map filename
-    std::string apmFilename; // physical map filename
-    switch (position)
-    {
-    case urLayerA:
-      agmFilename = "layerA.agm";
-      apmFilename = "layerA.apm";
-      break;
-    case urLayerB:
-      agmFilename = "layerB.agm";
-      apmFilename = "layerB.apm";
-      break;
-    case urLayerC:
-      agmFilename = "layerC.agm";
-      apmFilename = "layerC.apm";
-      break;
-    }
-    /* Now we need to load up the two maps...
-     */
-    loadLayerMap(layerPath + agmFilename, layerPath + apmFilename);
+  /* Now we need to load up the map (the array of ints called floorMap) */
+  std::string agmFilename; // graphic map filename
+  std::string apmFilename; // physical map filename
+  switch (position) {
+  case urLayerA:
+    agmFilename = "layerA.agm";
+    apmFilename = "layerA.apm";
+    break;
+  case urLayerB:
+    agmFilename = "layerB.agm";
+    apmFilename = "layerB.apm";
+    break;
+  case urLayerC:
+    agmFilename = "layerC.agm";
+    apmFilename = "layerC.apm";
+    break;
   }
-
-  // class destructor
-  Layer::~Layer()
-  {
-  }
-
-  /*
-   * Load up a floormap.  Floormaps are used to determine
-   * the way that the engine should react to different
-   * floor styles on the map, and to draw the map's surface
+  /* Now we need to load up the two maps...
    */
-  Sint64
-  Layer::loadLayerMap(std::string agmFilename, std::string apmFilename)
-  {
-    std::ifstream loadReader; /* This object is used to load up the map matrix
-                               */
-    /* This code loads up the agm */
-    loadReader.open((agmFilename).c_str(), std::ifstream::in);
-    if (!loadReader.good())
-    {
-      std::cout << "!! Unable to open graphical map definition file (agm)." << std::endl << 
-        "   Filename was "  << agmFilename << std::endl;
-      exit(1); // call system to stop
-    }
-    for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
-    {
-      for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
-      {
-        char *c_str_buf = new char[5];
-        loadReader.getline(c_str_buf, 5, ',');
-        floorGraphicalMap[xcounter][ycounter] = atoi(c_str_buf);
-        delete[] c_str_buf;
-      }
-    }
-    loadReader.close();
-
-    /* This code loads up the apm */
-    loadReader.open((apmFilename).c_str(), std::ifstream::in);
-    if (!loadReader.good())
-    {
-      std::cout << "!! Unable to open physical map definition file (apm)." << std::endl << 
-        "   Filename was "  << apmFilename << std::endl;
-      exit(1); // call system to stop
-    }
-    for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
-    {
-      for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
-      {
-        char *c_str_buf = new char[5];
-        loadReader.getline(c_str_buf, 5, ',');
-        floorPhysicalMap[xcounter][ycounter] = atoi(c_str_buf);
-        delete[] c_str_buf;
-      }
-    }
-    loadReader.close();
-    return 0;
-  }
-
-  Sint64
-  Layer::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom)
-  {
-    Sint64 beginY = screenGeom.y / 32;
-    Sint64 endY = beginY + (SCREEN_HEIGHT / 32);
-    Sint64 beginX = screenGeom.x / 32;
-    Sint64 endX = beginX + (SCREEN_WIDTH / 32);
-
-    endX += 2; // these two are there just so it overlaps and there's no blockiness at the right and bottom edges
-    endY += 2;
-
-    // std::cout << screenGeom.w/32 << std::endl << screenGeom.h/32 << std::endl << std::endl;
-    for (Sint64 ycounter = beginY; ycounter < endY; ycounter++)
-    {
-      for (Sint64 xcounter = beginX; xcounter < endX; xcounter++)
-      {
-        SDL_Rect *srcRect;
-        SDL_Rect *dstRect;
-        srcRect = getTileSrcCoord(floorGraphicalMap[xcounter][ycounter]);
-        dstRect = getTileDestCoord(xcounter, ycounter);
-        // std::cout << "The requested tilepile blit's source coordinates and dimensions are: ";
-        // std::cout << " X origin: " << srcRect->x << " Y origin: " << srcRect->y << " Height: " << srcRect->h << " Width: " << srcRect->w << std::endl;
-        // std::cout << "The requested renderer destination coordinates and dimensions are: ";
-        // std::cout << " X origin: " << dstRect->x << " Y origin: " << dstRect->y << " Height: " << dstRect->h << " Width: " << dstRect->w << std::endl;
-        dstRect->x -= screenGeom.x;
-        dstRect->y -= screenGeom.y;
-        SDL_RenderCopy(renderer, tilepile, srcRect, dstRect);
-        delete srcRect;
-        delete dstRect;
-      }
-    }
-    return 0;
-  }
-
-  SDL_Rect *
-  Layer::getTileSrcCoord(Sint64 number)
-  {
-    SDL_Rect *result = new SDL_Rect;
-    result->h = TILE_HEIGHT;
-    result->w = TILE_WIDTH;
-    result->x = TILE_WIDTH * (number - 1);
-    result->y = TILE_HEIGHT * tilesAnimPos;
-    return result;
-  }
-
-  SDL_Rect *
-  Layer::getTileDestCoord(Sint64 x, Sint64 y)
-  {
-    SDL_Rect *result = new SDL_Rect;
-    result->h = TILE_HEIGHT;
-    result->w = TILE_WIDTH;
-    result->x = TILE_WIDTH * x;
-    result->y = TILE_HEIGHT * y;
-    return result;
-  }
-
-  void
-  Layer::quickAGMPrint()
-  {
-    for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
-    {
-      for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
-      {
-        std::cout << floorGraphicalMap[xcounter][ycounter];
-      }
-      std::cout << "\n";
-    }
-  }
-
-  void
-  Layer::quickAPMPrint()
-  {
-    for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++)
-    {
-      for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++)
-      {
-        std::cout << floorPhysicalMap[xcounter][ycounter];
-      }
-      std::cout << "\n";
-    }
-  }
-
-  Sint64
-  Layer::run()
-  {
-    tilesAnimPos = SDL_GetTicks() / 33 / 3 % 8;
-    return 0;
-  }
-
+  loadLayerMap(layerPath + agmFilename, layerPath + apmFilename);
 }
+
+// class destructor
+Layer::~Layer() {}
+
+/*
+ * Load up a floormap.  Floormaps are used to determine
+ * the way that the engine should react to different
+ * floor styles on the map, and to draw the map's surface
+ */
+Sint64 Layer::loadLayerMap(std::string agmFilename, std::string apmFilename) {
+  std::ifstream loadReader; /* This object is used to load up the map matrix
+                             */
+  /* This code loads up the agm */
+  loadReader.open((agmFilename).c_str(), std::ifstream::in);
+  if (!loadReader.good()) {
+    std::cout << "!! Unable to open graphical map definition file (agm)."
+              << std::endl
+              << "   Filename was " << agmFilename << std::endl;
+    exit(1); // call system to stop
+  }
+  for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++) {
+    for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++) {
+      char *c_str_buf = new char[5];
+      loadReader.getline(c_str_buf, 5, ',');
+      floorGraphicalMap[xcounter][ycounter] = atoi(c_str_buf);
+      delete[] c_str_buf;
+    }
+  }
+  loadReader.close();
+
+  /* This code loads up the apm */
+  loadReader.open((apmFilename).c_str(), std::ifstream::in);
+  if (!loadReader.good()) {
+    std::cout << "!! Unable to open physical map definition file (apm)."
+              << std::endl
+              << "   Filename was " << apmFilename << std::endl;
+    exit(1); // call system to stop
+  }
+  for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++) {
+    for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++) {
+      char *c_str_buf = new char[5];
+      loadReader.getline(c_str_buf, 5, ',');
+      floorPhysicalMap[xcounter][ycounter] = atoi(c_str_buf);
+      delete[] c_str_buf;
+    }
+  }
+  loadReader.close();
+  return 0;
+}
+
+Sint64 Layer::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom) {
+  Sint64 beginY = screenGeom.y / 32;
+  Sint64 endY = beginY + (SCREEN_HEIGHT / 32);
+  Sint64 beginX = screenGeom.x / 32;
+  Sint64 endX = beginX + (SCREEN_WIDTH / 32);
+
+  endX += 2; // these two are there just so it overlaps and there's no
+             // blockiness at the right and bottom edges
+  endY += 2;
+
+  // std::cout << screenGeom.w/32 << std::endl << screenGeom.h/32 << std::endl
+  // << std::endl;
+  for (Sint64 ycounter = beginY; ycounter < endY; ycounter++) {
+    for (Sint64 xcounter = beginX; xcounter < endX; xcounter++) {
+      SDL_Rect *srcRect;
+      SDL_Rect *dstRect;
+      srcRect = getTileSrcCoord(floorGraphicalMap[xcounter][ycounter]);
+      dstRect = getTileDestCoord(xcounter, ycounter);
+      // std::cout << "The requested tilepile blit's source coordinates and
+      // dimensions are: "; std::cout << " X origin: " << srcRect->x << " Y
+      // origin: " << srcRect->y << " Height: " << srcRect->h << " Width: " <<
+      // srcRect->w << std::endl; std::cout << "The requested renderer
+      // destination coordinates and dimensions are: "; std::cout << " X origin:
+      // " << dstRect->x << " Y origin: " << dstRect->y << " Height: " <<
+      // dstRect->h << " Width: " << dstRect->w << std::endl;
+      dstRect->x -= screenGeom.x;
+      dstRect->y -= screenGeom.y;
+      SDL_RenderCopy(renderer, tilepile, srcRect, dstRect);
+      delete srcRect;
+      delete dstRect;
+    }
+  }
+  return 0;
+}
+
+SDL_Rect *Layer::getTileSrcCoord(Sint64 number) {
+  SDL_Rect *result = new SDL_Rect;
+  result->h = TILE_HEIGHT;
+  result->w = TILE_WIDTH;
+  result->x = TILE_WIDTH * (number - 1);
+  result->y = TILE_HEIGHT * tilesAnimPos;
+  return result;
+}
+
+SDL_Rect *Layer::getTileDestCoord(Sint64 x, Sint64 y) {
+  SDL_Rect *result = new SDL_Rect;
+  result->h = TILE_HEIGHT;
+  result->w = TILE_WIDTH;
+  result->x = TILE_WIDTH * x;
+  result->y = TILE_HEIGHT * y;
+  return result;
+}
+
+void Layer::quickAGMPrint() {
+  for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++) {
+    for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++) {
+      std::cout << floorGraphicalMap[xcounter][ycounter];
+    }
+    std::cout << "\n";
+  }
+}
+
+void Layer::quickAPMPrint() {
+  for (Sint64 ycounter = 0; ycounter < MAP_HEIGHT; ycounter++) {
+    for (Sint64 xcounter = 0; xcounter < MAP_WIDTH; xcounter++) {
+      std::cout << floorPhysicalMap[xcounter][ycounter];
+    }
+    std::cout << "\n";
+  }
+}
+
+Sint64 Layer::run() {
+  tilesAnimPos = SDL_GetTicks() / 33 / 3 % 8;
+  return 0;
+}
+
+} // namespace ur

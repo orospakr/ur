@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -19,70 +19,68 @@
 #ifndef UR_MAP_H
 #define UR_MAP_H
 
+#include "audio/audio.h"
+#include "game/object.h"
+#include "graphics/font.h"
+#include "graphics/layer.h"
+#include "ur.h"
+#include <SDL.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <SDL.h>
-#include "ur.h"
-#include "audio/audio.h"
-#include "graphics/font.h"
-#include "graphics/layer.h"
-#include "game/object.h"
 
-namespace ur
-{
+namespace ur {
 
-  /*
-   * A UR 'level.'  Contains all the layers, objects, characters, sprites,
-   * textures, etc.  It will render to an SDL_Surface if you ask it
-   * nicely.
+/*
+ * A UR 'level.'  Contains all the layers, objects, characters, sprites,
+ * textures, etc.  It will render to an SDL_Surface if you ask it
+ * nicely.
+ */
+
+class Map {
+public:
+  // class constructor
+  Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
+  // class destructor
+  ~Map();
+  std::string mapName;
+
+  /* screen size and current display position (the x and y vars can be
+   * bigger than the screen itself!) */
+  SDL_Rect screenGeom;
+
+  SDL_Texture *mapTileset;
+
+  Layer *layerA;
+  Layer *layerB;
+  Layer *layerC;
+
+  Object *player;
+
+  /* the object pile. (this is for all the layers!)
    */
+  Object **objects;
 
-  class Map
-  {
-  public:
-    // class constructor
-    Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
-    // class destructor
-    ~Map();
-    std::string mapName;
+  /**
+   * @brief Runs one cycle of updates for the map and all its objects.
+   */
+  Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer);
 
-    /* screen size and current display position (the x and y vars can be
-     * bigger than the screen itself!) */
-    SDL_Rect screenGeom;
+  /**
+   * @brief Renders the map to the screen.
+   */
+  void drawToScreen(SDL_Renderer *renderer);
 
-    SDL_Texture *mapTileset;
+private:
+  /* a pointer to the object that is the user's character
+   */
+  Object *playerCharacter;
+  Font *fontManager; // a pointer to the UR font manager
+  Audio *audioController;
+};
 
-    Layer *layerA;
-    Layer *layerB;
-    Layer *layerC;
-
-    Object *player;
-
-    /* the object pile. (this is for all the layers!)
-     */
-    Object **objects;
-
-    /**
-     * @brief Runs one cycle of updates for the map and all its objects.
-     */
-    Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer);
-
-    /**
-     * @brief Renders the map to the screen.
-     */
-    void drawToScreen(SDL_Renderer *renderer);
-
-  private:
-    /* a pointer to the object that is the user's character
-     */
-    Object *playerCharacter;
-    Font *fontManager; // a pointer to the UR font manager
-    Audio *audioController;
-  };
-
-}
+} // namespace ur
 
 #endif // UR_MAP_H

@@ -3,13 +3,13 @@
 /* A quick summary:
    UR is an RPG game for the GNU System, using SDL for multimedia I/O.  It is
    quite portable, requiring only the GNU System and the SDL library,
-   and should compile and run on X11(fb?)/GNU/Linux, Win32(mingw32 or perhaps cygwin),
-   Sony PS2(with GNU/Linux), and maybe even the Dreamcast. Endianess was in mind
-   during design and coding.  If you are using a PowerPC or other such machine,
-   and see anything that looks 'inverted' or 'backwards,' it is likely an endianness
-   bug (please email a bug report to bsdnerd@yahoo.ca!)  It is based
-   on the Archie/SatAM SonicVerse (roughly) as the game world.
-   Another issue seems to be memory issues, ie conflicts, leaks, uninitialisations...
+   and should compile and run on X11(fb?)/GNU/Linux, Win32(mingw32 or perhaps
+   cygwin), Sony PS2(with GNU/Linux), and maybe even the Dreamcast. Endianess
+   was in mind during design and coding.  If you are using a PowerPC or other
+   such machine, and see anything that looks 'inverted' or 'backwards,' it is
+   likely an endianness bug (please email a bug report to bsdnerd@yahoo.ca!)  It
+   is based on the Archie/SatAM SonicVerse (roughly) as the game world. Another
+   issue seems to be memory issues, ie conflicts, leaks, uninitialisations...
    please help me find these if you know C++! :)
    Game MODs should be fairly easy to write, as it will (eventually)
    utilise a a WAD-like file containing a directory structure with the
@@ -48,8 +48,9 @@
    (with in a suitable IC context, of course... the most common one being
    a door :P)
 
-   Also, there will be, perhaps, a third map which defines arguments for the physical
-   map blocks.  Such as, which level to jump to when you enter a jump block.
+   Also, there will be, perhaps, a third map which defines arguments for the
+   physical map blocks.  Such as, which level to jump to when you enter a jump
+   block.
 
    The way you will interact with other characters will be by
    'text referencing'.  Each char in the map has an array of words to
@@ -60,15 +61,15 @@
    There will also be default 'look' and 'name' responses built in, and perhaps
    'buy' and 'sell' if that particular character supports that.
 
-   It is (mostly) object oriented.  ( I bet some OOP diehards will look at this code
-   and keel over dead, tho... >.> )
+   It is (mostly) object oriented.  ( I bet some OOP diehards will look at this
+   code and keel over dead, tho... >.> )
 */
 
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -82,11 +83,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <algorithm>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <iostream>
-#include <algorithm>
 
 #define SDL_MAIN_HANDLED 1
 
@@ -94,12 +95,12 @@
 
 #include "ur.h"
 
-#include "graphics/font.h"
-#include "ui/titlescreen.h"
+#include "game/map.h"
 #include "game/object.h"
+#include "graphics/font.h"
 #include "graphics/layer.h"
 #include "ui/menu.h"
-#include "game/map.h"
+#include "ui/titlescreen.h"
 
 /**
  * SDL window.
@@ -111,9 +112,9 @@ SDL_Window *sdlWindow;
  */
 SDL_Renderer *sdlRenderer;
 
-/* this is an instantiation of the game itself, including the primary maps... this thing
-   contains all of the layers, objects, sprites, and everything else that make up the
-   currently loaded location in the game world
+/* this is an instantiation of the game itself, including the primary maps...
+   this thing contains all of the layers, objects, sprites, and everything else
+   that make up the currently loaded location in the game world
 */
 ur::Map *map = NULL;
 
@@ -123,8 +124,8 @@ ur::Font *fontManager = NULL;
 /* The title screen */
 ur::Titlescreen *titleScreen = NULL;
 
-/* this is the menuing subsystem.  The main game loop switches between this and the Map
-   accordingly.
+/* this is the menuing subsystem.  The main game loop switches between this and
+   the Map accordingly.
 */
 ur::Menu *menu = NULL;
 
@@ -136,11 +137,10 @@ ur::Audio *audioManager = NULL;
  */
 static Uint32 lastTime = 0;
 
-void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput, bool down)
-{
+void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput,
+                    bool down) {
   ur::UR_KEYPAD_ENUM result;
-  switch ((*sdlevents).key.keysym.sym)
-  {
+  switch ((*sdlevents).key.keysym.sym) {
   case SDLK_LEFT:
     currentInput->left = down;
     break;
@@ -167,45 +167,26 @@ void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput, bool down)
   }
 }
 
-ur::UR_DIRECTION_ENUM
-keyToDirection(ur::UR_INPUT keypress)
-{
+ur::UR_DIRECTION_ENUM keyToDirection(ur::UR_INPUT keypress) {
   ur::UR_DIRECTION_ENUM result;
 
-  if (keypress.up && keypress.right)
-  {
+  if (keypress.up && keypress.right) {
     result = ur::urDirNorthEast;
-  }
-  else if (keypress.up && keypress.left)
-  {
+  } else if (keypress.up && keypress.left) {
     result = ur::urDirNorthWest;
-  }
-  else if (keypress.down && keypress.right)
-  {
+  } else if (keypress.down && keypress.right) {
     result = ur::urDirSouthEast;
-  }
-  else if (keypress.down && keypress.left)
-  {
+  } else if (keypress.down && keypress.left) {
     result = ur::urDirSouthWest;
-  }
-  else if (keypress.up)
-  {
+  } else if (keypress.up) {
     result = ur::urDirNorth;
-  }
-  else if (keypress.down)
-  {
+  } else if (keypress.down) {
     result = ur::urDirSouth;
-  }
-  else if (keypress.left)
-  {
+  } else if (keypress.left) {
     result = ur::urDirWest;
-  }
-  else if (keypress.right)
-  {
+  } else if (keypress.right) {
     result = ur::urDirEast;
-  }
-  else
-  {
+  } else {
     result = ur::urDirNone;
   }
   return result;
@@ -213,21 +194,19 @@ keyToDirection(ur::UR_INPUT keypress)
 
 /* Primary start up routine, gets things warmed up and online... Hey, you gotta
    start somewhere. n.~ */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   char *msg;
   Sint64 done;
   std::cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
   std::cout << "    " << REVISION_EDITION << std::endl;
-  std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR << "."
-            << REVISION_MICRO << std::endl
+  std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR
+            << "." << REVISION_MICRO << std::endl
             << std::endl;
   printf("Initialising SDL... ");
   /* Initialize SDL */
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-  {
-   // sprintf(msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
-   // std::cout << msg;
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+    // sprintf(msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
+    // std::cout << msg;
     free(msg);
     exit(1);
   }
@@ -239,20 +218,21 @@ int main(int argc, char *argv[])
   //                      SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 
   sdlWindow = SDL_CreateWindow("Usurper's Retribution", SDL_WINDOWPOS_UNDEFINED,
-                               SDL_WINDOWPOS_UNDEFINED, 800,
-                               600, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                               SDL_WINDOWPOS_UNDEFINED, 800, 600,
+                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
-  if (sdlWindow == NULL)
-  {
+  if (sdlWindow == NULL) {
     std::cout << "!! Could not create window: " << SDL_GetError() << std::endl;
     exit(1);
   }
 
-  // Using software rendering for now because otherwise (at least on macOS with metal) there are subpixel rendering issues.
-  sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
-  if (sdlRenderer == NULL)
-  {
-    std::cout << "!! Could not create renderer: " << SDL_GetError() << std::endl;
+  // Using software rendering for now because otherwise (at least on macOS with
+  // metal) there are subpixel rendering issues.
+  sdlRenderer = SDL_CreateRenderer(
+      sdlWindow, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
+  if (sdlRenderer == NULL) {
+    std::cout << "!! Could not create renderer: " << SDL_GetError()
+              << std::endl;
     exit(1);
   }
 
@@ -262,7 +242,8 @@ int main(int argc, char *argv[])
   SDL_RenderPresent(sdlRenderer);
 
   // our logical display size is 640x480, use GPU scaling to scale it up.
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // nearest-neighbor scaling for sharp pixel art.
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,
+              "linear"); // nearest-neighbor scaling for sharp pixel art.
   SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
   printf("DONE.\nDisplaying startup logo... ");
@@ -277,7 +258,8 @@ int main(int argc, char *argv[])
   // display the startup logos
   SDL_Surface *logoLoader;
   logoLoader = SDL_LoadBMP("data/logo_ld.bmp");
-  SDL_Texture *logoTexture = SDL_CreateTextureFromSurface(sdlRenderer, logoLoader);
+  SDL_Texture *logoTexture =
+      SDL_CreateTextureFromSurface(sdlRenderer, logoLoader);
   SDL_FreeSurface(logoLoader);
   SDL_RenderCopy(sdlRenderer, logoTexture, NULL, NULL);
 
@@ -300,7 +282,8 @@ int main(int argc, char *argv[])
   printf("DONE.\nStarting the engine... ");
 
   /* Start instantiating the game itself */
-  titleScreen = new ur::Titlescreen("data/", sdlRenderer, fontManager, audioManager);
+  titleScreen =
+      new ur::Titlescreen("data/", sdlRenderer, fontManager, audioManager);
 
   menu = new ur::Menu();
 
@@ -321,8 +304,7 @@ int main(int argc, char *argv[])
   static Uint32 accumulator = 0;
 
   /* primary game loop! */
-  while (!done)
-  {
+  while (!done) {
     // get current time in ms
     Uint32 currentTime = SDL_GetTicks();
     // calculate time since last iteration
@@ -338,12 +320,10 @@ int main(int argc, char *argv[])
     // std::cout << "FPS: " << fps << std::endl;
 
     /* Process events */
-    while (SDL_PollEvent(&event))
-    {
-      // I can change this to handle multiple keypresses at once by mutating a struct
-      // or bitmask. Track SDL_KEYDOWN to clear them.
-      switch (event.type)
-      {
+    while (SDL_PollEvent(&event)) {
+      // I can change this to handle multiple keypresses at once by mutating a
+      // struct or bitmask. Track SDL_KEYDOWN to clear them.
+      switch (event.type) {
       case SDL_KEYDOWN:
         /* this bit puts the user's interactions in currentInput for relaying
          * to the proper subsystem
@@ -362,15 +342,13 @@ int main(int argc, char *argv[])
         break;
       }
     }
-    switch (status)
-    {
+    switch (status) {
     case ur::urGameState_Quit:
       done = 1;
       break;
     case ur::urGameState_InGame:
       // run physics and game logic at timeStep rate.
-      while (accumulator >= timeStep)
-      {
+      while (accumulator >= timeStep) {
         float interpolationFactor = accumulator / timeStep;
 
         // run the game logic
@@ -390,8 +368,7 @@ int main(int argc, char *argv[])
       SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
       SDL_RenderClear(sdlRenderer);
       titleResult = titleScreen->run(currentInput, sdlRenderer);
-      if (titleResult == 0)
-      {
+      if (titleResult == 0) {
         map = new ur::Map("kv", sdlRenderer, fontManager, audioManager);
         status = ur::urGameState_InGame;
       }

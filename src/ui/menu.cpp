@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -18,19 +18,16 @@
 
 #include "menu.h" // class's header file
 
-namespace ur
-{
+namespace ur {
 
-  // class constructor
-  Menu::Menu()
-  {
-    // insert your code here
-  }
-
-  // class destructor
-  Menu::~Menu()
-  {
-    // insert your code here
-  }
-
+// class constructor
+Menu::Menu() {
+  // insert your code here
 }
+
+// class destructor
+Menu::~Menu() {
+  // insert your code here
+}
+
+} // namespace ur

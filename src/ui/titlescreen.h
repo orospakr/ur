@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -19,44 +19,41 @@
 #ifndef UR_TITLESCREEN_H
 #define UR_TITLESCREEN_H
 
+#include "audio/audio.h"
+#include "game/map.h"
+#include "graphics/font.h"
+#include "ur.h"
+#include <SDL.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <SDL.h>
-#include "ur.h"
-#include "audio/audio.h"
-#include "game/map.h"
-#include "graphics/font.h"
 
-namespace ur
-{
+namespace ur {
 
-  /*
-   * The title screen class.
+/*
+ * The title screen class.
+ */
+class Titlescreen {
+public:
+  // class constructor
+  Titlescreen(std::string basedir, SDL_Renderer *renderer, Font *fonts,
+              Audio *audio);
+  // class destructor
+  ~Titlescreen();
+  /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the
+   *game should begin , otherwise just run it again.
    */
-  class Titlescreen
-  {
-  public:
-    // class constructor
-    Titlescreen(std::string basedir,
-                SDL_Renderer *renderer,
-                Font *fonts, Audio *audio);
-    // class destructor
-    ~Titlescreen();
-    /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the game should begin
-     *, otherwise just run it again.
-     */
-    Sint64 run(UR_INPUT keystate, SDL_Renderer *renderer);
+  Sint64 run(UR_INPUT keystate, SDL_Renderer *renderer);
 
-  private:
-    SDL_Texture *titleGraphic;
-    Font *fontManager;
-    std::string scrollerText;
-    Audio *audioManager;
-  };
+private:
+  SDL_Texture *titleGraphic;
+  Font *fontManager;
+  std::string scrollerText;
+  Audio *audioManager;
+};
 
-}
+} // namespace ur
 
 #endif // UR_TITLESCREEN_H

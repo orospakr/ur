@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -18,30 +18,28 @@
 
 #ifndef UR_MENU_H
 #define UR_MENU_H
+#include "ur.h"
+#include <SDL.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <SDL.h>
-#include "ur.h"
 
-namespace ur
-{
+namespace ur {
 
-  /*
-   * The menuing system... starts the game, displays configuration
-   * menus...  should hopefully be available during game play soon...
-   */
-  class Menu
-  {
-  public:
-    // class constructor
-    Menu();
-    // class destructor
-    ~Menu();
-  };
+/*
+ * The menuing system... starts the game, displays configuration
+ * menus...  should hopefully be available during game play soon...
+ */
+class Menu {
+public:
+  // class constructor
+  Menu();
+  // class destructor
+  ~Menu();
+};
 
-}
+} // namespace ur
 
 #endif // UR_MENU_H

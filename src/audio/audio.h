@@ -1,8 +1,8 @@
 /*
     This file is part of Usurper's Retribution.
 
-    Usurper's Retribution is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    Usurper's Retribution is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -18,59 +18,58 @@
 #ifndef UR_AUDIO_H
 #define UR_AUDIO_H
 
+#include "ur.h"
+#include <SDL.h>
+#include <fstream>
+#include <iostream>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <sys/stat.h>
 #include <string>
+#include <sys/stat.h>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <SDL.h>
-#include "ur.h"
 
 // include openmpt header
 #include "libopenmpt/libopenmpt.hpp"
 
-namespace ur
-{
+namespace ur {
 
-  class Audio
-  {
-  public:
-    /**
-     * @brief Construct the audio manager. Note will block synchronously as it loads all content.
-     *
-     */
-    Audio();
-    void audio_callback(Uint8 *stream, int len);
+class Audio {
+public:
+  /**
+   * @brief Construct the audio manager. Note will block synchronously as it
+   * loads all content.
+   *
+   */
+  Audio();
+  void audio_callback(Uint8 *stream, int len);
 
-    void pushBGM(std::string name);
-    void popBGM();
+  void pushBGM(std::string name);
+  void popBGM();
 
-    Uint16 VUmeterL;
-    Uint16 VUmeterR;
+  Uint16 VUmeterL;
+  Uint16 VUmeterR;
 
-    ~Audio();
+  ~Audio();
 
-  private:
-    void load_music(std::string name);
-    void unload_music();
-    void change_music(std::string name);
-    SDL_AudioSpec *obtained_audio_spec;
+private:
+  void load_music(std::string name);
+  void unload_music();
+  void change_music(std::string name);
+  SDL_AudioSpec *obtained_audio_spec;
 
-    // a map of filenames to loaded openmpt modules
-    std::map<std::string, openmpt::module *> modules;
+  // a map of filenames to loaded openmpt modules
+  std::map<std::string, openmpt::module *> modules;
 
-    std::string *BGMstack;
+  std::string *BGMstack;
 
-    Uint8 BGMstack_ptr;
+  Uint8 BGMstack_ptr;
 
-    // codec specific variables
+  // codec specific variables
 
-    // a loaded openmpt module
-    openmpt::module *currentMOD;
-  };
-}
+  // a loaded openmpt module
+  openmpt::module *currentMOD;
+};
+} // namespace ur
 
 #endif // UR_AUDIO_H
