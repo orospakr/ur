@@ -36,7 +36,7 @@ namespace ur
     areaInfluence.h = TILE_HEIGHT;
     areaInfluence.x = xpos;
     areaInfluence.y = ypos;
-    bossLayer = hostLayer;
+    hostLayer = hostLayer;
     dead = false;
     char *loadBuffer = new char[2048];
     name = objectName;
@@ -222,7 +222,7 @@ namespace ur
     Sint64 futureY = ypos + yvel;
     Sint64 futureBlock;
     futureBlock =
-        bossLayer->floorPhysicalMap[(futureX + 15) / TILE_WIDTH][(futureY + 25) /
+        hostLayer->floorPhysicalMap[(futureX + 15) / TILE_WIDTH][(futureY + 25) /
                                                                  TILE_HEIGHT];
     switch (futureBlock)
     {
@@ -273,23 +273,23 @@ namespace ur
     // all that shiziat done, we now need to check for collisions...
     for (Sint64 counter = 0; counter < MAX_OBJS; counter++)
     {
-      if (bossLayer->objects[counter] == this)
+      if (hostLayer->objects[counter] == this)
         continue;                      // I don't want to bother with this one... it's me!
-      if (bossLayer->objects[counter]) // do the following if this object is not NULL
+      if (hostLayer->objects[counter]) // do the following if this object is not NULL
       {
         // std::cout << "Object #" << counter << " was not null.\n";
         bool xInRange = false;
         bool yInRange = false;
 
-        Sint64 xNearBound = bossLayer->objects[counter]->areaInfluence.x;
-        Sint64 xFarBound = xNearBound + bossLayer->objects[counter]->areaInfluence.w;
+        Sint64 xNearBound = hostLayer->objects[counter]->areaInfluence.x;
+        Sint64 xFarBound = xNearBound + hostLayer->objects[counter]->areaInfluence.w;
         // std::cout << xNearBound << std::endl;
         // std::cout << xFarBound << std::endl;
 
         // std::cout << bossLayer->objects[counter]->areaInfluence.x << std::endl;
 
-        Sint64 yNearBound = bossLayer->objects[counter]->areaInfluence.y;
-        Sint64 yFarBound = yNearBound + bossLayer->objects[counter]->areaInfluence.h;
+        Sint64 yNearBound = hostLayer->objects[counter]->areaInfluence.y;
+        Sint64 yFarBound = yNearBound + hostLayer->objects[counter]->areaInfluence.h;
 
         if ((xpos > xNearBound) && (xpos < xFarBound))
         {
@@ -306,7 +306,7 @@ namespace ur
         {
           std::cout << "We've hit some shiziat!!\n";
           dead = true;
-          collision(bossLayer->objects[counter]);
+          collision(hostLayer->objects[counter]);
         }
         // we've hit something!!
       }

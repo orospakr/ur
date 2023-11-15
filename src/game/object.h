@@ -132,7 +132,7 @@ namespace ur
     Sint64 affect_push(UR_DIRECTION_ENUM sourceDirection);
 
   private:
-    Layer *bossLayer;
+    Layer *hostLayer;
   };
 
 }
