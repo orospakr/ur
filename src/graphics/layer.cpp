@@ -17,6 +17,8 @@
 */
 
 #include "graphics/layer.h" // class's header file
+#include "layer.h"
+#include "agm.pb.h"
 
 namespace ur {
 
@@ -46,11 +48,28 @@ Layer::Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
   }
   /* Now we need to load up the two maps...
    */
-  loadLayerMap(layerPath + agmFilename, layerPath + apmFilename);
+  loadLayerMapFromProto(layerPath + agmFilename, layerPath + apmFilename);
 }
 
 // class destructor
 Layer::~Layer() {}
+
+Sint64 Layer::loadLayerMapFromProto(std::string agmFilename, std::string apmFilename) {
+  // load entire file into protobuf AGM class
+  std::ifstream input(agmFilename, std::ios::in | std::ios::binary);
+  if (!input) {
+    std::cerr << agmFilename << "!! Unable to open graphical map definition file (agm)"
+              << std::endl;
+    return 1;
+  }
+  AGM agm;
+  if (!agm.ParseFromIstream(&input)) {
+    std::cerr << "!! Unable to parse graphical map definition file (" << agmFilename << ") because: "
+              << agm.InitializationErrorString() << std::endl;
+
+    return 1;
+  }
+}
 
 /*
  * Load up a floormap.  Floormaps are used to determine
@@ -63,7 +82,7 @@ Sint64 Layer::loadLayerMap(std::string agmFilename, std::string apmFilename) {
   /* This code loads up the agm */
   loadReader.open((agmFilename).c_str(), std::ifstream::in);
   if (!loadReader.good()) {
-    std::cout << "!! Unable to open graphical map definition file (agm)."
+    std::cerr << "!! Unable to open graphical map definition file (agm)."
               << std::endl
               << "   Filename was " << agmFilename << std::endl;
     exit(1); // call system to stop

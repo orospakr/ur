@@ -59,6 +59,8 @@ public:
   // class destructor
   ~Layer();
 
+
+
   /* The object stack for the parent map */
   Object **objects;
 
@@ -94,6 +96,14 @@ private:
    * blitting a tile from the tilepile
    */
   SDL_Rect *getTileDestCoord(Sint64 x, Sint64 y);
+
+  /* Loads up the floormaps using protobuf.  Floormaps are used to determine
+   * the way that the engine should react to different
+   * floor styles on the map, and to graphically draw the map.
+   * The two map types are Acorn Graphical Map (agm) and Acorn
+   * Physical Map (apm).
+   */
+  Sint64 loadLayerMapFromProto(std::string agmFilename, std::string apmFilename);
 
   /* Loads up the floormaps.  Floormaps are used to determine
    * the way that the engine should react to different

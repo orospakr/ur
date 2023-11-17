@@ -1,15 +1,20 @@
--- find and fix memory leaks and uninitialised/allocated props and objects
+- replace APM/AGM with protobuf?
 
--- implement more 'intelligent' APM implementation that checks for nearby walls, etc.
+- quick map editor UI. too bad can't assume WinUI
 
--- perhaps design and implement "mapmods" so a map can have different versions of its APM and AGM, and object placement maps.
+- fix 
 
--- object placement maps
+- find and fix memory leaks and uninitialised/allocated props and objects
 
--- menuing subsystem (ur_menu)
+- implement more 'intelligent' APM implementation that checks for nearby walls, etc.
 
--- atmosphere class
+- perhaps design and implement "mapmods" so a map can have different versions of its APM and AGM, and object placement maps.
 
--- and finally, map state loading and saving
+- object placement maps
 
--- AudioDrive
+- menuing subsystem (ur_menu)
+
+- atmosphere class
+
+- and finally, map state loading and saving
+

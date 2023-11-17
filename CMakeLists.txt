@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define the executable
-add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/layer.cpp src/graphics/sprite.cpp)
+add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/layer.cpp src/graphics/sprite.cpp src/proto/agm.pb.cc)
 
 # SDL:
 find_package(SDL2 REQUIRED)
@@ -55,8 +55,34 @@ else()
     target_link_libraries(ur PkgConfig::OPENMPT)
 endif()
 
+
+# So, to handle protobuf correctly, we have to do a bit of a hack.
+# Background: cmake bundles FindProtobuf.cmake, which is used to find and also includes
+# tooling for protobuf. Howver, upstream Protobuf has since added a transitive dependency
+# on Abseil/ABSL.  So, when actually linking against protobuf at link time, we need to use
+# the package's own cmake and ignore cmake's bundled FindProtobuf.cmake.  However, we still
+# need tha latter to build our protos.
+
+
+# first, find the package/upstream of protobuf's recipe, and use that for
+# includes/linking:
+find_package(Protobuf CONFIG REQUIRED)
+if(Protobuf_FOUND)
+    target_link_libraries(ur protobuf::libprotobuf)
+endif()
+
+# #  Now, built-in FindCmake to build the protos:
+# find_package(Protobuf REQUIRED)
+
+# # Build protos:
+# protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS proto/agm.proto)
+# message(STATUS "PROTO_SRCS = ${PROTO_SRCS}")
+# message(STATUS "PROTO_HDRS = ${PROTO_HDRS}")
+# target_sources(ur PRIVATE ${PROTO_SRCS})
+# target_include_directories(ur PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 # Include directories
-include_directories(src src/audio src/graphics src/ui)
+include_directories(src src/audio src/graphics src/ui src/proto)
 
 # Add subdirectory
 add_subdirectory(src)

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+message TileType {
+    string title = 1;
+
+    /// The (column) index in tiles bitmap
+    int32 graphicIndex = 2;
+
+    bool solid = 3;
+}
+
+message MapLayer {
+    // 2d matrix of tiles, row-major order
+    repeated int32 tiles = 5;
+}
+
+/// Usurper's Retribution AGM 2 data file format.
+message AGM {
+    string title = 1;
+    repeated TileType tileTypes = 2;
+
+    int32 width = 3;
+    int32 height = 4;
+
+    repeated MapLayer layers = 5;
+}
+
+// TODO: tile types to indirect graphics tile selection from tile properties
+// (such as solid or not). This replaces the "APM" model.
