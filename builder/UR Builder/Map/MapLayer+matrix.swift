@@ -13,4 +13,10 @@ extension MapLayer {
         let index = (y * width) + x
         return Int(self.tiles[index])
     }
+    
+    /// Set the given tile to a given tiletype index. Width is the stride, in row major-order.
+    mutating func setTileAt(width: Int, x: Int, y: Int, tileTypeIndex: Int) {
+        let index = (y * width) + x
+        self.tiles[index] = Int32(tileTypeIndex)
+    }
 }

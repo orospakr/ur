@@ -13,4 +13,7 @@ class EditorState: ObservableObject {
     
     /// Layers currently disabled from rendering
     @Published var disabledLayers: Set<Int> = []
+    
+    /// Currently selected tile type
+    @Published var activeTileType: Int? = nil
 }

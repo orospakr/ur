@@ -24,10 +24,18 @@ struct ExplorerView: View {
     
     var tileTypeExplorer: some View {
         List {
-            ForEach(Array(tileTypes.enumerated()), id: \.offset) { _, tileType in
+            ForEach(Array(tileTypes.enumerated()), id: \.offset) { idx, tileType in
                 HStack {
                     Image(nsImage: tileset.tiles[Int(tileType.graphicIndex)].previewImage)
                     Text(tileType.title)
+                }.background(
+                    editorState.activeTileType == idx ? Color.accentColor : Color.clear
+                ).onTapGesture {
+                    if (editorState.activeTileType == idx) {
+                        editorState.activeTileType = nil
+                    } else {
+                        editorState.activeTileType = idx
+                    }
                 }
             }
         }
@@ -46,9 +54,17 @@ struct ExplorerView: View {
                             editorState.disabledLayers.insert(idx)
                         }
                     })) {
-                        Text("Layer \(idx + 1)")
+                        Text("Layer \(idx + 1)").onTapGesture {
+                            if (editorState.activeLayer == idx) {
+                                editorState.activeLayer = nil
+                            } else {
+                                editorState.activeLayer = idx
+                            }
+                        }
                     }
-                }
+                }.background(
+                    editorState.activeLayer == idx ? Color.accentColor : Color.clear
+                )
             }
         }
     }
