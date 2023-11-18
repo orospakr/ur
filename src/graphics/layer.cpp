@@ -48,7 +48,7 @@ Layer::Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
   }
   /* Now we need to load up the two maps...
    */
-  loadLayerMapFromProto(layerPath + agmFilename, layerPath + apmFilename);
+  loadLayerMap(layerPath + agmFilename, layerPath + apmFilename);
 }
 
 // class destructor
