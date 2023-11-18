@@ -10,6 +10,7 @@ import os.log
 
 struct ContentView: View {
     @Binding var document: URMapDocument
+    @StateObject var editorState: EditorState = EditorState()
     
     var body: some View {
         NavigationView {
@@ -22,39 +23,14 @@ struct ContentView: View {
     }
     
     var explorer: some View {
-        TabView {
-            tileTypeExplorer.tabItem { Text("Tiles") }
-            layerExplorer.tabItem { Text("Layers") }
-        }
-        
-    }
-    
-    var tileTypeExplorer: some View {
-        List {
-            ForEach(Array(document.state.tileTypes.enumerated()), id: \.offset) { _, tileType in
-                HStack {
-                    Image(nsImage: document.tileset.tiles[Int(tileType.graphicIndex)].previewImage)
-                    Text(tileType.title)
-                }
-            }
-        }
-    }
-    
-    var layerExplorer: some View {
-        List {
-            ForEach(Array(document.state.layers.enumerated()), id: \.offset) { idx, layer in
-                HStack {
-                    Text("Layer \(idx + 1)")
-                }
-            }
-        }
+        ExplorerView(tileset: document.tileset, editorState: self.editorState, tileTypes: $document.state.tileTypes, layers: $document.state.layers)
     }
     
     var canvas: some View {
         VStack {
             Text("Map size: \(document.state.width)x\(document.state.height)")
             ScrollView([.horizontal, .vertical]) {
-                MapCanvas(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, tileset: document.tileset, mapLayers: $document.state.layers)
+                CanvasView(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, editorState: self.editorState, tileset: document.tileset, mapLayers: $document.state.layers)
             }
         }
     }
@@ -66,54 +42,6 @@ struct ContentView: View {
     }
 }
 
-struct MapCanvas: View {
-    let tileTypes: [TileType]
-    let mapSize: AGM.MapSize
-    
-    let tileset: Tileset
-    
-    @Binding var mapLayers: [MapLayer]
-    
-    private let scaleFactor = 1
-    
-    private let tileSize = 32
-    
-    @State private var reticleLocation: (Int, Int)? = nil
-    
-
-    
-    var body: some View {
-        Canvas { context, size in
-            
-            (0..<mapSize.width).forEach { x in
-                (0..<mapSize.height).forEach { y in
-                    
-                    mapLayers.forEach { mapLayer in
-                        let tileIndex = mapLayer.getTileAt(width: mapSize.width, x: x, y: y)
-                        
-                        context.draw(Image(tileset.tiles[tileIndex].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .init(x: x * tileSize * scaleFactor, y: y * tileSize * scaleFactor), size: CGSize(width: tileSize * scaleFactor, height: tileSize * scaleFactor)), style: FillStyle(eoFill: false, antialiased: false))
-                    }
-                    
-                }
-            }
-            
-            if let reticleLocation = self.reticleLocation {
-                context.stroke(Path(CGRect(x: tileSize * reticleLocation.0, y: tileSize * reticleLocation.1, width: tileSize, height: tileSize)), with: .color(.red), lineWidth: 2)
-            }
-            
-//            context.draw(Image(tileset.tiles[3].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .zero, size: CGSize(width: 128, height: 128)), style: FillStyle(eoFill: false, antialiased: false))
-        }.frame(width: CGFloat(mapSize.width * tileSize), height: CGFloat(mapSize.height * tileSize))
-            .onContinuousHover(coordinateSpace: .local) { hoverPhase in
-                switch(hoverPhase) {
-                case .active(let location):
-                    reticleLocation = (Int(location.x) / tileSize, Int(location.y) / tileSize)
-                case .ended:
-                    os_log("ENDED")
-                    reticleLocation = nil
-                }
-            }
-    }
-}
 
 #Preview {
     ContentView(document: .constant(URMapDocument()))

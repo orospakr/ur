@@ -23,7 +23,10 @@ namespace _fl = ::google::protobuf::internal::field_layout;
 
 inline constexpr TileType::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : title_(
+      : uuid_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        title_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         graphicindex_{0},
@@ -48,6 +51,11 @@ inline constexpr MapLayer::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : tiles_{},
         _tiles_cached_byte_size_{0},
+        uuid_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        width_{0},
+        height_{0},
         _cached_size_{0} {}
 
 template <typename>
@@ -103,6 +111,7 @@ const ::uint32_t TableStruct_proto_2fagm_2eproto::offsets[] PROTOBUF_SECTION_VAR
     ~0u,  // no _inlined_string_donated_
     ~0u,  // no _split_
     ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::TileType, _impl_.uuid_),
     PROTOBUF_FIELD_OFFSET(::TileType, _impl_.title_),
     PROTOBUF_FIELD_OFFSET(::TileType, _impl_.graphicindex_),
     PROTOBUF_FIELD_OFFSET(::TileType, _impl_.solid_),
@@ -114,6 +123,9 @@ const ::uint32_t TableStruct_proto_2fagm_2eproto::offsets[] PROTOBUF_SECTION_VAR
     ~0u,  // no _inlined_string_donated_
     ~0u,  // no _split_
     ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::MapLayer, _impl_.uuid_),
+    PROTOBUF_FIELD_OFFSET(::MapLayer, _impl_.width_),
+    PROTOBUF_FIELD_OFFSET(::MapLayer, _impl_.height_),
     PROTOBUF_FIELD_OFFSET(::MapLayer, _impl_.tiles_),
     ~0u,  // no _has_bits_
     PROTOBUF_FIELD_OFFSET(::AGM, _internal_metadata_),
@@ -133,8 +145,8 @@ const ::uint32_t TableStruct_proto_2fagm_2eproto::offsets[] PROTOBUF_SECTION_VAR
 static const ::_pbi::MigrationSchema
     schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::TileType)},
-        {11, -1, -1, sizeof(::MapLayer)},
-        {20, -1, -1, sizeof(::AGM)},
+        {12, -1, -1, sizeof(::MapLayer)},
+        {24, -1, -1, sizeof(::AGM)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -143,18 +155,20 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::_AGM_default_instance_._instance,
 };
 const char descriptor_table_protodef_proto_2fagm_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-    "\n\017proto/agm.proto\">\n\010TileType\022\r\n\005title\030\001"
-    " \001(\t\022\024\n\014graphicIndex\030\002 \001(\005\022\r\n\005solid\030\003 \001("
-    "\010\"\031\n\010MapLayer\022\r\n\005tiles\030\005 \003(\005\"l\n\003AGM\022\r\n\005t"
-    "itle\030\001 \001(\t\022\034\n\ttileTypes\030\002 \003(\0132\t.TileType"
-    "\022\r\n\005width\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\022\031\n\006layer"
-    "s\030\005 \003(\0132\t.MapLayerb\006proto3"
+    "\n\017proto/agm.proto\"L\n\010TileType\022\014\n\004uuid\030\001 "
+    "\001(\t\022\r\n\005title\030\002 \001(\t\022\024\n\014graphicIndex\030\003 \001(\005"
+    "\022\r\n\005solid\030\004 \001(\010\"F\n\010MapLayer\022\014\n\004uuid\030\001 \001("
+    "\t\022\r\n\005width\030\002 \001(\005\022\016\n\006height\030\003 \001(\005\022\r\n\005tile"
+    "s\030\004 \003(\005\"l\n\003AGM\022\r\n\005title\030\001 \001(\t\022\034\n\ttileTyp"
+    "es\030\002 \003(\0132\t.TileType\022\r\n\005width\030\003 \001(\005\022\016\n\006he"
+    "ight\030\004 \001(\005\022\031\n\006layers\030\005 \003(\0132\t.MapLayerb\006p"
+    "roto3"
 };
 static ::absl::once_flag descriptor_table_proto_2fagm_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_proto_2fagm_2eproto = {
     false,
     false,
-    226,
+    285,
     descriptor_table_protodef_proto_2fagm_2eproto,
     "proto/agm.proto",
     &descriptor_table_proto_2fagm_2eproto_once,
@@ -200,7 +214,8 @@ TileType::TileType(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE TileType::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from)
-      : title_(arena, from.title_),
+      : uuid_(arena, from.uuid_),
+        title_(arena, from.title_),
         _cached_size_{0} {}
 
 TileType::TileType(
@@ -225,7 +240,8 @@ TileType::TileType(
 inline PROTOBUF_NDEBUG_INLINE TileType::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : title_(arena),
+      : uuid_(arena),
+        title_(arena),
         _cached_size_{0} {}
 
 inline void TileType::SharedCtor(::_pb::Arena* arena) {
@@ -244,6 +260,7 @@ TileType::~TileType() {
 }
 inline void TileType::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.uuid_.Destroy();
   _impl_.title_.Destroy();
   _impl_.~Impl_();
 }
@@ -255,6 +272,7 @@ PROTOBUF_NOINLINE void TileType::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.uuid_.ClearToEmpty();
   _impl_.title_.ClearToEmpty();
   ::memset(&_impl_.graphicindex_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.solid_) -
@@ -270,47 +288,53 @@ const char* TileType::_InternalParse(
 
 
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 22, 2> TileType::_table_ = {
+const ::_pbi::TcParseTable<2, 4, 0, 26, 2> TileType::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    4, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294967280,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
+    4,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_TileType_default_instance_._instance,
     ::_pbi::TcParser::GenericFallback,  // fallback
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
-    // string title = 1;
-    {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.title_)}},
-    // int32 graphicIndex = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TileType, _impl_.graphicindex_), 63>(),
-     {16, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.graphicindex_)}},
-    // bool solid = 3;
+    // bool solid = 4;
     {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(TileType, _impl_.solid_), 63>(),
-     {24, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.solid_)}},
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.solid_)}},
+    // string uuid = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.uuid_)}},
+    // string title = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.title_)}},
+    // int32 graphicIndex = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TileType, _impl_.graphicindex_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(TileType, _impl_.graphicindex_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // string title = 1;
+    // string uuid = 1;
+    {PROTOBUF_FIELD_OFFSET(TileType, _impl_.uuid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string title = 2;
     {PROTOBUF_FIELD_OFFSET(TileType, _impl_.title_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // int32 graphicIndex = 2;
+    // int32 graphicIndex = 3;
     {PROTOBUF_FIELD_OFFSET(TileType, _impl_.graphicindex_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
-    // bool solid = 3;
+    // bool solid = 4;
     {PROTOBUF_FIELD_OFFSET(TileType, _impl_.solid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kBool)},
   }},
   // no aux_entries
   {{
-    "\10\5\0\0\0\0\0\0"
+    "\10\4\5\0\0\0\0\0"
     "TileType"
+    "uuid"
     "title"
   }},
 };
@@ -322,26 +346,34 @@ const ::_pbi::TcParseTable<2, 3, 0, 22, 2> TileType::_table_ = {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // string title = 1;
+  // string uuid = 1;
+  if (!this->_internal_uuid().empty()) {
+    const std::string& _s = this->_internal_uuid();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "TileType.uuid");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // string title = 2;
   if (!this->_internal_title().empty()) {
     const std::string& _s = this->_internal_title();
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
         _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "TileType.title");
-    target = stream->WriteStringMaybeAliased(1, _s, target);
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
-  // int32 graphicIndex = 2;
+  // int32 graphicIndex = 3;
   if (this->_internal_graphicindex() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::
-        WriteInt32ToArrayWithField<2>(
+        WriteInt32ToArrayWithField<3>(
             stream, this->_internal_graphicindex(), target);
   }
 
-  // bool solid = 3;
+  // bool solid = 4;
   if (this->_internal_solid() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteBoolToArray(
-        3, this->_internal_solid(), target);
+        4, this->_internal_solid(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -361,19 +393,25 @@ const ::_pbi::TcParseTable<2, 3, 0, 22, 2> TileType::_table_ = {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string title = 1;
+  // string uuid = 1;
+  if (!this->_internal_uuid().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_uuid());
+  }
+
+  // string title = 2;
   if (!this->_internal_title().empty()) {
     total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                     this->_internal_title());
   }
 
-  // int32 graphicIndex = 2;
+  // int32 graphicIndex = 3;
   if (this->_internal_graphicindex() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
         this->_internal_graphicindex());
   }
 
-  // bool solid = 3;
+  // bool solid = 4;
   if (this->_internal_solid() != 0) {
     total_size += 2;
   }
@@ -397,6 +435,9 @@ void TileType::MergeImpl(::google::protobuf::Message& to_msg, const ::google::pr
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (!from._internal_uuid().empty()) {
+    _this->_internal_set_uuid(from._internal_uuid());
+  }
   if (!from._internal_title().empty()) {
     _this->_internal_set_title(from._internal_title());
   }
@@ -428,6 +469,7 @@ void TileType::InternalSwap(TileType* PROTOBUF_RESTRICT other) {
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.uuid_, &other->_impl_.uuid_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.title_, &other->_impl_.title_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(TileType, _impl_.solid_)
@@ -458,6 +500,7 @@ inline PROTOBUF_NDEBUG_INLINE MapLayer::Impl_::Impl_(
     const Impl_& from)
       : tiles_{visibility, arena, from.tiles_},
         _tiles_cached_byte_size_{0},
+        uuid_(arena, from.uuid_),
         _cached_size_{0} {}
 
 MapLayer::MapLayer(
@@ -469,6 +512,13 @@ MapLayer::MapLayer(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, width_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, width_),
+           offsetof(Impl_, height_) -
+               offsetof(Impl_, width_) +
+               sizeof(Impl_::height_));
 
   // @@protoc_insertion_point(copy_constructor:MapLayer)
 }
@@ -477,10 +527,17 @@ inline PROTOBUF_NDEBUG_INLINE MapLayer::Impl_::Impl_(
     ::google::protobuf::Arena* arena)
       : tiles_{visibility, arena},
         _tiles_cached_byte_size_{0},
+        uuid_(arena),
         _cached_size_{0} {}
 
 inline void MapLayer::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, width_),
+           0,
+           offsetof(Impl_, height_) -
+               offsetof(Impl_, width_) +
+               sizeof(Impl_::height_));
 }
 MapLayer::~MapLayer() {
   // @@protoc_insertion_point(destructor:MapLayer)
@@ -489,6 +546,7 @@ MapLayer::~MapLayer() {
 }
 inline void MapLayer::SharedDtor() {
   ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.uuid_.Destroy();
   _impl_.~Impl_();
 }
 
@@ -500,6 +558,10 @@ PROTOBUF_NOINLINE void MapLayer::Clear() {
   (void) cached_has_bits;
 
   _impl_.tiles_.Clear();
+  _impl_.uuid_.ClearToEmpty();
+  ::memset(&_impl_.width_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.height_) -
+      reinterpret_cast<char*>(&_impl_.width_)) + sizeof(_impl_.height_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -511,32 +573,53 @@ const char* MapLayer::_InternalParse(
 
 
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 0, 2> MapLayer::_table_ = {
+const ::_pbi::TcParseTable<2, 4, 0, 21, 2> MapLayer::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    5, 0,  // max_field_number, fast_idx_mask
+    4, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967279,  // skipmap
+    4294967280,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    4,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     &_MapLayer_default_instance_._instance,
     ::_pbi::TcParser::GenericFallback,  // fallback
   }, {{
-    // repeated int32 tiles = 5;
+    // repeated int32 tiles = 4;
     {::_pbi::TcParser::FastV32P1,
-     {42, 63, 0, PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.tiles_)}},
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.tiles_)}},
+    // string uuid = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.uuid_)}},
+    // int32 width = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(MapLayer, _impl_.width_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.width_)}},
+    // int32 height = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(MapLayer, _impl_.height_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.height_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // repeated int32 tiles = 5;
+    // string uuid = 1;
+    {PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.uuid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 width = 2;
+    {PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.width_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 height = 3;
+    {PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.height_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // repeated int32 tiles = 4;
     {PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.tiles_), 0, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt32)},
   }},
   // no aux_entries
   {{
+    "\10\4\0\0\0\0\0\0"
+    "MapLayer"
+    "uuid"
   }},
 };
 
@@ -547,12 +630,34 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> MapLayer::_table_ = {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // repeated int32 tiles = 5;
+  // string uuid = 1;
+  if (!this->_internal_uuid().empty()) {
+    const std::string& _s = this->_internal_uuid();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "MapLayer.uuid");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // int32 width = 2;
+  if (this->_internal_width() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<2>(
+            stream, this->_internal_width(), target);
+  }
+
+  // int32 height = 3;
+  if (this->_internal_height() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<3>(
+            stream, this->_internal_height(), target);
+  }
+
+  // repeated int32 tiles = 4;
   {
     int byte_size = _impl_._tiles_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteInt32Packed(
-          5, _internal_tiles(), byte_size, target);
+          4, _internal_tiles(), byte_size, target);
     }
   }
 
@@ -573,7 +678,7 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> MapLayer::_table_ = {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated int32 tiles = 5;
+  // repeated int32 tiles = 4;
   {
     std::size_t data_size = ::_pbi::WireFormatLite::Int32Size(
         this->_internal_tiles())
@@ -586,6 +691,24 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> MapLayer::_table_ = {
     ;
     total_size += tag_size + data_size;
   }
+  // string uuid = 1;
+  if (!this->_internal_uuid().empty()) {
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_uuid());
+  }
+
+  // int32 width = 2;
+  if (this->_internal_width() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_width());
+  }
+
+  // int32 height = 3;
+  if (this->_internal_height() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_height());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -606,6 +729,15 @@ void MapLayer::MergeImpl(::google::protobuf::Message& to_msg, const ::google::pr
   (void) cached_has_bits;
 
   _this->_internal_mutable_tiles()->MergeFrom(from._internal_tiles());
+  if (!from._internal_uuid().empty()) {
+    _this->_internal_set_uuid(from._internal_uuid());
+  }
+  if (from._internal_width() != 0) {
+    _this->_internal_set_width(from._internal_width());
+  }
+  if (from._internal_height() != 0) {
+    _this->_internal_set_height(from._internal_height());
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -625,8 +757,17 @@ PROTOBUF_NOINLINE bool MapLayer::IsInitialized() const {
 }
 void MapLayer::InternalSwap(MapLayer* PROTOBUF_RESTRICT other) {
   using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.tiles_.InternalSwap(&other->_impl_.tiles_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.uuid_, &other->_impl_.uuid_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.height_)
+      + sizeof(MapLayer::_impl_.height_)
+      - PROTOBUF_FIELD_OFFSET(MapLayer, _impl_.width_)>(
+          reinterpret_cast<char*>(&_impl_.width_),
+          reinterpret_cast<char*>(&other->_impl_.width_));
 }
 
 ::google::protobuf::Metadata MapLayer::GetMetadata() const {

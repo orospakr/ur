@@ -51,6 +51,7 @@ extension AGM {
 
 
         var layer = MapLayer()
+        layer.uuid = UUID().uuidString
         layer.tiles = layerDataRows.flatMap { row in
             row
         }

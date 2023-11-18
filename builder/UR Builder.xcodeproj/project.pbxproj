@@ -18,6 +18,9 @@
 		49D54A852B05C53C0060C7B3 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 49D54A842B05C53C0060C7B3 /* SwiftProtobuf */; };
 		49D54A872B05C53C0060C7B3 /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 49D54A862B05C53C0060C7B3 /* SwiftProtobufPluginLibrary */; };
 		49D54A892B05C53C0060C7B3 /* protoc-gen-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 49D54A882B05C53C0060C7B3 /* protoc-gen-swift */; };
+		49D842822B092A1B0001E2AA /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D842812B092A1B0001E2AA /* CanvasView.swift */; };
+		49D842842B092A550001E2AA /* EditorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D842832B092A550001E2AA /* EditorState.swift */; };
+		49D842862B092C500001E2AA /* ExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D842852B092C500001E2AA /* ExplorerView.swift */; };
 		49E8B4C92B06F9F700570E5A /* Tileset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E8B4C82B06F9F700570E5A /* Tileset.swift */; };
 		49E8B4CC2B0701BE00570E5A /* MapLayer+matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E8B4CB2B0701BE00570E5A /* MapLayer+matrix.swift */; };
 		49E8B4CE2B0703EE00570E5A /* AGM+mapSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E8B4CD2B0703EE00570E5A /* AGM+mapSize.swift */; };
@@ -35,6 +38,9 @@
 		49D54A742B05C36C0060C7B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49D54A752B05C36C0060C7B3 /* UR_Builder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = UR_Builder.entitlements; sourceTree = "<group>"; };
 		49D54A812B05C5110060C7B3 /* agm.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = agm.pb.swift; sourceTree = "<group>"; };
+		49D842812B092A1B0001E2AA /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		49D842832B092A550001E2AA /* EditorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorState.swift; sourceTree = "<group>"; };
+		49D842852B092C500001E2AA /* ExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorerView.swift; sourceTree = "<group>"; };
 		49E8B4C82B06F9F700570E5A /* Tileset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tileset.swift; sourceTree = "<group>"; };
 		49E8B4CB2B0701BE00570E5A /* MapLayer+matrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapLayer+matrix.swift"; sourceTree = "<group>"; };
 		49E8B4CD2B0703EE00570E5A /* AGM+mapSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AGM+mapSize.swift"; sourceTree = "<group>"; };
@@ -83,6 +89,9 @@
 				49D54A752B05C36C0060C7B3 /* UR_Builder.entitlements */,
 				49D54A712B05C36C0060C7B3 /* Preview Content */,
 				49E8B4C82B06F9F700570E5A /* Tileset.swift */,
+				49D842812B092A1B0001E2AA /* CanvasView.swift */,
+				49D842852B092C500001E2AA /* ExplorerView.swift */,
+				49D842832B092A550001E2AA /* EditorState.swift */,
 			);
 			path = "UR Builder";
 			sourceTree = "<group>";
@@ -194,8 +203,11 @@
 			files = (
 				49D54A822B05C5110060C7B3 /* agm.pb.swift in Sources */,
 				494525C22B08504C004873DB /* AGM+legacyImport.swift in Sources */,
+				49D842822B092A1B0001E2AA /* CanvasView.swift in Sources */,
 				49E8B4CC2B0701BE00570E5A /* MapLayer+matrix.swift in Sources */,
+				49D842842B092A550001E2AA /* EditorState.swift in Sources */,
 				494525C02B084804004873DB /* AGM+blank.swift in Sources */,
+				49D842862B092C500001E2AA /* ExplorerView.swift in Sources */,
 				49E8B4CE2B0703EE00570E5A /* AGM+mapSize.swift in Sources */,
 				49D54A6A2B05C36A0060C7B3 /* UR_BuilderApp.swift in Sources */,
 				49D54A6C2B05C36A0060C7B3 /* URMapDocument.swift in Sources */,

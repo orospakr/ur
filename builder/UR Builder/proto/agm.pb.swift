@@ -25,6 +25,8 @@ struct TileType {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  var uuid: String = String()
+
   var title: String = String()
 
   //// The (column) index in tiles bitmap
@@ -41,6 +43,12 @@ struct MapLayer {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
+
+  var uuid: String = String()
+
+  var width: Int32 = 0
+
+  var height: Int32 = 0
 
   /// 2d matrix of tiles, row-major order
   var tiles: [Int32] = []
@@ -82,9 +90,10 @@ extension AGM: @unchecked Sendable {}
 extension TileType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = "TileType"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "title"),
-    2: .same(proto: "graphicIndex"),
-    3: .same(proto: "solid"),
+    1: .same(proto: "uuid"),
+    2: .same(proto: "title"),
+    3: .same(proto: "graphicIndex"),
+    4: .same(proto: "solid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -93,28 +102,33 @@ extension TileType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.title) }()
-      case 2: try { try decoder.decodeSingularInt32Field(value: &self.graphicIndex) }()
-      case 3: try { try decoder.decodeSingularBoolField(value: &self.solid) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.uuid) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.title) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.graphicIndex) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.solid) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.uuid.isEmpty {
+      try visitor.visitSingularStringField(value: self.uuid, fieldNumber: 1)
+    }
     if !self.title.isEmpty {
-      try visitor.visitSingularStringField(value: self.title, fieldNumber: 1)
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 2)
     }
     if self.graphicIndex != 0 {
-      try visitor.visitSingularInt32Field(value: self.graphicIndex, fieldNumber: 2)
+      try visitor.visitSingularInt32Field(value: self.graphicIndex, fieldNumber: 3)
     }
     if self.solid != false {
-      try visitor.visitSingularBoolField(value: self.solid, fieldNumber: 3)
+      try visitor.visitSingularBoolField(value: self.solid, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: TileType, rhs: TileType) -> Bool {
+    if lhs.uuid != rhs.uuid {return false}
     if lhs.title != rhs.title {return false}
     if lhs.graphicIndex != rhs.graphicIndex {return false}
     if lhs.solid != rhs.solid {return false}
@@ -126,7 +140,10 @@ extension TileType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
 extension MapLayer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = "MapLayer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    5: .same(proto: "tiles"),
+    1: .same(proto: "uuid"),
+    2: .same(proto: "width"),
+    3: .same(proto: "height"),
+    4: .same(proto: "tiles"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -135,20 +152,35 @@ extension MapLayer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 5: try { try decoder.decodeRepeatedInt32Field(value: &self.tiles) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.uuid) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.width) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.height) }()
+      case 4: try { try decoder.decodeRepeatedInt32Field(value: &self.tiles) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.uuid.isEmpty {
+      try visitor.visitSingularStringField(value: self.uuid, fieldNumber: 1)
+    }
+    if self.width != 0 {
+      try visitor.visitSingularInt32Field(value: self.width, fieldNumber: 2)
+    }
+    if self.height != 0 {
+      try visitor.visitSingularInt32Field(value: self.height, fieldNumber: 3)
+    }
     if !self.tiles.isEmpty {
-      try visitor.visitPackedInt32Field(value: self.tiles, fieldNumber: 5)
+      try visitor.visitPackedInt32Field(value: self.tiles, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: MapLayer, rhs: MapLayer) -> Bool {
+    if lhs.uuid != rhs.uuid {return false}
+    if lhs.width != rhs.width {return false}
+    if lhs.height != rhs.height {return false}
     if lhs.tiles != rhs.tiles {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

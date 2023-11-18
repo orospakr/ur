@@ -1,17 +1,23 @@
 syntax = "proto3";
 
 message TileType {
-    string title = 1;
+    string uuid = 1;
+    string title = 2;
 
     /// The (column) index in tiles bitmap
-    int32 graphicIndex = 2;
+    int32 graphicIndex = 3;
 
-    bool solid = 3;
+    bool solid = 4;
 }
 
 message MapLayer {
+    string uuid = 1;
+
+    int32 width = 2;
+    int32 height = 3;
+
     // 2d matrix of tiles, row-major order
-    repeated int32 tiles = 5;
+    repeated int32 tiles = 4;
 }
 
 /// Usurper's Retribution AGM 2 data file format.

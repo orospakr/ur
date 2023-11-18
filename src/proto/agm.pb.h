@@ -207,11 +207,28 @@ class TileType final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTitleFieldNumber = 1,
-    kGraphicIndexFieldNumber = 2,
-    kSolidFieldNumber = 3,
+    kUuidFieldNumber = 1,
+    kTitleFieldNumber = 2,
+    kGraphicIndexFieldNumber = 3,
+    kSolidFieldNumber = 4,
   };
-  // string title = 1;
+  // string uuid = 1;
+  void clear_uuid() ;
+  const std::string& uuid() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_uuid(Arg_&& arg, Args_... args);
+  std::string* mutable_uuid();
+  PROTOBUF_NODISCARD std::string* release_uuid();
+  void set_allocated_uuid(std::string* value);
+
+  private:
+  const std::string& _internal_uuid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_uuid(
+      const std::string& value);
+  std::string* _internal_mutable_uuid();
+
+  public:
+  // string title = 2;
   void clear_title() ;
   const std::string& title() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -227,7 +244,7 @@ class TileType final :
   std::string* _internal_mutable_title();
 
   public:
-  // int32 graphicIndex = 2;
+  // int32 graphicIndex = 3;
   void clear_graphicindex() ;
   ::int32_t graphicindex() const;
   void set_graphicindex(::int32_t value);
@@ -237,7 +254,7 @@ class TileType final :
   void _internal_set_graphicindex(::int32_t value);
 
   public:
-  // bool solid = 3;
+  // bool solid = 4;
   void clear_solid() ;
   bool solid() const;
   void set_solid(bool value);
@@ -253,8 +270,8 @@ class TileType final :
 
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
-      22, 2>
+      2, 4, 0,
+      26, 2>
       _table_;
   friend class ::google::protobuf::MessageLite;
   friend class ::google::protobuf::Arena;
@@ -270,6 +287,7 @@ class TileType final :
                               ::google::protobuf::Arena* arena);
         inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                               ::google::protobuf::Arena* arena, const Impl_& from);
+    ::google::protobuf::internal::ArenaStringPtr uuid_;
     ::google::protobuf::internal::ArenaStringPtr title_;
     ::int32_t graphicindex_;
     bool solid_;
@@ -412,9 +430,12 @@ class MapLayer final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTilesFieldNumber = 5,
+    kTilesFieldNumber = 4,
+    kUuidFieldNumber = 1,
+    kWidthFieldNumber = 2,
+    kHeightFieldNumber = 3,
   };
-  // repeated int32 tiles = 5;
+  // repeated int32 tiles = 4;
   int tiles_size() const;
   private:
   int _internal_tiles_size() const;
@@ -432,14 +453,50 @@ class MapLayer final :
   ::google::protobuf::RepeatedField<::int32_t>* _internal_mutable_tiles();
 
   public:
+  // string uuid = 1;
+  void clear_uuid() ;
+  const std::string& uuid() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_uuid(Arg_&& arg, Args_... args);
+  std::string* mutable_uuid();
+  PROTOBUF_NODISCARD std::string* release_uuid();
+  void set_allocated_uuid(std::string* value);
+
+  private:
+  const std::string& _internal_uuid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_uuid(
+      const std::string& value);
+  std::string* _internal_mutable_uuid();
+
+  public:
+  // int32 width = 2;
+  void clear_width() ;
+  ::int32_t width() const;
+  void set_width(::int32_t value);
+
+  private:
+  ::int32_t _internal_width() const;
+  void _internal_set_width(::int32_t value);
+
+  public:
+  // int32 height = 3;
+  void clear_height() ;
+  ::int32_t height() const;
+  void set_height(::int32_t value);
+
+  private:
+  ::int32_t _internal_height() const;
+  void _internal_set_height(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:MapLayer)
  private:
   class _Internal;
 
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 0,
-      0, 2>
+      2, 4, 0,
+      21, 2>
       _table_;
   friend class ::google::protobuf::MessageLite;
   friend class ::google::protobuf::Arena;
@@ -457,6 +514,9 @@ class MapLayer final :
                               ::google::protobuf::Arena* arena, const Impl_& from);
     ::google::protobuf::RepeatedField<::int32_t> tiles_;
     mutable ::google::protobuf::internal::CachedSize _tiles_cached_byte_size_;
+    ::google::protobuf::internal::ArenaStringPtr uuid_;
+    ::int32_t width_;
+    ::int32_t height_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -725,7 +785,60 @@ class AGM final :
 
 // TileType
 
-// string title = 1;
+// string uuid = 1;
+inline void TileType::clear_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.uuid_.ClearToEmpty();
+}
+inline const std::string& TileType::uuid() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:TileType.uuid)
+  return _internal_uuid();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void TileType::set_uuid(Arg_&& arg,
+                                                     Args_... args) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.uuid_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:TileType.uuid)
+}
+inline std::string* TileType::mutable_uuid() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_uuid();
+  // @@protoc_insertion_point(field_mutable:TileType.uuid)
+  return _s;
+}
+inline const std::string& TileType::_internal_uuid() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.uuid_.Get();
+}
+inline void TileType::_internal_set_uuid(const std::string& value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.uuid_.Set(value, GetArena());
+}
+inline std::string* TileType::_internal_mutable_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  return _impl_.uuid_.Mutable( GetArena());
+}
+inline std::string* TileType::release_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  // @@protoc_insertion_point(field_release:TileType.uuid)
+  return _impl_.uuid_.Release();
+}
+inline void TileType::set_allocated_uuid(std::string* value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.uuid_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.uuid_.IsDefault()) {
+          _impl_.uuid_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:TileType.uuid)
+}
+
+// string title = 2;
 inline void TileType::clear_title() {
   PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
   _impl_.title_.ClearToEmpty();
@@ -778,7 +891,7 @@ inline void TileType::set_allocated_title(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:TileType.title)
 }
 
-// int32 graphicIndex = 2;
+// int32 graphicIndex = 3;
 inline void TileType::clear_graphicindex() {
   PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
   _impl_.graphicindex_ = 0;
@@ -801,7 +914,7 @@ inline void TileType::_internal_set_graphicindex(::int32_t value) {
   _impl_.graphicindex_ = value;
 }
 
-// bool solid = 3;
+// bool solid = 4;
 inline void TileType::clear_solid() {
   PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
   _impl_.solid_ = false;
@@ -828,7 +941,106 @@ inline void TileType::_internal_set_solid(bool value) {
 
 // MapLayer
 
-// repeated int32 tiles = 5;
+// string uuid = 1;
+inline void MapLayer::clear_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.uuid_.ClearToEmpty();
+}
+inline const std::string& MapLayer::uuid() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:MapLayer.uuid)
+  return _internal_uuid();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void MapLayer::set_uuid(Arg_&& arg,
+                                                     Args_... args) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.uuid_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:MapLayer.uuid)
+}
+inline std::string* MapLayer::mutable_uuid() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_uuid();
+  // @@protoc_insertion_point(field_mutable:MapLayer.uuid)
+  return _s;
+}
+inline const std::string& MapLayer::_internal_uuid() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.uuid_.Get();
+}
+inline void MapLayer::_internal_set_uuid(const std::string& value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.uuid_.Set(value, GetArena());
+}
+inline std::string* MapLayer::_internal_mutable_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  return _impl_.uuid_.Mutable( GetArena());
+}
+inline std::string* MapLayer::release_uuid() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  // @@protoc_insertion_point(field_release:MapLayer.uuid)
+  return _impl_.uuid_.Release();
+}
+inline void MapLayer::set_allocated_uuid(std::string* value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.uuid_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.uuid_.IsDefault()) {
+          _impl_.uuid_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:MapLayer.uuid)
+}
+
+// int32 width = 2;
+inline void MapLayer::clear_width() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.width_ = 0;
+}
+inline ::int32_t MapLayer::width() const {
+  // @@protoc_insertion_point(field_get:MapLayer.width)
+  return _internal_width();
+}
+inline void MapLayer::set_width(::int32_t value) {
+  _internal_set_width(value);
+  // @@protoc_insertion_point(field_set:MapLayer.width)
+}
+inline ::int32_t MapLayer::_internal_width() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.width_;
+}
+inline void MapLayer::_internal_set_width(::int32_t value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.width_ = value;
+}
+
+// int32 height = 3;
+inline void MapLayer::clear_height() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.height_ = 0;
+}
+inline ::int32_t MapLayer::height() const {
+  // @@protoc_insertion_point(field_get:MapLayer.height)
+  return _internal_height();
+}
+inline void MapLayer::set_height(::int32_t value) {
+  _internal_set_height(value);
+  // @@protoc_insertion_point(field_set:MapLayer.height)
+}
+inline ::int32_t MapLayer::_internal_height() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return _impl_.height_;
+}
+inline void MapLayer::_internal_set_height(::int32_t value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.height_ = value;
+}
+
+// repeated int32 tiles = 4;
 inline int MapLayer::_internal_tiles_size() const {
   return _internal_tiles().size();
 }
