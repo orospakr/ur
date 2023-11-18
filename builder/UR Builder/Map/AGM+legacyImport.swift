@@ -33,7 +33,7 @@ extension AGM {
     }
 
 
-    static func loadLayerFromCSVBuffer(_ csvBuffer: Data) throws -> MapLayer {
+    private static func loadLayerFromCSVBuffer(_ csvBuffer: Data) throws -> MapLayer {
     
 
         // load agm csv fil
