@@ -17,8 +17,11 @@ extension UTType {
 
 struct URMapDocument: FileDocument {
     var state: AGM
+    
+    // right now hard coded in the app, so technically abusing the Document class to do injection lol
+    var tileset: Tileset = Tileset()
 
-    init(state: AGM = AGM()) {
+    init(state: AGM = AGM.blank) {
         self.state = state
     }
 

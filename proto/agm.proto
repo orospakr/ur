@@ -25,5 +25,3 @@ message AGM {
     repeated MapLayer layers = 5;
 }
 
-// TODO: tile types to indirect graphics tile selection from tile properties
-// (such as solid or not). This replaces the "APM" model.
