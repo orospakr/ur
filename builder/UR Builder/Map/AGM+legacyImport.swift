@@ -27,16 +27,29 @@ extension AGM {
         }
 
         var agm = AGM.blank
+        
+        let layerWidths = Set(importedLayers.map { $0.width })
+        let layerHeights = Set(importedLayers.map { $0.height })
+        
+        if (layerWidths.count != 1) {
+            throw ImportError(message: "Either no layers or layers had divergent sizes")
+        }
+        
+        if (layerHeights.count != 1) {
+            throw ImportError(message: "Either no layers or layers had divergent sizes")
+        }
 
         agm.layers = importedLayers
+        
+        
+        agm.width = layerWidths.first!
+        agm.height = layerHeights.first!
         return agm
     }
 
 
     private static func loadLayerFromCSVBuffer(_ csvBuffer: Data) throws -> MapLayer {
-    
-
-        // load agm csv fil
+        // load agm csv file
         
         let layerString = String(data: csvBuffer, encoding: .utf8)!
 
@@ -55,6 +68,12 @@ extension AGM {
         layer.tiles = layerDataRows.flatMap { row in
             row
         }
+        layer.width = Int32(layerDataRows.count)
+        
+        let longestRow = layerDataRows.max(by: { a, b in
+            a.count > b.count
+        })!.count
+        layer.height = Int32(longestRow)
         return layer
     }
 
