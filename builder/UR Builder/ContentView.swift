@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os.log
 
 struct ContentView: View {
     @Binding var document: URMapDocument
@@ -71,10 +72,11 @@ struct MapCanvas: View {
     let mapLayer: MapLayer
     let tileset: Tileset
     
-    
     let scaleFactor = 1
     
     let tileSize = 32
+    
+    @State var reticleLocation: (Int, Int)? = nil
     
     var body: some View {
         Canvas { context, size in
@@ -87,8 +89,22 @@ struct MapCanvas: View {
                 }
             }
             
+            if let reticleLocation = self.reticleLocation {
+                context.stroke(Path(CGRect(x: tileSize * reticleLocation.0, y: tileSize * reticleLocation.1, width: tileSize, height: tileSize)), with: .color(.red), lineWidth: 2)
+            }
+            
 //            context.draw(Image(tileset.tiles[3].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .zero, size: CGSize(width: 128, height: 128)), style: FillStyle(eoFill: false, antialiased: false))
         }.frame(width: CGFloat(mapSize.width * tileSize), height: CGFloat(mapSize.height * tileSize))
+            .onContinuousHover(coordinateSpace: .local) { hoverPhase in
+                switch(hoverPhase) {
+                case .active(let location):
+                    os_log("DONUT: %@ %@", location.x, location.y)
+                    reticleLocation = (Int(location.x) / tileSize, Int(location.y) / tileSize)
+                case .ended:
+                    os_log("ENDED")
+                    reticleLocation = nil
+                }
+            }
     }
 }
 
