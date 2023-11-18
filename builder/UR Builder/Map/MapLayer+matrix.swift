@@ -10,7 +10,7 @@ import Foundation
 extension MapLayer {
     /// Return the tiletype index for a given tile coordinate. Width is the stride, in row major-order.
     func getTileAt(width: Int, x: Int, y: Int) -> Int {
-        let index = (x * width) + y
+        let index = (y * width) + x
         return Int(self.tiles[index])
     }
 }

@@ -54,7 +54,7 @@ struct ContentView: View {
         VStack {
             Text("Map size: \(document.state.width)x\(document.state.height)")
             ScrollView([.horizontal, .vertical]) {
-                MapCanvas(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, mapLayer: document.state.layers.first ?? MapLayer(), tileset: document.tileset)
+                MapCanvas(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, tileset: document.tileset, mapLayers: $document.state.layers)
             }
         }
     }
@@ -69,23 +69,31 @@ struct ContentView: View {
 struct MapCanvas: View {
     let tileTypes: [TileType]
     let mapSize: AGM.MapSize
-    let mapLayer: MapLayer
+    
     let tileset: Tileset
     
-    let scaleFactor = 1
+    @Binding var mapLayers: [MapLayer]
     
-    let tileSize = 32
+    private let scaleFactor = 1
     
-    @State var reticleLocation: (Int, Int)? = nil
+    private let tileSize = 32
+    
+    @State private var reticleLocation: (Int, Int)? = nil
+    
+
     
     var body: some View {
         Canvas { context, size in
             
             (0..<mapSize.width).forEach { x in
                 (0..<mapSize.height).forEach { y in
-                    let tileIndex = mapLayer.getTileAt(width: mapSize.width, x: x, y: y)
                     
-                    context.draw(Image(tileset.tiles[tileIndex].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .init(x: x * tileSize * scaleFactor, y: y * tileSize * scaleFactor), size: CGSize(width: tileSize * scaleFactor, height: tileSize * scaleFactor)), style: FillStyle(eoFill: false, antialiased: false))
+                    mapLayers.forEach { mapLayer in
+                        let tileIndex = mapLayer.getTileAt(width: mapSize.width, x: x, y: y)
+                        
+                        context.draw(Image(tileset.tiles[tileIndex].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .init(x: x * tileSize * scaleFactor, y: y * tileSize * scaleFactor), size: CGSize(width: tileSize * scaleFactor, height: tileSize * scaleFactor)), style: FillStyle(eoFill: false, antialiased: false))
+                    }
+                    
                 }
             }
             
@@ -98,7 +106,6 @@ struct MapCanvas: View {
             .onContinuousHover(coordinateSpace: .local) { hoverPhase in
                 switch(hoverPhase) {
                 case .active(let location):
-                    os_log("DONUT: %@ %@", location.x, location.y)
                     reticleLocation = (Int(location.x) / tileSize, Int(location.y) / tileSize)
                 case .ended:
                     os_log("ENDED")
