@@ -14,7 +14,7 @@ struct ContentView: View {
         NavigationView {
             explorer
             HStack {
-                editor
+                canvas
                 inspector
             }
         }
@@ -49,12 +49,13 @@ struct ContentView: View {
         }
     }
     
-    var editor: some View {
+    var canvas: some View {
         VStack {
             Text("Map size: \(document.state.width)x\(document.state.height)")
-            MapCanvas(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, mapLayer: document.state.layers.first ?? MapLayer(), tileset: document.tileset)
+            ScrollView([.horizontal, .vertical]) {
+                MapCanvas(tileTypes: document.state.tileTypes, mapSize: document.state.mapSize, mapLayer: document.state.layers.first ?? MapLayer(), tileset: document.tileset)
+            }
         }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     var inspector: some View {
@@ -87,7 +88,7 @@ struct MapCanvas: View {
             }
             
 //            context.draw(Image(tileset.tiles[3].firstFrame, scale: 1.0, label: Text("tile")), in: CGRect.init(origin: .zero, size: CGSize(width: 128, height: 128)), style: FillStyle(eoFill: false, antialiased: false))
-        }
+        }.frame(width: CGFloat(mapSize.width * tileSize), height: CGFloat(mapSize.height * tileSize))
     }
 }
 
