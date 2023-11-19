@@ -26,14 +26,14 @@ std::string charToSTLString(char *input) {
 
 // class constructor
 Object::Object(std::string objectPath, std::string objectName,
-               SDL_Renderer *renderer, Layer *hostLayer) {
+               SDL_Renderer *renderer, ObjectOwner *owner) {
   xpos = 0;
   ypos = 0;
   areaInfluence.w = TILE_WIDTH;
   areaInfluence.h = TILE_HEIGHT;
   areaInfluence.x = xpos;
   areaInfluence.y = ypos;
-  this->hostLayer = hostLayer;
+  this->owner = owner;
   dead = false;
   char *loadBuffer = new char[2048];
   name = objectName;
@@ -82,6 +82,8 @@ Object::Object(std::string objectPath, std::string objectName,
   }
   delete[] loadBuffer;
   loadReader.close();
+
+  this->owner->registerObject(this);
 }
 
 // class destructor
@@ -117,117 +119,111 @@ void Object::run() {
 }
 
 Sint64 Object::move(UR_DIRECTION_ENUM key) {
-  if (dead)
-    return 1; // if we're dead we're not moving anymore. :)
-  switch (key) {
-  case urDirNorth:
-    yvel--;
-    if ((yvel * (-1)) >= velmax)
-      yvel = (velmax * (-1));
-    if (xvel < 0)
-      xvel++;
-    if (xvel > 0)
-      xvel--;
-    break;
-  case urDirSouth:
-    yvel++;
-    if (yvel >= velmax)
-      yvel = velmax;
-    if (xvel < 0)
-      xvel++;
-    if (xvel > 0)
-      xvel--;
-    break;
-  case urDirWest:
-    xvel--;
-    if ((xvel * (-1)) >= velmax)
-      xvel = (velmax * (-1));
-    if (yvel < 0)
-      yvel++;
-    if (yvel > 0)
-      yvel--;
-    break;
-  case urDirEast:
-    xvel++;
-    if (xvel >= velmax)
-      xvel = velmax;
-    if (yvel < 0)
-      yvel++;
-    if (yvel > 0)
-      yvel--;
-    break;
-  case urDirNorthWest:
-    yvel--;
-    if ((yvel * (-1)) >= velmax)
-      yvel = (velmax * (-1));
-    xvel--;
-    if ((xvel * (-1)) >= velmax)
-      xvel = (velmax * (-1));
-    break;
-  case urDirNorthEast:
-    yvel--;
-    if ((yvel * (-1)) >= velmax)
-      yvel = (velmax * (-1));
-    xvel++;
-    if (xvel >= velmax)
-      xvel = velmax;
-    break;
-  case urDirSouthWest:
-    yvel++;
-    if (yvel >= velmax)
-      yvel = velmax;
-    xvel--;
-    if ((xvel * (-1)) >= velmax)
-      xvel = (velmax * (-1));
-    break;
-  case urDirSouthEast:
-    yvel++;
-    if (yvel >= velmax)
-      yvel = velmax;
-    xvel++;
-    if (xvel >= velmax)
-      xvel = velmax;
-    break;
-  default:
-    /* we want to accelerate so our inertia is equal to that of the reference
-     * plane of the platform. In English: we want the object to slow down
-     */
-    if (yvel < 0)
-      yvel++;
-    if (yvel > 0)
-      yvel--;
-    if (xvel < 0)
-      xvel++;
-    if (xvel > 0)
-      xvel--;
-    break;
-  }
+    if (dead)
+        return 1; // if we're dead we're not moving anymore. :)
+    switch (key) {
+        case urDirNorth:
+            yvel--;
+            if ((yvel * (-1)) >= velmax)
+                yvel = (velmax * (-1));
+            if (xvel < 0)
+                xvel++;
+            if (xvel > 0)
+                xvel--;
+            break;
+        case urDirSouth:
+            yvel++;
+            if (yvel >= velmax)
+                yvel = velmax;
+            if (xvel < 0)
+                xvel++;
+            if (xvel > 0)
+                xvel--;
+            break;
+        case urDirWest:
+            xvel--;
+            if ((xvel * (-1)) >= velmax)
+                xvel = (velmax * (-1));
+            if (yvel < 0)
+                yvel++;
+            if (yvel > 0)
+                yvel--;
+            break;
+        case urDirEast:
+            xvel++;
+            if (xvel >= velmax)
+                xvel = velmax;
+            if (yvel < 0)
+                yvel++;
+            if (yvel > 0)
+                yvel--;
+            break;
+        case urDirNorthWest:
+            yvel--;
+            if ((yvel * (-1)) >= velmax)
+                yvel = (velmax * (-1));
+            xvel--;
+            if ((xvel * (-1)) >= velmax)
+                xvel = (velmax * (-1));
+            break;
+        case urDirNorthEast:
+            yvel--;
+            if ((yvel * (-1)) >= velmax)
+                yvel = (velmax * (-1));
+            xvel++;
+            if (xvel >= velmax)
+                xvel = velmax;
+            break;
+        case urDirSouthWest:
+            yvel++;
+            if (yvel >= velmax)
+                yvel = velmax;
+            xvel--;
+            if ((xvel * (-1)) >= velmax)
+                xvel = (velmax * (-1));
+            break;
+        case urDirSouthEast:
+            yvel++;
+            if (yvel >= velmax)
+                yvel = velmax;
+            xvel++;
+            if (xvel >= velmax)
+                xvel = velmax;
+            break;
+        default:
+            /* we want to accelerate so our inertia is equal to that of the reference
+             * plane of the platform. In English: we want the object to slow down
+             */
+            if (yvel < 0)
+                yvel++;
+            if (yvel > 0)
+                yvel--;
+            if (xvel < 0)
+                xvel++;
+            if (xvel > 0)
+                xvel--;
+            break;
+    }
 
-  // TODO: start here and consider replacing with a ray trace regime to enable
-  // flexible collision detection with the map?
+    // TODO: start here and consider replacing with a ray trace regime to enable
+    // flexible collision detection with the map?
 
-  Sint64 futureX =
-      xpos + xvel; // values that could be... but only if the APM permits it!
-  Sint64 futureY = ypos + yvel;
-  Sint64 futureBlock;
-  futureBlock = hostLayer->floorPhysicalMap[(futureX + 15) / TILE_WIDTH]
-                                           [(futureY + 25) / TILE_HEIGHT];
-  switch (futureBlock) {
-  case 1: // no obstruction.  Let 'im past. :)
-    xpos = futureX;
-    ypos = futureY;
-    break;
-  case 2:
-    // play "bump" sound.  Not going anywhere!
-    break;
-  default:
-    std::cout << "!! Warning! Undefined APM space detected!  Check the level "
-                 "definition files.\n";
-    // give the player the benefit of the doubt and let 'im pass. :P
-    xpos = futureX;
-    ypos = futureY;
-    break;
-  }
+
+
+    Sint64 futureX =
+            xpos + xvel; // values that could be... but only if the APM permits it!
+    Sint64 futureY = ypos + yvel;
+
+
+    auto mapCollision = this->owner->checkMapPathCollision(this, xpos, ypos, xvel, yvel);
+
+    if (mapCollision.collision) {
+        // cannot pass, so do nothing.
+    } else {
+        xpos = futureX;
+        ypos = futureY;
+}
+
 
   /* Now, we need to check to ensure we have not gone outside the bounds of the
    * map
@@ -261,46 +257,48 @@ Sint64 Object::move(UR_DIRECTION_ENUM key) {
   // update the sprite's direction with the keypress
   spriteGrafx->currentDir = key;
 
-  // all that shiziat done, we now need to check for collisions...
-  for (Sint64 counter = 0; counter < MAX_OBJS; counter++) {
-    if (hostLayer->objects[counter] == this)
-      continue; // I don't want to bother with this one... it's me!
-    if (hostLayer
-            ->objects[counter]) // do the following if this object is not NULL
-    {
-      // std::cout << "Object #" << counter << " was not null.\n";
-      bool xInRange = false;
-      bool yInRange = false;
+  // TODO: restore object collision detection
 
-      Sint64 xNearBound = hostLayer->objects[counter]->areaInfluence.x;
-      Sint64 xFarBound =
-          xNearBound + hostLayer->objects[counter]->areaInfluence.w;
-      // std::cout << xNearBound << std::endl;
-      // std::cout << xFarBound << std::endl;
-
-      // std::cout << bossLayer->objects[counter]->areaInfluence.x << std::endl;
-
-      Sint64 yNearBound = hostLayer->objects[counter]->areaInfluence.y;
-      Sint64 yFarBound =
-          yNearBound + hostLayer->objects[counter]->areaInfluence.h;
-
-      if ((xpos > xNearBound) && (xpos < xFarBound)) {
-        xInRange = true;
-        // std::cout << "X was in range for something!\n";
-      }
-      if ((ypos > yNearBound) && (ypos < yFarBound)) {
-        yInRange = true;
-        // std::cout << "Y was in range for something!\n";
-      }
-
-      if (xInRange && yInRange) {
-        std::cout << "We've hit some shiziat!!\n";
-        dead = true;
-        collision(hostLayer->objects[counter]);
-      }
-      // we've hit something!!
-    }
-  }
+//  // all that done, we now need to check for object collisions...
+//  for (Sint64 counter = 0; counter < MAX_OBJS; counter++) {
+//    if (hostLayer->objects[counter] == this)
+//      continue; // I don't want to bother with this one... it's me!
+//    if (hostLayer
+//            ->objects[counter]) // do the following if this object is not NULL
+//    {
+//      // std::cout << "Object #" << counter << " was not null.\n";
+//      bool xInRange = false;
+//      bool yInRange = false;
+//
+//      Sint64 xNearBound = hostLayer->objects[counter]->areaInfluence.x;
+//      Sint64 xFarBound =
+//          xNearBound + hostLayer->objects[counter]->areaInfluence.w;
+//      // std::cout << xNearBound << std::endl;
+//      // std::cout << xFarBound << std::endl;
+//
+//      // std::cout << bossLayer->objects[counter]->areaInfluence.x << std::endl;
+//
+//      Sint64 yNearBound = hostLayer->objects[counter]->areaInfluence.y;
+//      Sint64 yFarBound =
+//          yNearBound + hostLayer->objects[counter]->areaInfluence.h;
+//
+//      if ((xpos > xNearBound) && (xpos < xFarBound)) {
+//        xInRange = true;
+//        // std::cout << "X was in range for something!\n";
+//      }
+//      if ((ypos > yNearBound) && (ypos < yFarBound)) {
+//        yInRange = true;
+//        // std::cout << "Y was in range for something!\n";
+//      }
+//
+//      if (xInRange && yInRange) {
+//        std::cout << "We've hit some shiziat!!\n";
+//        dead = true;
+//        collision(hostLayer->objects[counter]);
+//      }
+//      // we've hit something!!
+//    }
+//  }
   return 0;
 }
 

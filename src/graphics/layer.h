@@ -33,12 +33,11 @@
 #include <string>
 #include <vector>
 
-namespace ur {
+#include "game/object.h"
+#include "proto/agm.pb.h"
+#include "game/object_owner.h"
 
-/* Forward declaration of Object instead of an #include "Object.h" to
- * avoid a cyclic dependency
- */
-class Object;
+namespace ur {
 
 /*typedef struct
 {
@@ -48,43 +47,66 @@ class Object;
     Sint64 objectOrigin_Y;
 } UR_RELATIVE_ORIGIN; */
 
-enum UR_LAYER_ENUM { urLayerA, urLayerB, urLayerC };
+// enum UR_LAYER_ENUM { urLayerA, urLayerB, urLayerC };
 
-class Layer {
+class Layer : public ObjectOwner {
 public:
-  // class constructor
-  Layer(std::string layerPath, UR_LAYER_ENUM position, bool transparent,
-        SDL_Texture *tileset, SDL_Renderer *renderer, Object **objPile);
+/**
+ * @brief Construct a new Layer object
+ * 
+ * @param mapLayer MapLayer protobuf object.
+ * @param layerIndex index of the layer, 0 is lowest.
+ * @param tileset SDL texture of the whole animated tileset.
+ * @param renderer SDL renderer to draw on.
+ */
+  Layer(const MapLayer* mapLayer, const AGM* agm, int layerIndex,
+        SDL_Texture *tileset, SDL_Renderer *renderer);
 
   // class destructor
   ~Layer();
 
-
-
-  /* The object stack for the parent map */
-  Object **objects;
-
   /* The tile graphics for this floor
    */
   SDL_Texture *tilepile;
+
+
+
+  Sint64 drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
+
+  Sint64 run();
+
+/**
+ * @brief Register an object to participate in this layer's physics run.
+ * 
+ * @param obj 
+ */
+  void registerObject(ur::Object *obj) override;
+
+  CollisionResult checkMapPathCollision(Object *obj, Sint64 xpos,
+                                                Sint64 ypos, Sint64 xvel,
+                                                Sint64 yvel) override;
+
+private:
+  /* Between 0 and 7.  Is the animation position for the tiles.
+   */
+  Sint64 tilesAnimPos;
+
+  /* The layer's index.  Indexed from lowest to highest.
+   */
+  int layerIndex;
 
   /* the matrix of values describing to the engine what each block is
    * graphically. Remember, each block is 32x32
    */
   Sint64 floorGraphicalMap[MAP_WIDTH][MAP_HEIGHT];
 
-  /* the physical properties of the map, as described in docs/physmaps
+  /**
+   * @brief Level contents
+   * 
    */
-  Sint64 floorPhysicalMap[MAP_WIDTH][MAP_HEIGHT];
+  const MapLayer* mapLayer;
 
-  Sint64 drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
-
-  Sint64 run();
-
-private:
-  /* Between 0 and 7.  Is the animation position for the tiles.
-   */
-  Sint64 tilesAnimPos;
+  const AGM* agm;
 
   /*
    * returns an SDL_Rect that you can use as a srcrect when
@@ -97,26 +119,15 @@ private:
    */
   SDL_Rect *getTileDestCoord(Sint64 x, Sint64 y);
 
-  /* Loads up the floormaps using protobuf.  Floormaps are used to determine
-   * the way that the engine should react to different
-   * floor styles on the map, and to graphically draw the map.
-   * The two map types are Acorn Graphical Map (agm) and Acorn
-   * Physical Map (apm).
-   */
-  Sint64 loadLayerMapFromProto(std::string agmFilename, std::string apmFilename);
-
-  /* Loads up the floormaps.  Floormaps are used to determine
-   * the way that the engine should react to different
-   * floor styles on the map, and to graphically draw the map.
-   * The two map types are Acorn Graphical Map (agm) and Acorn
-   * Physical Map (apm).
-   */
-  Sint64 loadLayerMap(std::string agmFilename, std::string apmFilename);
-
   /* debugging funcs to display the contents of floorGraphicalMap and physmap
    */
   void quickAGMPrint();
-  void quickAPMPrint();
+
+  /**
+   * @brief Registered objects.
+   * 
+   */
+  std::vector<Object *> registeredObjects;
 };
 
 } // namespace ur

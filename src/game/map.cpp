@@ -19,6 +19,9 @@
 #include <SDL_image.h>
 
 #include "game/map.h" // class's header file
+#include "agm.pb.h"
+#include "map.h"
+#include "game/object_owner.h"
 
 namespace ur {
 
@@ -51,21 +54,25 @@ Map::Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio) {
     exit(1);
   }
 
-  /* instantiate the layers... */
-  layerA = new Layer("data/maps/" + name + "/", urLayerA, false, mapTileset,
-                     renderer, objects);
-  layerB = new Layer("data/maps/" + name + "/", urLayerB, false, mapTileset,
-                     renderer, objects);
-  layerC = new Layer("data/maps/" + name + "/", urLayerC, false, mapTileset,
-                     renderer, objects);
+  // TODO: now all this is loaded from a single protobuf AGM file
+  this->loadFromAGM("data/maps/" + name + "/newformat.agm");
+
+  // populate this->layers with Layer objects around each layer in the AGM
+  this->layers = std::vector<Layer *>();
+  for (int i = 0; i < definition.layers_size(); i++) {
+    auto layer = &definition.layers(i);
+    auto newLayer = new Layer(layer, &this->definition, i, mapTileset, renderer);
+    this->layers.push_back(newLayer);
+  }
+
   // layerAtmosphere = new Layer("data/maps/"+name+"/",urLayerAtmosphere,
   // false);  ATMOSPHERE NOT YET SUPPORTED
-  player = new Object("data/objs/", "al", renderer, layerA);
+  player = new Object("data/objs/", "al", renderer, this->layers[0]);
   objects[0] = player;
 
   // we are going to create a Mickey Mouse, and then set his bit to 'evil'...
   // let us see what happens...
-  objects[1] = new Object("data/objs/", "mickey", renderer, layerA);
+  objects[1] = new Object("data/objs/", "mickey", renderer, this->layers[0]);
   objects[1]->faction = urFact_BadNik; // make him evil
   objects[0]->faction = urFact_FF;     // make our friend Al an FF
   player->xpos = 13 * TILE_WIDTH;
@@ -75,16 +82,31 @@ Map::Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio) {
   audioController->pushBGM("7thheaven.mod");
 }
 
-Sint64 Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer) {
-
-  layerA->run();
-  layerB->run();
-  layerC->run();
-  for (Sint64 counter = 0; counter < MAX_OBJS; counter++) {
-    if (objects[counter] != NULL) {
-      objects[counter]->run();
-    }
+void Map::loadFromAGM(std::string agmFilename) {
+  // load entire file into protobuf AGM class
+  std::ifstream input(agmFilename, std::ios::in | std::ios::binary);
+  if (!input) {
+    std::cerr << agmFilename
+              << "!! Unable to open graphical map definition file (agm)"
+              << std::endl;
+    return;
   }
+  AGM agm;
+  if (!agm.ParseFromIstream(&input)) {
+    std::cerr << "!! Unable to parse AGM file ("
+              << agmFilename << ") because: "
+              << agm.InitializationErrorString() << std::endl;
+
+    return;
+  }
+  this->definition = agm;
+}
+
+Sint64 Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer) {
+  for(auto layer : this->layers) {
+    layer->run();
+  }
+
   player->move(keypress);
 
   // screen follows the player:
@@ -114,17 +136,11 @@ Sint64 Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer) {
 
 void Map::drawToScreen(SDL_Renderer *renderer) {
 
-  // std::cout<< player->xpos << std::endl << player->ypos << std::endl <<
-  // std::endl; screenGeom.y++; screenGeom.x++;
-  layerA->drawToScreen(renderer, screenGeom);
-  for (Sint64 counter = 0; counter < MAX_OBJS; counter++) {
-    if (objects[counter] != NULL) {
-      objects[counter]->drawToScreen(renderer, screenGeom);
-    }
+  // draw all layers to screen 
+  for (auto layer : this->layers) {
+    layer->drawToScreen(renderer, screenGeom);
   }
-  layerB->drawToScreen(renderer, screenGeom);
-  layerC->drawToScreen(renderer, screenGeom);
-
+  
   SDL_Point greetzTextPos;
   greetzTextPos.x = 3;
   greetzTextPos.y = SCREEN_HEIGHT - 20;
@@ -150,13 +166,14 @@ void Map::drawToScreen(SDL_Renderer *renderer) {
 
 // class destructor
 Map::~Map() {
-  delete layerA;
-  // delete layerB;
-  // delete layerC;
+  // delete all layers:
+  for (auto layer : this->layers) {
+    delete layer;
+  }
+
   delete[] objects; // note the objects that this array of pointers points to
                     // will also require freeing
   SDL_DestroyTexture(mapTileset);
   delete audioController;
-  // delete layerAtmosphere;  ATMOSPHERE NOT YET SUPPORTED
 }
 } // namespace ur

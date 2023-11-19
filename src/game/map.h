@@ -24,6 +24,7 @@
 #include "graphics/font.h"
 #include "graphics/layer.h"
 #include "ur.h"
+#include "proto/agm.pb.h"
 #include <SDL.h>
 #include <iostream>
 #include <stdio.h>
@@ -43,6 +44,7 @@ class Map {
 public:
   // class constructor
   Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
+
   // class destructor
   ~Map();
   std::string mapName;
@@ -53,9 +55,11 @@ public:
 
   SDL_Texture *mapTileset;
 
-  Layer *layerA;
-  Layer *layerB;
-  Layer *layerC;
+  /**
+   * @brief Vector of layer objects.
+   * 
+   */
+  std::vector<Layer *> layers;
 
   Object *player;
 
@@ -74,11 +78,20 @@ public:
   void drawToScreen(SDL_Renderer *renderer);
 
 private:
+  AGM definition;
+
   /* a pointer to the object that is the user's character
    */
   Object *playerCharacter;
   Font *fontManager; // a pointer to the UR font manager
   Audio *audioController;
+
+  /**
+   * @brief Load the map from the AGM protobuf file.
+   * 
+   * @param agmFilename 
+   */
+  void loadFromAGM(std::string agmFilename);
 };
 
 } // namespace ur

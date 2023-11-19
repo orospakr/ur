@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include "game/object_owner.h"
 
 namespace ur {
 
@@ -43,7 +44,7 @@ public:
    * from, amongst other things)
    */
   Object(std::string objectPath, std::string objectName, SDL_Renderer *renderer,
-         Layer *hostLayer);
+         ObjectOwner *owner);
 
   // class destructor
   ~Object();
@@ -132,7 +133,7 @@ public:
   Sint64 affect_push(UR_DIRECTION_ENUM sourceDirection);
 
 private:
-  Layer *hostLayer;
+  ObjectOwner *owner;
 };
 
 } // namespace ur

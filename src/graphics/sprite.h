@@ -33,8 +33,6 @@
 #include <string>
 #include <vector>
 
-#include "graphics/layer.h"
-
 namespace ur {
 
 class Sprite {
