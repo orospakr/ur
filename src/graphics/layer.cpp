@@ -16,6 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <memory>
 #include "graphics/layer.h" // class's header file
 #include "agm.pb.h"
 #include "layer.h"
@@ -23,14 +24,8 @@
 namespace ur {
 
 // class constructor
-    Layer::Layer(const MapLayer *mapLayer, const AGM *agm, int layerIndex, SDL_Texture *tileset,
-                 SDL_Renderer *renderer) {
-        tilepile = tileset;
-        tilesAnimPos = 0;
-        this->layerIndex = layerIndex;
-        this->mapLayer = mapLayer;
-        this->agm = agm;
-
+    Layer::Layer(const MapLayer* mapLayer, const std::shared_ptr<AGM> agm, int layerIndex, SDL_Texture *tileset,
+                 SDL_Renderer *renderer): tilepile(tileset), tilesAnimPos(0), layerIndex(layerIndex), floorGraphicalMap(), mapLayer(mapLayer), agm(agm) {
         // populate floorGraphicalMap
         for (int ycounter = 0; ycounter < MAP_HEIGHT; ycounter++) {
             for (int xcounter = 0; xcounter < MAP_WIDTH; xcounter++) {
@@ -41,7 +36,7 @@ namespace ur {
     }
 
 // class destructor
-    Layer::~Layer() {}
+    Layer::~Layer() = default;
 
     Sint64 Layer::drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom) {
         Sint64 beginY = screenGeom.y / 32;

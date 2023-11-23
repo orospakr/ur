@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace ur {
 
@@ -78,7 +79,7 @@ public:
   void drawToScreen(SDL_Renderer *renderer);
 
 private:
-  AGM definition;
+  const std::shared_ptr<AGM> definition;
 
   /* a pointer to the object that is the user's character
    */

@@ -30,6 +30,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -59,7 +60,7 @@ public:
  * @param tileset SDL texture of the whole animated tileset.
  * @param renderer SDL renderer to draw on.
  */
-  Layer(const MapLayer* mapLayer, const AGM* agm, int layerIndex,
+  Layer(const MapLayer* mapLayer, const std::shared_ptr<AGM> agm, int layerIndex,
         SDL_Texture *tileset, SDL_Renderer *renderer);
 
   // class destructor
@@ -106,7 +107,7 @@ private:
    */
   const MapLayer* mapLayer;
 
-  const AGM* agm;
+  const std::shared_ptr<AGM> agm;
 
   /*
    * returns an SDL_Rect that you can use as a srcrect when
