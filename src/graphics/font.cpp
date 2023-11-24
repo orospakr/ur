@@ -24,14 +24,47 @@ namespace ur {
 
 // class constructor
 Font::Font(std::string basedir, SDL_Renderer *renderer) {
+    SDL_Surface *textFontSurface = IMG_Load((basedir + "/textfont.png").c_str());
+        if (textFont == NULL)
+            std::cout << "ACK!  could not text font from " << basedir + "/textfont.png"
+                      << " because " << SDL_GetError() << std::endl;
+
+    // iterate through the surface and change all non-transparent pixels to white.
+    SDL_PixelFormat *fmt = textFontSurface->format;
+    int bpp = fmt->BytesPerPixel;
+    int w = textFontSurface->w;
+    int h = textFontSurface->h;
+    Uint8 *pixels = (Uint8 *)textFontSurface->pixels;
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w * bpp; x += bpp) {
+            // get pixel
+            Uint32 *pixel = (Uint32 *)&pixels[y * textFontSurface->pitch + x];
+
+            // get pixel colour
+            Uint8 r, g, b, a;
+            SDL_GetRGBA(*pixel, fmt, &r, &g, &b, &a);
+
+            // if pixel is not transparent, change it to white
+            if (a != 0) {
+                *pixel = SDL_MapRGBA(fmt, 255, 255, 255, 255);
+            }
+        }
+    }
+
+    // create texture from surface
+    textFont = SDL_CreateTextureFromSurface(renderer, textFontSurface);
+
+
+
+
   bigFont = IMG_LoadTexture(renderer, (basedir + "/bigfont.png").c_str());
   if (bigFont == NULL)
     std::cout << "ACK!  could not big font from " << basedir + "/bigfont.png"
               << " because " << SDL_GetError() << std::endl;
-  textFont = IMG_LoadTexture(renderer, (basedir + "/textfont.png").c_str());
-  if (textFont == NULL)
-    std::cout << "ACK!  could not text font from " << basedir + "/textfont.png"
-              << " because " << SDL_GetError() << std::endl;
+
+
+
+
 }
 
 // class destructor

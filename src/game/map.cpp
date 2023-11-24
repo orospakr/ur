@@ -142,6 +142,7 @@ namespace ur {
         funkycolor.r = 255;
         funkycolor.g = 255;
         funkycolor.b = 255;
+        funkycolor.a = 255;
         fontManager->printTextToSurface(renderer, "ur0.0.1 Demo!", urFont_Big,
                                         greetzTextPos, funkycolor);
 
