@@ -12,6 +12,7 @@ cmake_install.cmake
 Makefile
 ur
 build
+.cmake
 
 # vcpkg
 vcpkg_installed
