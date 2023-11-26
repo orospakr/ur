@@ -191,8 +191,7 @@ Sint64 Object::move(UR_DIRECTION_ENUM key) {
                 xvel = velmax;
             break;
         default:
-            /* we want to accelerate so our inertia is equal to that of the reference
-             * plane of the platform. In English: we want the object to slow down
+            /* decay velocity
              */
             if (yvel < 0)
                 yvel++;
@@ -205,24 +204,40 @@ Sint64 Object::move(UR_DIRECTION_ENUM key) {
             break;
     }
 
-    // TODO: start here and consider replacing with a ray trace regime to enable
-    // flexible collision detection with the map?
-
+    // TODO: aha, velocity/physics calculation below should be done on every run() tick, not in key handler. Key handler
+    //   should set a state of a key command to be handled in run tick. This could be causing issues with velocity decay?
 
 
     Sint64 futureX =
             xpos + xvel; // values that could be... but only if the APM permits it!
     Sint64 futureY = ypos + yvel;
 
+    Vector2D velocity(
+                static_cast<float>(xvel) / TILE_WIDTH,
+                static_cast<float>(yvel) / TILE_HEIGHT
+        );
 
-    auto mapCollision = this->owner->checkMapPathCollision(this, xpos, ypos, xvel, yvel);
+        Point2D position(
+                static_cast<float>(xpos) / TILE_WIDTH,
+                static_cast<float>(ypos) / TILE_HEIGHT
+        );
 
-    if (mapCollision.collision) {
-        // cannot pass, so do nothing.
-    } else {
-        xpos = futureX;
-        ypos = futureY;
-}
+    auto mapCollision = this->owner->checkMapPathCollision(this, position,  velocity);
+
+    // TODO: handle new clamped collision result here.
+
+//    if (mapCollision.collision) {
+//        // adopt the collision position as our new position.
+//        xpos = mapCollision.x;
+//        ypos = mapCollision.y;
+//        // set velocities to zero, dead stop.
+//        xvel = 0;
+//        yvel = 0;
+//        // TODO: should only zero out the velocity on the axis that caused the collision.
+//    } else {
+//        xpos = futureX;
+//        ypos = futureY;
+//    }
 
 
   /* Now, we need to check to ensure we have not gone outside the bounds of the

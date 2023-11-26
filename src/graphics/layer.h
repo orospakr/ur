@@ -83,9 +83,8 @@ public:
  */
   void registerObject(ur::Object *obj) override;
 
-  CollisionResult checkMapPathCollision(Object *obj, Sint64 xpos,
-                                                Sint64 ypos, Sint64 xvel,
-                                                Sint64 yvel) override;
+    ObjectOwner::CollisionResult
+    checkMapPathCollision(Object *obj, Point2D position, Vector2D vector) override;
 
 private:
   /* Between 0 and 7.  Is the animation position for the tiles.

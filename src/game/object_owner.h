@@ -3,6 +3,8 @@
 
 #include "SDL.h"
 #include "proto/agm.pb.h"
+#include "Vector2D.h"
+#include "Point2D.h"
 
 namespace ur {
 
@@ -32,58 +34,58 @@ public:
     Sint64 y2;
   };
 
+  /**
+   * Describes the result of a collision check.
+   */
   struct CollisionResult {
-    bool collision;
+      enum Axis {
+          None = 0,
+          Vertical = 1 << 0,
+          Horizontal = 1 << 1,
+      };
 
-    // if collision is set, the following fields are available.
+      Axis collidedOn = Axis::None;
 
-    /**
-     * @brief Location of collision in X pixel coordinate.
-     *
-     * 0 if `collision` is false.
-     */
-    Sint64 x = 0;
-
-    /**
-     * @brief Location of collision in Y pixel coordinate.
-     *
-     * 0 if `collision` is false.
-     */
-    Sint64 y = 0;
+      /**
+       * The transformed vector of movement of the object, clamped by any collisions.
+       */
+      Vector2D clampedVector = Vector2D();
 
     /**
      * @brief Index of the tile type that was collided with.
+     *
+     * @note This is the first tile that is collided with
+     * by the vector; the clamped vector may collide with other tiles (such as approaching a corner at an angle).
      */
     Sint64 tileTypeIdx = 0;
 
+      // TODO: adopt std::optional?
     /**
-     * @brief Pointer to the tile type that was collided with.
+     * @brief  Pointer of the tile type that was collided with.
      *
-     * null if `collision` is false.
+     * @note This is the first tile that is collided with
+     * by the vector; the clamped vector may collide with other tiles (such as approaching a corner at an angle).
+     *
+     * `nullptr` if `collidedOn` is `Axis::None`.
      */
     TileType *tileType = nullptr;
   };
 
   /**
    * @brief Interrogate the object owner to determine if any collisions
-   * with map geoemetry can occur along the given path. If so,
+   * with map geometry can occur along the given path. If so,
    * returns what map tile the collision would occur at and the exact location
    * of the collision.
    *
    * @param obj Object to check for collisions.
-   * @param xpos X position of the object.
-   * @param ypos Y position of the object.
-   * @param xvel X velocity of the object.
-   * @param yvel Y velocity of the object.
+   * @param position Position of the object.
+   * @param vector Vector of movement of the object.
    *
    * @return CollisionResult struct.
    */
-  virtual CollisionResult checkMapPathCollision(Object *obj, Sint64 xpos,
-                                                Sint64 ypos, Sint64 xvel,
-                                                Sint64 yvel) = 0;
-
+  virtual CollisionResult checkMapPathCollision(Object *obj, Point2D position, Vector2D vector) = 0;
   // NOTE: this approach to map collisions has some limitations: the object's
-  // physics logic cannot be aware of any of the geometry. But it works for
+  // physics logic cannot be aware of the details of the geometry. But it works for
   // now.
 
   //   virtual Object *checkObjectCollision(Object *obj, Sint64 *xpos, Sint64

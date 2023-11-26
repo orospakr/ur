@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 project(ur VERSION 0.1.0)
 
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define the executable
-add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/layer.cpp src/graphics/sprite.cpp src/proto/agm.pb.cc)
+add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/Vector2D.cpp src/graphics/Point2D.cpp src/graphics/layer.cpp src/graphics/sprite.cpp src/proto/agm.pb.cc)
 
 # SDL:
 find_package(SDL2 REQUIRED)

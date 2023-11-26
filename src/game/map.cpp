@@ -39,9 +39,6 @@ namespace ur {
             objects[counter] = NULL;
         }
 
-        /* load up the tiles for this map into a temp surface */
-        SDL_Surface *mapTilesetLoad;
-
         std::string tilesetPath = "data/maps/" + mapName + "/tiles.png";
         mapTileset = IMG_LoadTexture(renderer, tilesetPath.c_str());
         if (mapTileset == NULL) {
@@ -78,7 +75,7 @@ namespace ur {
     }
 
     void Map::loadFromAGM(std::string agmFilename) {
-        // load entire file into protobuf AGM class
+        // load from protobuf
         std::ifstream input(agmFilename, std::ios::in | std::ios::binary);
         if (!input) {
             std::cerr << agmFilename
