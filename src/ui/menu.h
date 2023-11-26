@@ -33,11 +33,11 @@ namespace ur {
  * menus...  should hopefully be available during game play soon...
  */
 class Menu {
-public:
-  // class constructor
-  Menu();
-  // class destructor
-  ~Menu();
+  public:
+    // class constructor
+    Menu();
+    // class destructor
+    ~Menu();
 };
 
 } // namespace ur

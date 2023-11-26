@@ -35,40 +35,40 @@
 namespace ur {
 
 class Audio {
-public:
-  /**
-   * @brief Construct the audio manager. Note will block synchronously as it
-   * loads all content.
-   *
-   */
-  Audio();
-  void audio_callback(Uint8 *stream, int len);
+  public:
+    /**
+     * @brief Construct the audio manager. Note will block synchronously as it
+     * loads all content.
+     *
+     */
+    Audio();
+    void audio_callback(Uint8 *stream, int len);
 
-  void pushBGM(std::string name);
-  void popBGM();
+    void pushBGM(std::string name);
+    void popBGM();
 
-  Uint16 VUmeterL;
-  Uint16 VUmeterR;
+    Uint16 VUmeterL;
+    Uint16 VUmeterR;
 
-  ~Audio();
+    ~Audio();
 
-private:
-  void load_music(std::string name);
-  void unload_music();
-  void change_music(std::string name);
-  SDL_AudioSpec *obtained_audio_spec;
+  private:
+    void load_music(std::string name);
+    void unload_music();
+    void change_music(std::string name);
+    SDL_AudioSpec *obtained_audio_spec;
 
-  // a map of filenames to loaded openmpt modules
-  std::map<std::string, openmpt::module *> modules;
+    // a map of filenames to loaded openmpt modules
+    std::map<std::string, openmpt::module *> modules;
 
-  std::string *BGMstack;
+    std::string *BGMstack;
 
-  Uint8 BGMstack_ptr;
+    Uint8 BGMstack_ptr;
 
-  // codec specific variables
+    // codec specific variables
 
-  // a loaded openmpt module
-  openmpt::module *currentMOD;
+    // a loaded openmpt module
+    openmpt::module *currentMOD;
 };
 } // namespace ur
 

@@ -23,15 +23,15 @@
 #include "game/object.h"
 #include "graphics/font.h"
 #include "graphics/layer.h"
-#include "ur.h"
 #include "proto/agm.pb.h"
+#include "ur.h"
 #include <SDL.h>
 #include <iostream>
+#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace ur {
 
@@ -42,57 +42,57 @@ namespace ur {
  */
 
 class Map {
-public:
-  // class constructor
-  Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
+  public:
+    // class constructor
+    Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio);
 
-  // class destructor
-  ~Map();
-  std::string mapName;
+    // class destructor
+    ~Map();
+    std::string mapName;
 
-  /* screen size and current display position (the x and y vars can be
-   * bigger than the screen itself!) */
-  SDL_Rect screenGeom;
+    /* screen size and current display position (the x and y vars can be
+     * bigger than the screen itself!) */
+    SDL_Rect screenGeom;
 
-  SDL_Texture *mapTileset;
+    SDL_Texture *mapTileset;
 
-  /**
-   * @brief Vector of layer objects.
-   * 
-   */
-  std::vector<Layer *> layers;
+    /**
+     * @brief Vector of layer objects.
+     *
+     */
+    std::vector<Layer *> layers;
 
-  Object *player;
+    Object *player;
 
-  /* the object pile. (this is for all the layers!)
-   */
-  Object **objects;
+    /* the object pile. (this is for all the layers!)
+     */
+    Object **objects;
 
-  /**
-   * @brief Runs one cycle of updates for the map and all its objects.
-   */
-  Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer);
+    /**
+     * @brief Runs one cycle of updates for the map and all its objects.
+     */
+    Sint64 run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer);
 
-  /**
-   * @brief Renders the map to the screen.
-   */
-  void drawToScreen(SDL_Renderer *renderer);
+    /**
+     * @brief Renders the map to the screen.
+     */
+    void drawToScreen(SDL_Renderer *renderer);
 
-private:
-  const std::shared_ptr<AGM> definition;
+  private:
+    const std::shared_ptr<AGM> definition;
 
-  /* a pointer to the object that is the user's character
-   */
-  Object *playerCharacter;
-  Font *fontManager; // a pointer to the UR font manager
-  Audio *audioController;
+    /* a pointer to the object that is the user's character
+     */
+    Object *playerCharacter;
+    Font *fontManager; // a pointer to the UR font manager
+    Audio *audioController;
 
-  /**
-   * @brief Load the map from the AGM protobuf file.
-   * 
-   * @param agmFilename 
-   */
-  void loadFromAGM(std::string agmFilename);
+    /**
+     * @brief Load the map from the AGM protobuf file.
+     *
+     * @param agmFilename
+     */
+    void loadFromAGM(std::string agmFilename);
 };
 
 } // namespace ur

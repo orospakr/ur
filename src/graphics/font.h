@@ -35,19 +35,19 @@
 namespace ur {
 
 class Font {
-public:
-  // class constructor
-  Font(std::string basedir, SDL_Renderer *renderer);
-  // class destructor
-  ~Font();
-  void printTextToSurface(SDL_Renderer *renderer, std::string text,
-                          UR_FONT_ENUM whichFont, SDL_Point destPos,
-                          SDL_Color textColor);
+  public:
+    // class constructor
+    Font(std::string basedir, SDL_Renderer *renderer);
+    // class destructor
+    ~Font();
+    void printTextToSurface(SDL_Renderer *renderer, std::string text,
+                            UR_FONT_ENUM whichFont, SDL_Point destPos,
+                            SDL_Color textColor);
 
-private:
-  SDL_Texture *bigFont;
-  SDL_Texture *textFont;
-  Sint64 char2ascii(char input);
+  private:
+    SDL_Texture *bigFont;
+    SDL_Texture *textFont;
+    Sint64 char2ascii(char input);
 };
 
 } // namespace ur

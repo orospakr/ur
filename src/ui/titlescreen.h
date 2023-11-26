@@ -36,22 +36,22 @@ namespace ur {
  * The title screen class.
  */
 class Titlescreen {
-public:
-  // class constructor
-  Titlescreen(std::string basedir, SDL_Renderer *renderer, Font *fonts,
-              Audio *audio);
-  // class destructor
-  ~Titlescreen();
-  /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the
-   *game should begin , otherwise just run it again.
-   */
-  Sint64 run(UR_INPUT keystate, SDL_Renderer *renderer);
+  public:
+    // class constructor
+    Titlescreen(std::string basedir, SDL_Renderer *renderer, Font *fonts,
+                Audio *audio);
+    // class destructor
+    ~Titlescreen();
+    /* runs the Title Screen one cycle.  Returns 0 if the user hit START and the
+     *game should begin , otherwise just run it again.
+     */
+    Sint64 run(UR_INPUT keystate, SDL_Renderer *renderer);
 
-private:
-  SDL_Texture *titleGraphic;
-  Font *fontManager;
-  std::string scrollerText;
-  Audio *audioManager;
+  private:
+    SDL_Texture *titleGraphic;
+    Font *fontManager;
+    std::string scrollerText;
+    Audio *audioManager;
 };
 
 } // namespace ur

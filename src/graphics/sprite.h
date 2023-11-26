@@ -36,36 +36,36 @@
 namespace ur {
 
 class Sprite {
-public:
-  // class constructor
-  Sprite(std::string spriteBMPFilename, SDL_Renderer *renderer);
-  // class destructor
-  ~Sprite();
+  public:
+    // class constructor
+    Sprite(std::string spriteBMPFilename, SDL_Renderer *renderer);
+    // class destructor
+    ~Sprite();
 
-  /* this is all of the sprite data in a giant texture.  Read docs/sprite.txt
-   * for more info
-   */
-  SDL_Texture *spriteData;
+    /* this is all of the sprite data in a giant texture.  Read docs/sprite.txt
+     * for more info
+     */
+    SDL_Texture *spriteData;
 
-  /* the following are funcs that return SDL_Rects that point to the relevant
-   * area of the spriteData surface, depending upon the sprite type, and
-   * animation status.
-   */
+    /* the following are funcs that return SDL_Rects that point to the relevant
+     * area of the spriteData surface, depending upon the sprite type, and
+     * animation status.
+     */
 
-  SDL_Rect getPotrait();
-  void advanceAnimation();
-  UR_DIRECTION_ENUM currentDir;
-  UR_ANIM_ENUM currentAnim;
-  void drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
+    SDL_Rect getPotrait();
+    void advanceAnimation();
+    UR_DIRECTION_ENUM currentDir;
+    UR_ANIM_ENUM currentAnim;
+    void drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
 
-  /* These are updated automatically by the parent Object.  Don't bother
-   * changing them from this scope.
-   */
-  Sint64 xpos, ypos;
+    /* These are updated automatically by the parent Object.  Don't bother
+     * changing them from this scope.
+     */
+    Sint64 xpos, ypos;
 
-private:
-  Sint64 animationPhase;
-  SDL_Rect *getAnim(UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType);
+  private:
+    Sint64 animationPhase;
+    SDL_Rect *getAnim(UR_DIRECTION_ENUM direction, UR_ANIM_ENUM animType);
 };
 
 } // namespace ur

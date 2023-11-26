@@ -139,268 +139,272 @@ static Uint32 lastTime = 0;
 
 void inputUpdateKey(SDL_Event *sdlevents, ur::UR_INPUT *currentInput,
                     bool down) {
-  ur::UR_KEYPAD_ENUM result;
-  switch ((*sdlevents).key.keysym.sym) {
-  case SDLK_LEFT:
-    currentInput->left = down;
-    break;
-  case SDLK_RIGHT:
-    currentInput->right = down;
-    break;
-  case SDLK_UP:
-    currentInput->up = down;
-    break;
-  case SDLK_DOWN:
-    currentInput->down = down;
-    break;
-  case SDLK_RETURN:
-    currentInput->start = down;
-    break;
-  case SDLK_SPACE:
-    currentInput->action = down;
-    break;
-  case SDLK_RCTRL:
-    currentInput->select = down;
-    break;
-  default:
-    break;
-  }
+    ur::UR_KEYPAD_ENUM result;
+    switch ((*sdlevents).key.keysym.sym) {
+    case SDLK_LEFT:
+        currentInput->left = down;
+        break;
+    case SDLK_RIGHT:
+        currentInput->right = down;
+        break;
+    case SDLK_UP:
+        currentInput->up = down;
+        break;
+    case SDLK_DOWN:
+        currentInput->down = down;
+        break;
+    case SDLK_RETURN:
+        currentInput->start = down;
+        break;
+    case SDLK_SPACE:
+        currentInput->action = down;
+        break;
+    case SDLK_RCTRL:
+        currentInput->select = down;
+        break;
+    default:
+        break;
+    }
 }
 
 ur::UR_DIRECTION_ENUM keyToDirection(ur::UR_INPUT keypress) {
-  ur::UR_DIRECTION_ENUM result;
+    ur::UR_DIRECTION_ENUM result;
 
-  if (keypress.up && keypress.right) {
-    result = ur::urDirNorthEast;
-  } else if (keypress.up && keypress.left) {
-    result = ur::urDirNorthWest;
-  } else if (keypress.down && keypress.right) {
-    result = ur::urDirSouthEast;
-  } else if (keypress.down && keypress.left) {
-    result = ur::urDirSouthWest;
-  } else if (keypress.up) {
-    result = ur::urDirNorth;
-  } else if (keypress.down) {
-    result = ur::urDirSouth;
-  } else if (keypress.left) {
-    result = ur::urDirWest;
-  } else if (keypress.right) {
-    result = ur::urDirEast;
-  } else {
-    result = ur::urDirNone;
-  }
-  return result;
+    if (keypress.up && keypress.right) {
+        result = ur::urDirNorthEast;
+    } else if (keypress.up && keypress.left) {
+        result = ur::urDirNorthWest;
+    } else if (keypress.down && keypress.right) {
+        result = ur::urDirSouthEast;
+    } else if (keypress.down && keypress.left) {
+        result = ur::urDirSouthWest;
+    } else if (keypress.up) {
+        result = ur::urDirNorth;
+    } else if (keypress.down) {
+        result = ur::urDirSouth;
+    } else if (keypress.left) {
+        result = ur::urDirWest;
+    } else if (keypress.right) {
+        result = ur::urDirEast;
+    } else {
+        result = ur::urDirNone;
+    }
+    return result;
 }
 
 /* Primary start up routine, gets things warmed up and online... Hey, you gotta
    start somewhere. n.~ */
 int main(int argc, char *argv[]) {
-  char *msg;
-  Sint64 done;
-  std::cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
-  std::cout << "    " << REVISION_EDITION << std::endl;
-  std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR
-            << "." << REVISION_MICRO << std::endl
-            << std::endl;
-  printf("Initialising SDL... ");
-  /* Initialize SDL */
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-    // sprintf(msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
-    // std::cout << msg;
-    free(msg);
-    exit(1);
-  }
-  // atexit (SDL_Quit);
-  printf("DONE.\nCreating window...");
-  /* Set 640x480 16-bits video mode */
-  // screen =
-  //     SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16,
-  //                      SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
-
-  sdlWindow = SDL_CreateWindow("Usurper's Retribution", SDL_WINDOWPOS_UNDEFINED,
-                               SDL_WINDOWPOS_UNDEFINED, 800, 600,
-                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-
-  if (sdlWindow == NULL) {
-    std::cout << "!! Could not create window: " << SDL_GetError() << std::endl;
-    exit(1);
-  }
-
-  // Using software rendering for now because otherwise (at least on macOS with
-  // metal) there are subpixel rendering issues.
-  sdlRenderer = SDL_CreateRenderer(
-      sdlWindow, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
-  if (sdlRenderer == NULL) {
-    std::cout << "!! Could not create renderer: " << SDL_GetError()
+    char *msg;
+    Sint64 done;
+    std::cout << "\n~~~ USURPER's RETRIBUTION ~~~\n";
+    std::cout << "    " << REVISION_EDITION << std::endl;
+    std::cout << "       Version " << REVISION_MAJOR << "." << REVISION_MINOR
+              << "." << REVISION_MICRO << std::endl
               << std::endl;
-    exit(1);
-  }
-
-  // clear the display
-  SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-  SDL_RenderClear(sdlRenderer);
-  SDL_RenderPresent(sdlRenderer);
-
-  // our logical display size is 640x480, use GPU scaling to scale it up.
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,
-              "linear"); // nearest-neighbor scaling for sharp pixel art.
-  SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-  printf("DONE.\nDisplaying startup logo... ");
-  std::string name = "Usurper's Retribution ";
-
-  SDL_SetWindowTitle(sdlWindow, (name + REVISION_EDITION).c_str());
-
-  audioManager = new ur::Audio;
-  /* instantiate the system services, such as the sound and font managers */
-  fontManager = new ur::Font("data/", sdlRenderer);
-
-  // display the startup logos
-  SDL_Surface *logoLoader;
-  logoLoader = SDL_LoadBMP("data/logo_ld.bmp");
-  SDL_Texture *logoTexture =
-      SDL_CreateTextureFromSurface(sdlRenderer, logoLoader);
-  SDL_FreeSurface(logoLoader);
-  SDL_RenderCopy(sdlRenderer, logoTexture, NULL, NULL);
-
-  SDL_RenderPresent(sdlRenderer);
-  SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-  SDL_RenderClear(sdlRenderer);
-
-  SDL_Point welcomeTextPos;
-  welcomeTextPos.x = 10;
-  welcomeTextPos.y = 10;
-  SDL_Color textcolor;
-  textcolor.r = 255;
-  textcolor.g = 0;
-  textcolor.b = 0;
-  fontManager->printTextToSurface(sdlRenderer, "Welcome to UR!", ur::urFont_Big,
-                                  welcomeTextPos, textcolor);
-
-  // SDL_Delay(5000);             // show logo for 1 sec
-
-  printf("DONE.\nStarting the engine... ");
-
-  /* Start instantiating the game itself */
-  titleScreen =
-      new ur::Titlescreen("data/", sdlRenderer, fontManager, audioManager);
-
-  menu = new ur::Menu();
-
-  printf("DONE.\nOnline!!\n\n");
-  done = 0;
-
-  SDL_Event event;
-  ur::UR_INPUT currentInput = ur::UR_INPUT_DEFAULT;
-
-  ur::UR_RUN_STATE status = ur::urGameState_TitleScreen;
-  lastTime = SDL_GetTicks();
-
-  // time step in ms for the game logic (60 fps).
-  // TODO: these should be floats to avoid rounding? timestep will be too short
-  const Uint32 timeStep = 1000 / 60;
-  const Uint32 graphicsTimeStep = 1000 / 60;
-  // time accumulator for the game logic
-  static Uint32 accumulator = 0;
-
-  /* primary game loop! */
-  while (!done) {
-    // get current time in ms
-    Uint32 currentTime = SDL_GetTicks();
-    // calculate time since last iteration
-    Uint32 timeSinceLast = currentTime - lastTime;
-    // store current time for next iteration
-    lastTime = currentTime;
-
-    // add the time since last iteration to the accumulator
-    accumulator += timeSinceLast;
-
-    // calculate fps
-    int fps = timeSinceLast == 0 ? 0 : 1000 / timeSinceLast;
-    // std::cout << "FPS: " << fps << std::endl;
-
-    /* Process events */
-    while (SDL_PollEvent(&event)) {
-      // I can change this to handle multiple keypresses at once by mutating a
-      // struct or bitmask. Track SDL_KEYDOWN to clear them.
-      switch (event.type) {
-      case SDL_KEYDOWN:
-        /* this bit puts the user's interactions in currentInput for relaying
-         * to the proper subsystem
-         */
-        if (event.key.keysym.sym == SDLK_ESCAPE)
-          done = 1;
-        inputUpdateKey(&event, &currentInput, true);
-        break;
-      case SDL_KEYUP:
-        inputUpdateKey(&event, &currentInput, false);
-        break;
-      case SDL_QUIT:
-        done = 1;
-        break;
-      default:
-        break;
-      }
+    printf("Initialising SDL... ");
+    /* Initialize SDL */
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        // sprintf(msg, "Couldn't initialize SDL: %s\n", SDL_GetError());
+        // std::cout << msg;
+        free(msg);
+        exit(1);
     }
-    switch (status) {
-    case ur::urGameState_Quit:
-      done = 1;
-      break;
-    case ur::urGameState_InGame:
-      // run physics and game logic at timeStep rate.
-      while (accumulator >= timeStep) {
-        float interpolationFactor = accumulator / timeStep;
+    // atexit (SDL_Quit);
+    printf("DONE.\nCreating window...");
+    /* Set 640x480 16-bits video mode */
+    // screen =
+    //     SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16,
+    //                      SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 
-        // run the game logic
-        map->run(keyToDirection(currentInput), sdlRenderer);
+    sdlWindow =
+        SDL_CreateWindow("Usurper's Retribution", SDL_WINDOWPOS_UNDEFINED,
+                         SDL_WINDOWPOS_UNDEFINED, 800, 600,
+                         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
-        // remove the time step from the accumulator
-        accumulator -= timeStep;
-      }
-      SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-      SDL_RenderClear(sdlRenderer);
-      map->drawToScreen(sdlRenderer);
-      SDL_RenderPresent(sdlRenderer);
-
-      break;
-    case ur::urGameState_TitleScreen:
-      Sint64 titleResult;
-      SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-      SDL_RenderClear(sdlRenderer);
-      titleResult = titleScreen->run(currentInput, sdlRenderer);
-      if (titleResult == 0) {
-        map = new ur::Map("kv", sdlRenderer, fontManager, audioManager);
-        status = ur::urGameState_InGame;
-      }
-      SDL_RenderPresent(sdlRenderer);
-      break;
-    default:
-      done = 1;
-      break;
+    if (sdlWindow == NULL) {
+        std::cout << "!! Could not create window: " << SDL_GetError()
+                  << std::endl;
+        exit(1);
     }
 
-    // use delay limit frame rate to 60
-    // if (timeSinceLast < (graphicsTimeStep))
-    // {
-    //   std::cout << "HOLD" << std::endl;
-    //   SDL_Delay(graphicsTimeStep - timeSinceLast);
-    // }
+    // Using software rendering for now because otherwise (at least on macOS
+    // with metal) there are subpixel rendering issues.
+    sdlRenderer = SDL_CreateRenderer(
+        sdlWindow, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC);
+    if (sdlRenderer == NULL) {
+        std::cout << "!! Could not create renderer: " << SDL_GetError()
+                  << std::endl;
+        exit(1);
+    }
 
-    // max of (graphicstimestep - timeSinceLast) or 0
+    // clear the display
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(sdlRenderer);
+    SDL_RenderPresent(sdlRenderer);
 
-    // don't need this, got vsync.
-    // int timeUntilNextFrame = graphicsTimeStep - (SDL_GetTicks() - lastTime);
-    // if (timeUntilNextFrame > 0)
-    // {
-    //   SDL_Delay(timeUntilNextFrame);
-    // }
-  }
-  delete menu;
-  delete map;
-  delete titleScreen;
-  delete fontManager;
-  SDL_Quit();
+    // our logical display size is 640x480, use GPU scaling to scale it up.
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,
+                "linear"); // nearest-neighbor scaling for sharp pixel art.
+    SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-  std::cout << "\nShutdown successful.  Welcome back to the world of shell.\n";
-  return 0;
+    printf("DONE.\nDisplaying startup logo... ");
+    std::string name = "Usurper's Retribution ";
+
+    SDL_SetWindowTitle(sdlWindow, (name + REVISION_EDITION).c_str());
+
+    audioManager = new ur::Audio;
+    /* instantiate the system services, such as the sound and font managers */
+    fontManager = new ur::Font("data/", sdlRenderer);
+
+    // display the startup logos
+    SDL_Surface *logoLoader;
+    logoLoader = SDL_LoadBMP("data/logo_ld.bmp");
+    SDL_Texture *logoTexture =
+        SDL_CreateTextureFromSurface(sdlRenderer, logoLoader);
+    SDL_FreeSurface(logoLoader);
+    SDL_RenderCopy(sdlRenderer, logoTexture, NULL, NULL);
+
+    SDL_RenderPresent(sdlRenderer);
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(sdlRenderer);
+
+    SDL_Point welcomeTextPos;
+    welcomeTextPos.x = 10;
+    welcomeTextPos.y = 10;
+    SDL_Color textcolor;
+    textcolor.r = 255;
+    textcolor.g = 0;
+    textcolor.b = 0;
+    fontManager->printTextToSurface(sdlRenderer, "Welcome to UR!",
+                                    ur::urFont_Big, welcomeTextPos, textcolor);
+
+    // SDL_Delay(5000);             // show logo for 1 sec
+
+    printf("DONE.\nStarting the engine... ");
+
+    /* Start instantiating the game itself */
+    titleScreen =
+        new ur::Titlescreen("data/", sdlRenderer, fontManager, audioManager);
+
+    menu = new ur::Menu();
+
+    printf("DONE.\nOnline!!\n\n");
+    done = 0;
+
+    SDL_Event event;
+    ur::UR_INPUT currentInput = ur::UR_INPUT_DEFAULT;
+
+    ur::UR_RUN_STATE status = ur::urGameState_TitleScreen;
+    lastTime = SDL_GetTicks();
+
+    // time step in ms for the game logic (60 fps).
+    // TODO: these should be floats to avoid rounding? timestep will be too
+    // short
+    const Uint32 timeStep = 1000 / 60;
+    const Uint32 graphicsTimeStep = 1000 / 60;
+    // time accumulator for the game logic
+    static Uint32 accumulator = 0;
+
+    /* primary game loop! */
+    while (!done) {
+        // get current time in ms
+        Uint32 currentTime = SDL_GetTicks();
+        // calculate time since last iteration
+        Uint32 timeSinceLast = currentTime - lastTime;
+        // store current time for next iteration
+        lastTime = currentTime;
+
+        // add the time since last iteration to the accumulator
+        accumulator += timeSinceLast;
+
+        // calculate fps
+        int fps = timeSinceLast == 0 ? 0 : 1000 / timeSinceLast;
+        // std::cout << "FPS: " << fps << std::endl;
+
+        /* Process events */
+        while (SDL_PollEvent(&event)) {
+            // I can change this to handle multiple keypresses at once by
+            // mutating a struct or bitmask. Track SDL_KEYDOWN to clear them.
+            switch (event.type) {
+            case SDL_KEYDOWN:
+                /* this bit puts the user's interactions in currentInput for
+                 * relaying to the proper subsystem
+                 */
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    done = 1;
+                inputUpdateKey(&event, &currentInput, true);
+                break;
+            case SDL_KEYUP:
+                inputUpdateKey(&event, &currentInput, false);
+                break;
+            case SDL_QUIT:
+                done = 1;
+                break;
+            default:
+                break;
+            }
+        }
+        switch (status) {
+        case ur::urGameState_Quit:
+            done = 1;
+            break;
+        case ur::urGameState_InGame:
+            // run physics and game logic at timeStep rate.
+            while (accumulator >= timeStep) {
+                float interpolationFactor = accumulator / timeStep;
+
+                // run the game logic
+                map->run(keyToDirection(currentInput), sdlRenderer);
+
+                // remove the time step from the accumulator
+                accumulator -= timeStep;
+            }
+            SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+            SDL_RenderClear(sdlRenderer);
+            map->drawToScreen(sdlRenderer);
+            SDL_RenderPresent(sdlRenderer);
+
+            break;
+        case ur::urGameState_TitleScreen:
+            Sint64 titleResult;
+            SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+            SDL_RenderClear(sdlRenderer);
+            titleResult = titleScreen->run(currentInput, sdlRenderer);
+            if (titleResult == 0) {
+                map = new ur::Map("kv", sdlRenderer, fontManager, audioManager);
+                status = ur::urGameState_InGame;
+            }
+            SDL_RenderPresent(sdlRenderer);
+            break;
+        default:
+            done = 1;
+            break;
+        }
+
+        // use delay limit frame rate to 60
+        // if (timeSinceLast < (graphicsTimeStep))
+        // {
+        //   std::cout << "HOLD" << std::endl;
+        //   SDL_Delay(graphicsTimeStep - timeSinceLast);
+        // }
+
+        // max of (graphicstimestep - timeSinceLast) or 0
+
+        // don't need this, got vsync.
+        // int timeUntilNextFrame = graphicsTimeStep - (SDL_GetTicks() -
+        // lastTime); if (timeUntilNextFrame > 0)
+        // {
+        //   SDL_Delay(timeUntilNextFrame);
+        // }
+    }
+    delete menu;
+    delete map;
+    delete titleScreen;
+    delete fontManager;
+    SDL_Quit();
+
+    std::cout
+        << "\nShutdown successful.  Welcome back to the world of shell.\n";
+    return 0;
 }

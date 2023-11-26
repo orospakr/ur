@@ -8,28 +8,28 @@
 #include <iostream>
 
 namespace ur {
-    class Vector2D {
-    public:
-        double x, y;
+class Vector2D {
+  public:
+    double x, y;
 
-        explicit Vector2D(double x = 0.0f, double y = 0.0f);
+    explicit Vector2D(double x = 0.0f, double y = 0.0f);
 
-        Vector2D operator+(const Vector2D &other) const;
+    Vector2D operator+(const Vector2D &other) const;
 
-        Vector2D operator-(const Vector2D &other) const;
+    Vector2D operator-(const Vector2D &other) const;
 
-        Vector2D operator*(double scalar) const;
+    Vector2D operator*(double scalar) const;
 
-        Vector2D operator/(double scalar) const;
+    Vector2D operator/(double scalar) const;
 
-        [[nodiscard]] double length() const;
+    [[nodiscard]] double length() const;
 
-        [[nodiscard]] Vector2D normalize() const;
+    [[nodiscard]] Vector2D normalize() const;
 
-        friend std::ostream &operator<<(std::ostream &os, const Vector2D &v);
+    friend std::ostream &operator<<(std::ostream &os, const Vector2D &v);
 
-        double slope() const;
-    };
-}
+    double slope() const;
+};
+} // namespace ur
 
-#endif //UR_VECTOR2D_H
+#endif // UR_VECTOR2D_H

@@ -28,15 +28,15 @@
 #include <SDL.h>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "game/object.h"
-#include "proto/agm.pb.h"
 #include "game/object_owner.h"
+#include "proto/agm.pb.h"
 
 namespace ur {
 
@@ -51,83 +51,82 @@ namespace ur {
 // enum UR_LAYER_ENUM { urLayerA, urLayerB, urLayerC };
 
 class Layer : public ObjectOwner {
-public:
-/**
- * @brief Construct a new Layer object
- * 
- * @param mapLayer MapLayer protobuf object.
- * @param layerIndex index of the layer, 0 is lowest.
- * @param tileset SDL texture of the whole animated tileset.
- * @param renderer SDL renderer to draw on.
- */
-  Layer(const MapLayer* mapLayer, const std::shared_ptr<AGM> agm, int layerIndex,
-        SDL_Texture *tileset, SDL_Renderer *renderer);
+  public:
+    /**
+     * @brief Construct a new Layer object
+     *
+     * @param mapLayer MapLayer protobuf object.
+     * @param layerIndex index of the layer, 0 is lowest.
+     * @param tileset SDL texture of the whole animated tileset.
+     * @param renderer SDL renderer to draw on.
+     */
+    Layer(const MapLayer *mapLayer, const std::shared_ptr<AGM> agm,
+          int layerIndex, SDL_Texture *tileset, SDL_Renderer *renderer);
 
-  // class destructor
-  ~Layer();
+    // class destructor
+    ~Layer();
 
-  /* The tile graphics for this floor
-   */
-  SDL_Texture *tilepile;
+    /* The tile graphics for this floor
+     */
+    SDL_Texture *tilepile;
 
+    Sint64 drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
 
+    Sint64 run();
 
-  Sint64 drawToScreen(SDL_Renderer *renderer, SDL_Rect screenGeom);
-
-  Sint64 run();
-
-/**
- * @brief Register an object to participate in this layer's physics run.
- * 
- * @param obj 
- */
-  void registerObject(ur::Object *obj) override;
+    /**
+     * @brief Register an object to participate in this layer's physics run.
+     *
+     * @param obj
+     */
+    void registerObject(ur::Object *obj) override;
 
     ObjectOwner::CollisionResult
-    checkMapPathCollision(Object *obj, Point2D position, Vector2D vector) override;
+    checkMapPathCollision(Object *obj, Point2D position,
+                          Vector2D vector) override;
 
-private:
-  /* Between 0 and 7.  Is the animation position for the tiles.
-   */
-  Sint64 tilesAnimPos;
+  private:
+    /* Between 0 and 7.  Is the animation position for the tiles.
+     */
+    Sint64 tilesAnimPos;
 
-  /* The layer's index.  Indexed from lowest to highest.
-   */
-  int layerIndex;
+    /* The layer's index.  Indexed from lowest to highest.
+     */
+    int layerIndex;
 
-  /* the matrix of values describing to the engine what each block is
-   * graphically. Remember, each block is 32x32
-   */
-  Sint64 floorGraphicalMap[MAP_WIDTH][MAP_HEIGHT];
+    /* the matrix of values describing to the engine what each block is
+     * graphically. Remember, each block is 32x32
+     */
+    Sint64 floorGraphicalMap[MAP_WIDTH][MAP_HEIGHT];
 
-  /**
-   * @brief Level contents
-   * 
-   */
-  const MapLayer* mapLayer;
+    /**
+     * @brief Level contents
+     *
+     */
+    const MapLayer *mapLayer;
 
-  const std::shared_ptr<AGM> agm;
+    const std::shared_ptr<AGM> agm;
 
-  /*
-   * returns an SDL_Rect that you can use as a srcrect when
-   * blitting a tile from the tilepile
-   */
-  SDL_Rect *getTileSrcCoord(Sint64 number);
+    /*
+     * returns an SDL_Rect that you can use as a srcrect when
+     * blitting a tile from the tilepile
+     */
+    SDL_Rect *getTileSrcCoord(Sint64 number);
 
-  /* returns an SDL_Rect that you can use as a dstrect when
-   * blitting a tile from the tilepile
-   */
-  SDL_Rect *getTileDestCoord(Sint64 x, Sint64 y);
+    /* returns an SDL_Rect that you can use as a dstrect when
+     * blitting a tile from the tilepile
+     */
+    SDL_Rect *getTileDestCoord(Sint64 x, Sint64 y);
 
-  /* debugging funcs to display the contents of floorGraphicalMap and physmap
-   */
-  void quickAGMPrint();
+    /* debugging funcs to display the contents of floorGraphicalMap and physmap
+     */
+    void quickAGMPrint();
 
-  /**
-   * @brief Registered objects.
-   * 
-   */
-  std::vector<Object *> registeredObjects;
+    /**
+     * @brief Registered objects.
+     *
+     */
+    std::vector<Object *> registeredObjects;
 };
 
 } // namespace ur
