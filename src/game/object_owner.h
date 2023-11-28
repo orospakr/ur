@@ -42,6 +42,7 @@ class ObjectOwner {
             None = 0,
             Vertical = 1 << 0,
             Horizontal = 1 << 1,
+            Both = Vertical | Horizontal
         };
 
         Axis collidedOn = Axis::None;
@@ -72,6 +73,11 @@ class ObjectOwner {
          * `nullptr` if `collidedOn` is `Axis::None`.
          */
         TileType *tileType = nullptr;
+
+        // memberwise constructor:
+        CollisionResult(Axis collidedOn, Vector2D clampedVector, Sint64 tileTypeIdx, TileType *tileType)
+            : collidedOn(collidedOn), clampedVector(clampedVector), tileTypeIdx(tileTypeIdx), tileType(tileType) {}
+
     };
 
     /**
@@ -82,12 +88,12 @@ class ObjectOwner {
      *
      * @param obj Object to check for collisions.
      * @param position Position of the object.
-     * @param vector Vector of movement of the object.
+     * @param velocity Vector of movement of the object.
      *
      * @return CollisionResult struct.
      */
     virtual CollisionResult checkMapPathCollision(Object *obj, Point2D position,
-                                                  Vector2D vector) = 0;
+                                                  Vector2D velocity) = 0;
     // NOTE: this approach to map collisions has some limitations: the object's
     // physics logic cannot be aware of the details of the geometry. But it
     // works for now.

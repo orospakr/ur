@@ -7,10 +7,10 @@
 namespace ur {
 
 #define REVISION_MAJOR 0
-#define REVISION_MINOR 0
-#define REVISION_MICRO 1
+#define REVISION_MINOR 1
+#define REVISION_MICRO 0
 
-#define REVISION_EDITION "Technology Preview 1"
+#define REVISION_EDITION "20th Anniversary Edition"
 
 #define TILE_WIDTH 32
 #define TILE_HEIGHT 32

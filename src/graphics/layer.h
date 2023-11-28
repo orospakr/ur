@@ -83,7 +83,7 @@ class Layer : public ObjectOwner {
 
     ObjectOwner::CollisionResult
     checkMapPathCollision(Object *obj, Point2D position,
-                          Vector2D vector) override;
+                          Vector2D velocity) override;
 
   private:
     /* Between 0 and 7.  Is the animation position for the tiles.

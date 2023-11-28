@@ -69,10 +69,10 @@ Map::Map(std::string name, SDL_Renderer *renderer, Font *fonts, Audio *audio)
     objects[1] = new Object("data/objs/", "mickey", renderer, this->layers[0]);
     objects[1]->faction = urFact_BadNik; // make him evil
     objects[0]->faction = urFact_FF;     // make our friend Al an FF
-    player->xpos = 13 * TILE_WIDTH;
-    player->ypos = 9 * TILE_HEIGHT;
-    objects[1]->xpos = 12 * TILE_WIDTH;
-    objects[1]->ypos = 13 * TILE_HEIGHT;
+    player->position = Point2D(13, 9);
+
+    objects[1]->position = Point2D(12, 13);
+
     audioController->pushBGM("7thheaven.mod");
 }
 
@@ -103,8 +103,8 @@ Sint64 Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer) {
     player->move(keypress);
 
     // screen follows the player:
-    screenGeom.x = player->xpos - (SCREEN_WIDTH / 2);
-    screenGeom.y = player->ypos - (SCREEN_HEIGHT / 2);
+    screenGeom.x = static_cast<int>(player->position.x * TILE_WIDTH) - (SCREEN_WIDTH / 2);
+    screenGeom.y = static_cast<int>(player->position.y * TILE_HEIGHT) - (SCREEN_HEIGHT / 2);
 
     // now, we need to check to ensure that the screen position has not gone out
     // of bounds:

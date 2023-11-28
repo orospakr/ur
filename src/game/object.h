@@ -55,25 +55,28 @@ class Object {
     /* The object's area of influence, relative to the whole map */
     UR_INFLUENCE areaInfluence;
 
+    /**
+     * Object's current direction input (such as from user).
+     */
+    UR_DIRECTION_ENUM directionInput = UR_DIRECTION_ENUM::urDirNone;
+
     /* graphical manifestation
      */
     Sprite *spriteGrafx;
 
-    /* dynamics
+    /**
+     * Object's position in tile coordinate space.
      */
-    Sint64 xpos;
-    Sint64 ypos;
+    Point2D position = Point2D();
 
     /**
-     * Velocity. This is the amount of pixels the object moves per every 33.333
-     * ms.
-     *
-     * Assuming 30 fps, that's one pixel per frame.
+     * Velocity. This is the amount of space the object currently travels every tick, represented in fractions
+     * of tile size.
      */
-    Sint64 xvel;
-    Sint64 yvel;
+    Vector2D velocity = Vector2D();
 
-    /* Object's common name
+    /**
+     * Object's common name
      */
     std::string name;
 
@@ -95,20 +98,30 @@ class Object {
     /* *** The following props are the stats.  They don't (normally) need
      * *** to be set unless the object is a character
      */
-    /* experience. Can goes as high as you like (within the bounds of Sint64, of
+
+    /**
+     * experience. Can goes as high as you like (within the bounds of Sint64, of
      * course)
      */
     Sint64 exp;
-    /* strength setting.  Choose one between 0-100
+
+    /**
+     * strength setting.  Choose one between 0-100
      */
     Sint64 strength;
-    /* constitution.  Choose one between 0-100
+
+    /**
+     * constitution.  Choose one between 0-100
      */
     Sint64 constitution;
-    /* gender.  male=0, female=1... these values are arbitrary, I may note...
+
+    /**
+     * gender.  male=0, female=1... these values are arbitrary, I may note...
      */
     Sint64 gender;
-    /* the max velocities.  Higher for Sonic than others, obviously. ;P
+
+    /**
+     * the max velocities.  Higher for Sonic than others, obviously. ;P
      */
     Sint64 velmax;
 
