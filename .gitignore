@@ -24,3 +24,6 @@ CMakeSettings.json
 # Xcode (builder)
 ./builder/UR Builder.xcodeproj/project.xcworkspace/xcuserdata
 
+# Clion
+cmake-build-debug
+.idea

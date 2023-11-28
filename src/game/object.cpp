@@ -96,9 +96,9 @@ void Object::run() {
     }
 
     // fractional value to incrase velocity by when key is pressed.
-    const double accel = 0.1;
+    const double accel = 0.05;
 
-    const double velmax = 1.0;
+    const double velmax = 0.2;
 
     switch (this->directionInput) {
         case urDirNorth:
@@ -109,12 +109,15 @@ void Object::run() {
                 velocity.y = -velmax;
             }
 
-            // decay horizontal velocity back to 0:
-            if (velocity.x < 0) {
+            // decay horizontal velocity:
+            if (abs(velocity.x) < accel) {
+                velocity.x = 0;
+            } else if (velocity.x < 0) {
                 velocity.x += accel;
             } else if (velocity.x > 0) {
                 velocity.x -= accel;
             }
+
             break;
         case urDirSouth:
             velocity.y += accel;
@@ -124,8 +127,10 @@ void Object::run() {
                 velocity.y = velmax;
             }
 
-            // decay horizontal velocity back to 0:
-            if (velocity.x < 0) {
+            // decay horizontal velocity:
+            if (abs(velocity.x) < accel) {
+                velocity.x = 0;
+            } else if (velocity.x < 0) {
                 velocity.x += accel;
             } else if (velocity.x > 0) {
                 velocity.x -= accel;
@@ -139,8 +144,10 @@ void Object::run() {
                 velocity.x = -velmax;
             }
 
-            // decay vertical velocity back to 0:
-            if (velocity.y < 0) {
+            // decay vertical velocity:
+            if (abs(velocity.y) < accel) {
+                velocity.y = 0;
+            } else if (velocity.y < 0) {
                 velocity.y += accel;
             } else if (velocity.y > 0) {
                 velocity.y -= accel;
@@ -154,8 +161,10 @@ void Object::run() {
                 velocity.x = velmax;
             }
 
-            // decay vertical velocity back to 0:
-            if (velocity.y < 0) {
+            // decay vertical velocity:
+            if (abs(velocity.y) < accel) {
+                velocity.y = 0;
+            } else if (velocity.y < 0) {
                 velocity.y += accel;
             } else if (velocity.y > 0) {
                 velocity.y -= accel;
@@ -223,10 +232,20 @@ void Object::run() {
 
         default:
             // decay velocity:
-            if (velocity.x < 0) {
+            if (abs(velocity.x) < accel) {
+                velocity.x = 0;
+            } else if (velocity.x < 0) {
                 velocity.x += accel;
             } else if (velocity.x > 0) {
                 velocity.x -= accel;
+            }
+
+            if (abs(velocity.y) < accel) {
+                    velocity.y = 0;
+            } else if (velocity.y < 0) {
+                    velocity.y += accel;
+            } else if (velocity.y > 0) {
+                    velocity.y -= accel;
             }
             break;
     }
