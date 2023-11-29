@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define the executable
-add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/Vector2D.cpp src/graphics/Point2D.cpp src/graphics/layer.cpp src/graphics/sprite.cpp src/proto/agm.pb.cc)
+add_executable(ur src/ur.cpp src/audio/audio.cpp src/game/map.cpp src/game/object.cpp src/ui/menu.cpp src/ui/titlescreen.cpp src/graphics/font.cpp src/graphics/Vector2D.cpp src/graphics/Point2D.cpp src/graphics/layer.cpp src/graphics/sprite.cpp src/proto/agm.pb.cc src/input/ur_direction.cpp)
 
 # SDL:
 find_package(SDL2 REQUIRED)
@@ -82,6 +82,7 @@ endif()
 # target_include_directories(ur PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # Include directories
+# TODO: remove the specific directories and only leave src, so that #includes will have to be qualified
 include_directories(src src/audio src/graphics src/ui src/proto)
 
 # Add subdirectory

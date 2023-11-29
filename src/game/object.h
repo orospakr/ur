@@ -50,7 +50,12 @@ class Object {
     ~Object();
 
     void run();
-    Sint64 move(UR_DIRECTION_ENUM key);
+
+    /**
+     * Input to this object, in the form of a unit vector.
+     *
+     */
+    Sint64 move(Vector2D input);
 
     /* The object's area of influence, relative to the whole map */
     UR_INFLUENCE areaInfluence;
@@ -58,7 +63,7 @@ class Object {
     /**
      * Object's current direction input (such as from user).
      */
-    UR_DIRECTION_ENUM directionInput = UR_DIRECTION_ENUM::urDirNone;
+    Vector2D directionInput = Vector2D();
 
     /* graphical manifestation
      */

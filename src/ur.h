@@ -77,17 +77,7 @@ enum UR_ANIM_ENUM {
     urAnimYawn
 };
 
-enum UR_DIRECTION_ENUM {
-    urDirNorth,
-    urDirSouth,
-    urDirEast,
-    urDirWest,
-    urDirNorthEast,
-    urDirNorthWest,
-    urDirSouthEast,
-    urDirSouthWest,
-    urDirNone
-};
+
 
 struct UR_TALK_DATA {
     std::string prompt;

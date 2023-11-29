@@ -21,6 +21,7 @@
 #include "agm.pb.h"
 #include "game/map.h" // class's header file
 #include "game/object_owner.h"
+#include "input/ur_direction.h"
 #include "map.h"
 #include <memory>
 
@@ -100,7 +101,7 @@ Sint64 Map::run(UR_DIRECTION_ENUM keypress, SDL_Renderer *renderer) {
         layer->run();
     }
 
-    player->move(keypress);
+    player->move(vectorFromDirection(keypress));
 
     // screen follows the player:
     screenGeom.x = static_cast<int>(player->position.x * TILE_WIDTH) - (SCREEN_WIDTH / 2);

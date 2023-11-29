@@ -25,6 +25,7 @@
 #define UR_SPRITE_H
 
 #include "ur.h"
+#include "input/ur_direction.h"
 #include <SDL.h>
 #include <iostream>
 #include <math.h>

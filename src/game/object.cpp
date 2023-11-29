@@ -17,6 +17,7 @@
 */
 
 #include "game/object.h" // class's header file
+#include "input/ur_direction.h"
 
 namespace ur {
 std::string charToSTLString(char *input) {
@@ -95,163 +96,25 @@ void Object::run() {
         return;
     }
 
-    // fractional value to incrase velocity by when key is pressed.
+    // fractional value to increase velocity by when key is pressed.
     const double accel = 0.05;
 
+    // TODO: this shadows the integer value loaded from object definition
     const double velmax = 0.2;
 
-    switch (this->directionInput) {
-        case urDirNorth:
-            velocity.y += -accel;
+    // we normalize input vector for good measure.
+    const Vector2D acceleration = directionInput.normalize() * accel;
 
-            // clamp vertical velocity to velmax:
-            if (velocity.y < -velmax) {
-                velocity.y = -velmax;
-            }
+    // we add the acceleration to the velocity.
+    velocity = velocity + acceleration;
 
-            // decay horizontal velocity:
-            if (abs(velocity.x) < accel) {
-                velocity.x = 0;
-            } else if (velocity.x < 0) {
-                velocity.x += accel;
-            } else if (velocity.x > 0) {
-                velocity.x -= accel;
-            }
-
-            break;
-        case urDirSouth:
-            velocity.y += accel;
-
-            // clamp vertical velocity to velmax:
-            if (velocity.y > velmax) {
-                velocity.y = velmax;
-            }
-
-            // decay horizontal velocity:
-            if (abs(velocity.x) < accel) {
-                velocity.x = 0;
-            } else if (velocity.x < 0) {
-                velocity.x += accel;
-            } else if (velocity.x > 0) {
-                velocity.x -= accel;
-            }
-            break;
-        case urDirWest:
-            velocity.x += -accel;
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x < -velmax) {
-                velocity.x = -velmax;
-            }
-
-            // decay vertical velocity:
-            if (abs(velocity.y) < accel) {
-                velocity.y = 0;
-            } else if (velocity.y < 0) {
-                velocity.y += accel;
-            } else if (velocity.y > 0) {
-                velocity.y -= accel;
-            }
-            break;
-        case urDirEast:
-            velocity.x += accel;
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x > velmax) {
-                velocity.x = velmax;
-            }
-
-            // decay vertical velocity:
-            if (abs(velocity.y) < accel) {
-                velocity.y = 0;
-            } else if (velocity.y < 0) {
-                velocity.y += accel;
-            } else if (velocity.y > 0) {
-                velocity.y -= accel;
-            }
-            break;
-        case urDirNorthWest:
-            velocity.y += -accel;
-            velocity.x += -accel;
-
-            // clamp vertical velocity to velmax:
-            if (velocity.y < -velmax) {
-                velocity.y = -velmax;
-            }
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x < -velmax) {
-                velocity.x = -velmax;
-            }
-            break;
-
-        case urDirNorthEast:
-            velocity.y += -accel;
-            velocity.x += accel;
-
-            // clamp vertical velocity to velmax:
-            if (velocity.y < -velmax) {
-                velocity.y = -velmax;
-            }
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x > velmax) {
-                velocity.x = velmax;
-            }
-            break;
-
-        case urDirSouthWest:
-            velocity.y += accel;
-            velocity.x += -accel;
-
-            // clamp vertical velocity to velmax:
-            if (velocity.y > velmax) {
-                velocity.y = velmax;
-            }
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x < -velmax) {
-                velocity.x = -velmax;
-            }
-            break;
-
-        case urDirSouthEast:
-            velocity.y += accel;
-            velocity.x += accel;
-
-            // clamp vertical velocity to velmax:
-            if (velocity.y > velmax) {
-                velocity.y = velmax;
-            }
-
-            // clamp horizontal velocity to velmax:
-            if (velocity.x > velmax) {
-                velocity.x = velmax;
-            }
-            break;
-
-        default:
-            // decay velocity:
-            if (abs(velocity.x) < accel) {
-                velocity.x = 0;
-            } else if (velocity.x < 0) {
-                velocity.x += accel;
-            } else if (velocity.x > 0) {
-                velocity.x -= accel;
-            }
-
-            if (abs(velocity.y) < accel) {
-                    velocity.y = 0;
-            } else if (velocity.y < 0) {
-                    velocity.y += accel;
-            } else if (velocity.y > 0) {
-                    velocity.y -= accel;
-            }
-            break;
+    // clamp velocity to velmax:
+    if (velocity.length() > velmax) {
+            velocity = velocity.normalize() * velmax;
     }
 
-
-    // TODO: handle new clamped collision result here.
+    // decay velocity:
+    velocity = velocity * 0.9;
 
     //    if (mapCollision.collision) {
     //        // adopt the collision position as our new position.
@@ -366,11 +229,11 @@ void Object::run() {
     }
 }
 
-Sint64 Object::move(UR_DIRECTION_ENUM key) {
-    this->directionInput = key;
+Sint64 Object::move(Vector2D input) {
+    this->directionInput = input;
 
     // update the sprite's direction with the keypress
-    spriteGrafx->currentDir = key;
+    spriteGrafx->currentDir = directionFromVector(input);
 
     return 0;
 }
