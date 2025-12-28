@@ -27,3 +27,4 @@ CMakeSettings.json
 # Clion
 cmake-build-debug
 .idea
+.zig-cache

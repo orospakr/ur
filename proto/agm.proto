@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package ur;
+
 message TileType {
     string uuid = 1;
     string title = 2;
@@ -30,4 +32,3 @@ message AGM {
 
     repeated MapLayer layers = 5;
 }
-

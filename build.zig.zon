@@ -1,0 +1,16 @@
+.{
+    .name = .ur,
+    .version = "0.15.2",
+    .dependencies = .{
+        .SDL2 = .{
+            .url = "git+https://github.com/ikskuh/SDL.zig?ref=master#a7e95b5fcc5b0d68921c148778609d2fe248c3d8",
+            .hash = "SDL2-0.0.0-yMCQivWqBABTfB8opAADsLCGxxu20vijLBW2hHdpTR-L",
+        },
+        .protobuf = .{
+            .url = "git+https://github.com/Arwalk/zig-protobuf?ref=master#2828be045c5f3e55c6f3f239c2ec40bc480a26ca",
+            .hash = "protobuf-3.0.0-0e82alnSKAD4lJettI9uUAM148s_36NH5SP7ZVjaAPkg",
+        },
+    },
+    .paths = .{""},
+    .fingerprint = 0xad9a8f5c11df87b3,
+}
