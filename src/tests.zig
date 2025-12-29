@@ -12,6 +12,7 @@ const agm_proto = @import("proto/ur.pb.zig");
 const map_math = @import("game/map_math.zig");
 const object_mod = @import("game/object.zig");
 const audio_mod = @import("audio/audio.zig");
+const titlescreen_mod = @import("ui/titlescreen.zig");
 
 test "constants remain stable" {
     try std.testing.expectEqual(@as(i32, 32), ur.tile_width);
@@ -210,6 +211,14 @@ test "audio music path joins" {
     try std.testing.expectEqualStrings("data/music/song.mod", path);
 }
 
+test "title scroller offset wraps" {
+    const offset = titlescreen_mod.scrollerOffset(0, 100);
+    try std.testing.expectEqual(@as(i32, 0), offset);
+
+    const offset2 = titlescreen_mod.scrollerOffset(50, 100);
+    try std.testing.expectEqual(@as(i32, -10), offset2);
+}
+
 comptime {
     _ = input;
     _ = direction;
@@ -224,4 +233,5 @@ comptime {
     _ = map_math;
     _ = object_mod;
     _ = audio_mod;
+    _ = titlescreen_mod;
 }

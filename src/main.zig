@@ -8,6 +8,8 @@ const input = @import("input/input.zig");
 const map_mod = @import("game/map.zig");
 const object_mod = @import("game/object.zig");
 const audio_mod = @import("audio/audio.zig");
+const font_mod = @import("graphics/font.zig");
+const titlescreen_mod = @import("ui/titlescreen.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -48,7 +50,11 @@ pub fn main() !void {
     var audio = try audio_mod.Audio.init(allocator);
     defer audio.deinit();
 
-    try audio.pushBgm("7thheaven.mod");
+    var font = try font_mod.Font.init(allocator, renderer, "data");
+    defer font.deinit();
+
+    var title = try titlescreen_mod.Titlescreen.init(allocator, renderer, "data", &font, &audio);
+    defer title.deinit();
 
     var map = try map_mod.Map.init(allocator, renderer, "kv");
     defer map.deinit();
@@ -66,6 +72,8 @@ pub fn main() !void {
     try map.addObject(mickey);
 
     var input_state = input.InputState{};
+    var run_state: ur.RunState = .title_screen;
+    var game_music_started = false;
 
     var running = true;
     while (running) {
@@ -79,13 +87,25 @@ pub fn main() !void {
             }
         }
 
-        const move_dir = input.directionFromInput(input_state);
-        map.run(move_dir);
-        audio.update();
-
         _ = SDL.SDL_SetRenderDrawColor(renderer, 0x20, 0x1F, 0x1B, 0xFF);
         _ = SDL.SDL_RenderClear(renderer);
-        map.draw(renderer);
+
+        if (run_state == .title_screen) {
+            if (title.run(renderer, input_state)) {
+                run_state = .in_game;
+            }
+        } else {
+            const move_dir = input.directionFromInput(input_state);
+            map.run(move_dir);
+            map.draw(renderer);
+        }
+
+        if (run_state == .in_game and !game_music_started) {
+            try audio.pushBgm("7thheaven.mod");
+            game_music_started = true;
+        }
+
+        audio.update();
         SDL.SDL_RenderPresent(renderer);
     }
 }

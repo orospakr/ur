@@ -34,7 +34,7 @@ pub const Font = struct {
             var x: i32 = 0;
             while (x < w * bpp) : (x += bpp) {
                 const offset: usize = @intCast(y * text_surface.?.*.pitch + x);
-                const pixel_ptr = @as(*u32, @ptrCast(pixels + offset));
+                const pixel_ptr = @as(*u32, @ptrCast(@alignCast(pixels + offset)));
 
                 var r: u8 = 0;
                 var g: u8 = 0;
@@ -62,7 +62,7 @@ pub const Font = struct {
         const big_texture: *SDL.SDL_Texture = @ptrCast(big_texture_c.?);
 
         return .{
-            .big_font = big_texture.?,
+            .big_font = big_texture,
             .text_font = text_texture.?,
         };
     }

@@ -57,8 +57,9 @@ pub const Audio = struct {
     pub fn popBgm(self: *Audio) void {
         if (self.bgm_stack.items.len == 0) return;
 
-        const last = self.bgm_stack.pop();
-        self.allocator.free(last);
+        if (self.bgm_stack.pop()) |last| {
+            self.allocator.free(last);
+        }
 
         if (self.bgm_stack.items.len == 0) {
             self.current_module = null;
