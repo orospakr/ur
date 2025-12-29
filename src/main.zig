@@ -7,6 +7,7 @@ const ur = @import("ur.zig");
 const input = @import("input/input.zig");
 const map_mod = @import("game/map.zig");
 const object_mod = @import("game/object.zig");
+const audio_mod = @import("audio/audio.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -44,6 +45,11 @@ pub fn main() !void {
     };
     defer _ = SDL.SDL_DestroyRenderer(renderer);
 
+    var audio = try audio_mod.Audio.init(allocator);
+    defer audio.deinit();
+
+    try audio.pushBgm("7thheaven.mod");
+
     var map = try map_mod.Map.init(allocator, renderer, "kv");
     defer map.deinit();
 
@@ -75,6 +81,7 @@ pub fn main() !void {
 
         const move_dir = input.directionFromInput(input_state);
         map.run(move_dir);
+        audio.update();
 
         _ = SDL.SDL_SetRenderDrawColor(renderer, 0x20, 0x1F, 0x1B, 0xFF);
         _ = SDL.SDL_RenderClear(renderer);

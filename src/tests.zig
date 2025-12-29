@@ -11,6 +11,7 @@ const agm_loader = @import("proto/agm_loader.zig");
 const agm_proto = @import("proto/ur.pb.zig");
 const map_math = @import("game/map_math.zig");
 const object_mod = @import("game/object.zig");
+const audio_mod = @import("audio/audio.zig");
 
 test "constants remain stable" {
     try std.testing.expectEqual(@as(i32, 32), ur.tile_width);
@@ -200,6 +201,15 @@ test "object definition parsing" {
     try std.testing.expectEqualStrings("bar", def.speech.items[1].response);
 }
 
+test "audio music path joins" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const path = try audio_mod.musicPath(allocator, "song.mod");
+    try std.testing.expectEqualStrings("data/music/song.mod", path);
+}
+
 comptime {
     _ = input;
     _ = direction;
@@ -213,4 +223,5 @@ comptime {
     _ = agm_proto;
     _ = map_math;
     _ = object_mod;
+    _ = audio_mod;
 }
