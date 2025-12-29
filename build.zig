@@ -65,6 +65,18 @@ pub fn build(b: *std.Build) !void {
     const unit_tests = b.addTest(.{
         .root_module = test_module,
     });
+    unit_tests.linkSystemLibrary("SDL2_image");
+    unit_tests.linkSystemLibrary("openmpt");
+    unit_tests.linkSystemLibrary("iconv");
+    unit_tests.linkFramework("Cocoa");
+    unit_tests.linkFramework("CoreAudio");
+    unit_tests.linkFramework("Carbon");
+    unit_tests.linkFramework("Metal");
+    unit_tests.linkFramework("QuartzCore");
+    unit_tests.linkFramework("AudioToolbox");
+    unit_tests.linkFramework("ForceFeedback");
+    unit_tests.linkFramework("GameController");
+    unit_tests.linkFramework("CoreHaptics");
 
     const run_tests = b.addRunArtifact(unit_tests);
     const test_step = b.step("test", "Run unit tests");

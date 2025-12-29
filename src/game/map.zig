@@ -81,6 +81,7 @@ pub const Map = struct {
         try self.objects.append(self.allocator, obj);
         if (self.layers.items.len > 0) {
             const idx = self.objects.items.len - 1;
+            self.objects.items[idx].owner_layer = &self.layers.items[0];
             try self.layers.items[0].registerObject(self.allocator, &self.objects.items[idx]);
         }
     }

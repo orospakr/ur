@@ -7,6 +7,7 @@ const vector2d = @import("../graphics/vector2d.zig");
 const point2d = @import("../graphics/point2d.zig");
 const direction = @import("../input/direction.zig");
 const input = @import("../input/input.zig");
+const layer_mod = @import("../graphics/layer.zig");
 const object_physics = @import("object_physics.zig");
 
 pub const Definition = struct {
@@ -57,6 +58,7 @@ pub const Object = struct {
     dead: bool = false,
     obj_type: ur.ObjType = .inanimate,
     faction: ur.Faction = .bad_nik,
+    owner_layer: ?*layer_mod.Layer = null,
 
     pub fn init(
         allocator: std.mem.Allocator,
@@ -100,9 +102,22 @@ pub const Object = struct {
             return;
         }
 
-        const next = object_physics.step(.{ .position = self.position, .velocity = self.velocity }, self.direction_input);
-        self.position = next.position;
-        self.velocity = next.velocity;
+        const next = object_physics.step(
+            .{ .position = self.position, .velocity = self.velocity },
+            self.direction_input,
+        );
+        const position = next.position;
+        var velocity = next.velocity;
+
+        if (self.owner_layer) |layer| {
+            const collision_result = layer.checkMapPathCollision(self.position, velocity);
+            if (collision_result.collided_on != .none) {
+                velocity = vector2d.Vector2D.init(0, 0);
+            }
+        }
+
+        self.position = position;
+        self.velocity = velocity;
 
         self.sprite.current_anim = .walk;
         self.sprite.xpos = @intFromFloat(self.position.x * @as(f64, @floatFromInt(ur.tile_width)));
@@ -242,4 +257,30 @@ test "object collision insta-kill" {
 
     bad.collision(&good);
     try @import("std").testing.expect(good.dead);
+}
+
+test "object run stops on collision" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const dummy_tex: *SDL.SDL_Texture = @ptrFromInt(1);
+    const tile_types = [_]layer_mod.TileType{
+        .{ .graphic_index = 0, .solid = false },
+        .{ .graphic_index = 1, .solid = true },
+    };
+    const tiles = [_]i32{ 0, 1, 0, 0 };
+    var layer = layer_mod.Layer.init(dummy_tex, tiles[0..], tile_types[0..], 2, 2);
+    defer layer.deinit(allocator);
+
+    var obj = Object{
+        .sprite = undefined,
+        .name = "walker",
+        .position = point2d.Point2D.init(0.99, 0.0),
+        .velocity = vector2d.Vector2D.init(0, 0),
+    };
+    obj.owner_layer = &layer;
+    obj.direction_input = vector2d.Vector2D.init(1, 0);
+    obj.run();
+    try std.testing.expectEqual(@as(f64, 0.0), obj.velocity.x);
 }
