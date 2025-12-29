@@ -67,6 +67,9 @@ pub const Map = struct {
             obj.deinit(self.allocator);
         }
         self.objects.deinit(self.allocator);
+        for (self.layers.items) |*layer| {
+            layer.deinit(self.allocator);
+        }
         self.layers.deinit(self.allocator);
 
         SDL.SDL_DestroyTexture(self.tileset);
@@ -76,6 +79,10 @@ pub const Map = struct {
 
     pub fn addObject(self: *Map, obj: object_mod.Object) !void {
         try self.objects.append(self.allocator, obj);
+        if (self.layers.items.len > 0) {
+            const idx = self.objects.items.len - 1;
+            try self.layers.items[0].registerObject(self.allocator, &self.objects.items[idx]);
+        }
     }
 
     pub fn setPlayerIndex(self: *Map, index: usize) void {

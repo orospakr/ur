@@ -6,6 +6,7 @@ const sprite_mod = @import("../graphics/sprite.zig");
 const vector2d = @import("../graphics/vector2d.zig");
 const point2d = @import("../graphics/point2d.zig");
 const direction = @import("../input/direction.zig");
+const input = @import("../input/input.zig");
 const object_physics = @import("object_physics.zig");
 
 pub const Definition = struct {
@@ -45,6 +46,7 @@ pub const Object = struct {
     area_influence: ur.Influence = .{ .x = 0, .y = 0, .h = ur.tile_height, .w = ur.tile_width },
     name: []const u8,
     speech: std.ArrayListUnmanaged(ur.TalkData) = .empty,
+    inventory: std.ArrayListUnmanaged(*Object) = .empty,
 
     exp: i64 = 0,
     strength: i64 = 0,
@@ -82,6 +84,7 @@ pub const Object = struct {
             allocator.free(entry.response);
         }
         self.speech.deinit(allocator);
+        self.inventory.deinit(allocator);
         allocator.free(self.name);
         self.sprite.deinit();
     }
@@ -111,6 +114,26 @@ pub const Object = struct {
 
     pub fn draw(self: *Object, renderer: *SDL.SDL_Renderer, screen_geom: SDL.SDL_Rect) void {
         self.sprite.draw(renderer, screen_geom);
+    }
+
+    pub fn collision(self: *Object, other: *Object) void {
+        if (self.faction == .bad_nik and other.faction == .ff) {
+            other.affectInstaKill();
+        }
+    }
+
+    pub fn affectInstaKill(self: *Object) void {
+        self.dead = true;
+    }
+
+    pub fn affectInjure(self: *Object, hit_points: i64) void {
+        _ = self;
+        _ = hit_points;
+    }
+
+    pub fn affectPush(self: *Object, source_direction: input.Direction) void {
+        _ = self;
+        _ = source_direction;
     }
 
     fn updateInfluence(self: *Object) void {
@@ -209,4 +232,14 @@ test "object definition parsing" {
     try std.testing.expectEqualStrings("world", def.speech.items[0].response);
     try std.testing.expectEqualStrings("foo", def.speech.items[1].prompt);
     try std.testing.expectEqualStrings("bar", def.speech.items[1].response);
+}
+
+test "object collision insta-kill" {
+    var good = Object{ .sprite = undefined, .name = "good" };
+    var bad = Object{ .sprite = undefined, .name = "bad" };
+    good.faction = .ff;
+    bad.faction = .bad_nik;
+
+    bad.collision(&good);
+    try @import("std").testing.expect(good.dead);
 }

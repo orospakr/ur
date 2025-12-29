@@ -60,6 +60,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     test_module.addImport("protobuf", protobuf_dep.module("protobuf"));
+    test_module.addImport("sdl2", sdl_sdk.getNativeModule());
 
     const unit_tests = b.addTest(.{
         .root_module = test_module,

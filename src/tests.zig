@@ -5,7 +5,9 @@ test {
     _ = @import("input/direction.zig");
     _ = @import("graphics/sprite_anim.zig");
     _ = @import("graphics/layer_math.zig");
+    _ = @import("graphics/layer.zig");
     _ = @import("game/object_physics.zig");
+    _ = @import("game/object_owner.zig");
     _ = @import("proto/agm_loader.zig");
     _ = @import("game/map_math.zig");
     _ = @import("game/object.zig");
