@@ -171,3 +171,12 @@ pub const Audio = struct {
 pub fn musicPath(allocator: std.mem.Allocator, name: []const u8) ![]const u8 {
     return std.fs.path.join(allocator, &.{ "data", "music", name });
 }
+
+test "audio music path joins" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const path = try musicPath(allocator, "song.mod");
+    try std.testing.expectEqualStrings("data/music/song.mod", path);
+}

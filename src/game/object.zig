@@ -189,3 +189,24 @@ pub fn parseDefinition(allocator: std.mem.Allocator, data: []const u8) !Definiti
 
     return def;
 }
+
+test "object definition parsing" {
+    const data = "0\n100\n25\n30\n5\nhello\nworld\nfoo\nbar\n";
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    var def = try parseDefinition(allocator, data);
+    defer def.deinit(allocator);
+
+    try std.testing.expectEqual(@as(i64, 0), def.gender);
+    try std.testing.expectEqual(@as(i64, 100), def.exp);
+    try std.testing.expectEqual(@as(i64, 25), def.strength);
+    try std.testing.expectEqual(@as(i64, 30), def.constitution);
+    try std.testing.expectEqual(@as(i64, 5), def.velmax);
+    try std.testing.expectEqual(@as(usize, 2), def.speech.items.len);
+    try std.testing.expectEqualStrings("hello", def.speech.items[0].prompt);
+    try std.testing.expectEqualStrings("world", def.speech.items[0].response);
+    try std.testing.expectEqualStrings("foo", def.speech.items[1].prompt);
+    try std.testing.expectEqualStrings("bar", def.speech.items[1].response);
+}

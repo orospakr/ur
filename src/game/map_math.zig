@@ -1,3 +1,4 @@
+const std = @import("std");
 const ur = @import("../ur.zig");
 
 pub const Rect = struct {
@@ -21,4 +22,14 @@ pub fn screenRectForPlayer(player_x: f64, player_y: f64) Rect {
     if (rect.y >= ur.screen_height * 2) rect.y = ur.screen_height * 2;
 
     return rect;
+}
+
+test "map math clamps screen rect" {
+    const rect = screenRectForPlayer(0.0, 0.0);
+    try std.testing.expectEqual(@as(i32, 0), rect.x);
+    try std.testing.expectEqual(@as(i32, 0), rect.y);
+
+    const rect2 = screenRectForPlayer(1000.0, 1000.0);
+    try std.testing.expectEqual(ur.screen_width * 2, rect2.x);
+    try std.testing.expectEqual(ur.screen_height * 2, rect2.y);
 }

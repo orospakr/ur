@@ -46,3 +46,15 @@ pub fn portraitRect() Rect {
         .y = 0,
     };
 }
+
+test "sprite anim rect uses phase and direction" {
+    const std = @import("std");
+    const rect = animRect(.east, .walk, 3);
+    try std.testing.expectEqual(@as(i32, ur.tile_width * 5 + (ur.tile_width * 3)), rect.x);
+    try std.testing.expectEqual(@as(i32, ur.tile_height * 2), rect.y);
+    try std.testing.expectEqual(@as(i32, ur.tile_width), rect.w);
+    try std.testing.expectEqual(@as(i32, ur.tile_height), rect.h);
+
+    const wait_rect = animRect(.none, .wait, 0);
+    try std.testing.expectEqual(@as(i32, ur.tile_height * 9), wait_rect.y);
+}

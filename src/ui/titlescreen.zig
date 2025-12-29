@@ -90,3 +90,11 @@ pub fn scrollerOffset(ticks: i64, marquee_width: i32) i32 {
     const offset = @as(i32, @intCast(@mod(step, width_i64)));
     return -offset;
 }
+
+test "title scroller offset wraps" {
+    const offset = scrollerOffset(0, 100);
+    try std.testing.expectEqual(@as(i32, 0), offset);
+
+    const offset2 = scrollerOffset(50, 100);
+    try std.testing.expectEqual(@as(i32, -10), offset2);
+}

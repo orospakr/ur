@@ -38,3 +38,30 @@ pub const Vector2D = struct {
         return self.y / self.x;
     }
 };
+
+test "vector2d math and normalization" {
+    const a = Vector2D.init(3.0, 4.0);
+    try std.testing.expectEqual(@as(f64, 5.0), a.length());
+
+    const b = Vector2D.init(-1.0, 2.0);
+    const sum = a.add(b);
+    try std.testing.expectEqual(@as(f64, 2.0), sum.x);
+    try std.testing.expectEqual(@as(f64, 6.0), sum.y);
+
+    const scaled = a.mul(2.0);
+    try std.testing.expectEqual(@as(f64, 6.0), scaled.x);
+    try std.testing.expectEqual(@as(f64, 8.0), scaled.y);
+
+    const unit = a.normalize();
+    try std.testing.expectApproxEqAbs(@as(f64, 1.0), unit.length(), 0.000001);
+}
+
+test "vector2d slope and zero normalization" {
+    const a = Vector2D.init(2.0, 6.0);
+    try std.testing.expectEqual(@as(f64, 3.0), a.slope());
+
+    const zero = Vector2D.init(0.0, 0.0);
+    const normalized = zero.normalize();
+    try std.testing.expectEqual(@as(f64, 0.0), normalized.x);
+    try std.testing.expectEqual(@as(f64, 0.0), normalized.y);
+}

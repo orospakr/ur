@@ -59,3 +59,11 @@ pub const Faction = enum {
     ff,
     bad_nik,
 };
+
+test "constants remain stable" {
+    const std = @import("std");
+    try std.testing.expectEqual(@as(i32, 32), tile_width);
+    try std.testing.expectEqual(@as(i32, 32), tile_height);
+    try std.testing.expectEqual(@as(i32, 640), screen_width);
+    try std.testing.expectEqual(@as(i32, 345), screen_height);
+}

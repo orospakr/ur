@@ -20,3 +20,21 @@ pub const Point2D = struct {
         return .{ .x = self.x + other.x, .y = self.y + other.y };
     }
 };
+
+test "point2d operations" {
+    const std = @import("std");
+    const a = Point2D.init(1.0, 2.0);
+    const b = Point2D.init(3.0, 4.0);
+    const sum = a.add(b);
+    try std.testing.expectEqual(@as(f64, 4.0), sum.x);
+    try std.testing.expectEqual(@as(f64, 6.0), sum.y);
+
+    const delta = a.sub(b);
+    try std.testing.expectEqual(@as(f64, -2.0), delta.x);
+    try std.testing.expectEqual(@as(f64, -2.0), delta.y);
+
+    const v = vector2d.Vector2D.init(-1.0, 5.0);
+    const moved = a.addVector(v);
+    try std.testing.expectEqual(@as(f64, 0.0), moved.x);
+    try std.testing.expectEqual(@as(f64, 7.0), moved.y);
+}

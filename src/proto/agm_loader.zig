@@ -41,3 +41,45 @@ pub fn tileTypesFromAgm(allocator: std.mem.Allocator, agm: *const proto.AGM) ![]
 
     return result;
 }
+
+test "agm loader decodes and converts tile types" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    var agm = proto.AGM{};
+    defer agm.deinit(allocator);
+
+    const uuid0 = try allocator.dupe(u8, "t0");
+    const title0 = try allocator.dupe(u8, "Tile 0");
+    const uuid1 = try allocator.dupe(u8, "t1");
+    const title1 = try allocator.dupe(u8, "Tile 1");
+
+    try agm.tileTypes.append(allocator, .{ .uuid = uuid0, .title = title0, .graphicIndex = 4, .solid = true });
+    try agm.tileTypes.append(allocator, .{ .uuid = uuid1, .title = title1, .graphicIndex = 2, .solid = false });
+
+    var map_layer = proto.MapLayer{};
+    map_layer.width = 2;
+    map_layer.height = 2;
+    try map_layer.tiles.append(allocator, 0);
+    try map_layer.tiles.append(allocator, 1);
+    try map_layer.tiles.append(allocator, 1);
+    try map_layer.tiles.append(allocator, 0);
+    try agm.layers.append(allocator, map_layer);
+
+    var writer = std.Io.Writer.Allocating.init(allocator);
+    defer writer.deinit();
+    try agm.encode(&writer.writer, allocator);
+
+    var decoded = try decodeFromBytes(allocator, writer.written());
+    defer decoded.deinit(allocator);
+
+    const tile_types = try tileTypesFromAgm(allocator, &decoded);
+    defer allocator.free(tile_types);
+
+    try std.testing.expectEqual(@as(usize, 2), tile_types.len);
+    try std.testing.expectEqual(@as(i32, 4), tile_types[0].graphic_index);
+    try std.testing.expect(tile_types[0].solid);
+    try std.testing.expectEqual(@as(i32, 2), tile_types[1].graphic_index);
+    try std.testing.expect(!tile_types[1].solid);
+}

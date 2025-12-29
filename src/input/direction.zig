@@ -36,3 +36,16 @@ pub fn vectorFromDirection(direction: input.Direction) vector2d.Vector2D {
         .none => return vector2d.Vector2D.init(0, 0),
     }
 }
+
+test "direction from vector and back" {
+    const std = @import("std");
+    const v1 = vector2d.Vector2D.init(0, -5);
+    try std.testing.expectEqual(input.Direction.north, directionFromVector(v1));
+
+    const v2 = vector2d.Vector2D.init(2, 3);
+    try std.testing.expectEqual(input.Direction.south_east, directionFromVector(v2));
+
+    const v3 = vectorFromDirection(.north_west);
+    try std.testing.expectApproxEqAbs(@as(f64, -0.70710678), v3.x, 0.00001);
+    try std.testing.expectApproxEqAbs(@as(f64, -0.70710678), v3.y, 0.00001);
+}
